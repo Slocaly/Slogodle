@@ -1,5 +1,14 @@
-// src/data/logos.js
-export const LOGOS = [
+export interface Logo {
+  name: string
+  aliases: string[]
+  industry: string
+  founded: number
+  funFact: string
+  viewBox: string
+  svgPath: string
+}
+
+export const LOGOS: Logo[] = [
   {
     name: "Vue.js",
     aliases: ["vue", "vue.js", "vuejs"],
@@ -168,4 +177,4 @@ export const LOGOS = [
     svgPath:
       '<path d="M50 10 C68 10 82 24 82 42 C82 64 50 92 50 92 C50 92 18 64 18 42 C18 24 32 10 50 10 Z" fill="currentColor"/><circle cx="50" cy="42" r="14" fill="var(--card-bg)"/>',
   },
-];
+]

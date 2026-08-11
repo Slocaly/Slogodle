@@ -1,0 +1,66 @@
+import type { Logo } from '../data/logos'
+
+const EPOCH = new Date(2024, 0, 1)
+
+export type GameStatus = 'playing' | 'won' | 'lost'
+
+export interface Guess {
+  text: string
+  correct: boolean
+}
+
+function localMidnight(date: Date): Date {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+export function dayIndexFor(date: Date, epoch: Date = EPOCH): number {
+  const ms = localMidnight(date).getTime() - localMidnight(epoch).getTime()
+  return Math.floor(ms / 86400000)
+}
+
+export function pickLogo(bank: Logo[], dayIndex: number): Logo {
+  const i = ((dayIndex % bank.length) + bank.length) % bank.length
+  return bank[i]
+}
+
+export function isCorrectGuess(text: string, logo: Logo): boolean {
+  const q = text.trim().toLowerCase()
+  return logo.aliases.includes(q)
+}
+
+export function suggestionsFor(value: string, bank: Logo[], excludeName: string | null): string[] {
+  if (!value || value.trim().length < 1) return []
+  const q = value.trim().toLowerCase()
+  return bank
+    .map((l) => l.name)
+    .filter((name) => name.toLowerCase().startsWith(q) && name !== excludeName)
+    .slice(0, 4)
+}
+
+export function formatCountdown(ms: number): string {
+  const clamped = Math.max(0, ms)
+  const s = Math.floor(clamped / 1000)
+  const hh = String(Math.floor(s / 3600)).padStart(2, '0')
+  const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0')
+  const ss = String(s % 60).padStart(2, '0')
+  return `${hh}:${mm}:${ss}`
+}
+
+export function nextLocalMidnight(from: Date = new Date()): Date {
+  const d = localMidnight(from)
+  d.setDate(d.getDate() + 1)
+  return d
+}
+
+export function computeStreak(history: Record<string, GameStatus>, todayIndex: number): number {
+  let i = todayIndex
+  if (history[String(i)] === undefined) i -= 1
+  let streak = 0
+  while (history[String(i)] === 'won') {
+    streak += 1
+    i -= 1
+  }
+  return streak
+}

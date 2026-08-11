@@ -1,22 +1,15 @@
 ## Development
 
-When starting the dev server, use background mode:
+Start the dev server with:
 
 ```
-astro dev --background
+pnpm run dev
 ```
 
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+Build for production with `pnpm run build`, preview a production build with `pnpm run start`.
 
 ## Documentation
 
-Full documentation: https://docs.astro.build
+Full documentation: https://tanstack.com/start
 
-Consult these guides before working on related tasks:
-
-- [Adding pages, dynamic routes, or middleware](https://docs.astro.build/en/guides/routing/)
-- [Working with Astro components](https://docs.astro.build/en/basics/astro-components/)
-- [Using React, Vue, Svelte, or other framework components](https://docs.astro.build/en/guides/framework-components/)
-- [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
-- [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
-- [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+Consult the TanStack Start guides before working on routing, components, or middleware features.

@@ -13,10 +13,12 @@
   "dependencies": {
     "@tanstack/react-router": "^1.170.25",
     "@tanstack/react-start": "^1.168.42",
+    "matter-js": "^0.20.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@types/matter-js": "^0.20.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.0.5",

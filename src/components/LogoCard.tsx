@@ -6,9 +6,11 @@ interface LogoCardProps {
   dayIndex: number
   status: GameStatus
   logo: Logo
+  isToday: boolean
+  onBackToday: () => void
 }
 
-export function LogoCard({ dayIndex, status, logo }: LogoCardProps) {
+export function LogoCard({ dayIndex, status, logo, isToday, onBackToday }: LogoCardProps) {
   const label =
     status === 'playing'
       ? `GUESS THE LOGO · #${dayIndex + 1}`
@@ -18,7 +20,14 @@ export function LogoCard({ dayIndex, status, logo }: LogoCardProps) {
 
   return (
     <>
-      <div className="day-label">{label}</div>
+      <div className="day-label-row">
+        <div className="day-label">{label}</div>
+        {!isToday && (
+          <button type="button" className="back-today-btn" onClick={onBackToday}>
+            ← Back to today
+          </button>
+        )}
+      </div>
       <div className="logo-wrap">
         {/* svgPath comes from our own static data/logos.ts, never from user input */}
         <svg

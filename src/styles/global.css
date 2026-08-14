@@ -213,8 +213,30 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 8px;
+  font: inherit;
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  border-radius: 10px;
   font-size: 13px;
   color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.archive-day:hover {
+  background: var(--toggle-bg);
+  color: var(--text);
+}
+
+.archive-day-active {
+  background: var(--accent-lavender);
+  color: var(--text);
+}
+
+.archive-day:hover .archive-day-label,
+.archive-day-active .archive-day-label {
+  color: inherit;
 }
 
 .archive-day-label {
@@ -280,6 +302,15 @@ a:hover {
   }
 }
 
+.day-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
 .day-label {
   display: inline-block;
   font-size: 12px;
@@ -289,7 +320,22 @@ a:hover {
   background: var(--accent-yellow);
   padding: 6px 16px;
   border-radius: 999px;
-  margin-bottom: 32px;
+}
+
+.back-today-btn {
+  font: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.back-today-btn:hover {
+  color: var(--accent-pink);
 }
 
 .logo-wrap {

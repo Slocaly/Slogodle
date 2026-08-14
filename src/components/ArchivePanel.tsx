@@ -1,32 +1,37 @@
-import type { GameStatus } from '../lib/game-logic'
+import { LOGOS } from '../data/logos'
+import { pickLogo, type GameStatus } from '../lib/game-logic'
 
 const ARCHIVE_DAYS = 5
 
 interface ArchivePanelProps {
   open: boolean
   dayIndex: number
+  activeDayIndex: number
   history: Record<string, GameStatus>
+  onSelectDay: (dayIndex: number) => void
 }
 
-export function ArchivePanel({ open, dayIndex, history }: ArchivePanelProps) {
+export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelectDay }: ArchivePanelProps) {
   const rows = []
   for (let offset = 1; offset <= ARCHIVE_DAYS; offset++) {
     const idx = dayIndex - offset
     if (idx < 0) continue
     const result = history[String(idx)]
+    const statusClass = result === 'won' ? 'archive-won' : result === 'lost' ? 'archive-lost' : 'archive-unplayed'
+    const statusLabel = result === 'won' ? 'Solved' : result === 'lost' ? 'Missed' : 'Not played'
+    const name = result === 'won' || result === 'lost' ? pickLogo(LOGOS, idx).name : null
     rows.push(
-      <div className="archive-day" key={idx}>
-        <span
-          className={
-            'archive-dot ' +
-            (result === 'won' ? 'archive-won' : result === 'lost' ? 'archive-lost' : 'archive-unplayed')
-          }
-        />
+      <button
+        type="button"
+        className={'archive-day' + (idx === activeDayIndex ? ' archive-day-active' : '')}
+        key={idx}
+        onClick={() => onSelectDay(idx)}
+        aria-current={idx === activeDayIndex ? 'true' : undefined}
+      >
+        <span className={'archive-dot ' + statusClass} role="img" aria-label={statusLabel} />
         <span>#{idx + 1}</span>
-        <span className="archive-day-label">
-          {result === 'won' ? 'Solved' : result === 'lost' ? 'Missed' : 'Not played'}
-        </span>
-      </div>,
+        {name && <span className="archive-day-label">{name}</span>}
+      </button>,
     )
   }
 

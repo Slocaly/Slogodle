@@ -1,59 +1,56 @@
-import { useEffect, useReducer, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LOGOS, type Logo } from '../data/logos'
 import { loadJSON, saveJSON } from '../lib/storage'
 import { now, subscribe as subscribeClock } from '../lib/clock'
 import { dayIndexFor, pickLogo, isCorrectGuess, computeStreak, type Guess, type GameStatus } from '../lib/game-logic'
 
 const MAX_TRIES = 3
-const TODAY_KEY = 'logodle_today_v1'
-const HISTORY_KEY = 'logodle_history_v1'
+const OLD_TODAY_KEY = 'logodle_today_v1'
+const OLD_HISTORY_KEY = 'logodle_history_v1'
+const DAYS_KEY = 'logodle_days_v1'
 const DARK_KEY = 'logodle_dark_v1'
 
-interface DayState {
-  dayIndex: number
-  logo: Logo
+interface DayRecord {
   guesses: Guess[]
   status: GameStatus
 }
 
-interface SavedToday {
+type DaysRecord = Record<string, DayRecord>
+
+interface OldSavedToday {
   dayIndex: number
   guesses: Guess[]
   status: GameStatus
 }
 
-function loadDay(): DayState {
-  const dayIndex = dayIndexFor(now())
-  const logo = pickLogo(LOGOS, dayIndex)
-  const saved = loadJSON<SavedToday | null>(TODAY_KEY, null)
-  const resuming = saved !== null && saved.dayIndex === dayIndex
-  return {
-    dayIndex,
-    logo,
-    guesses: resuming ? saved!.guesses : [],
-    status: resuming ? saved!.status : 'playing',
-  }
-}
+const EMPTY_DAY: DayRecord = { guesses: [], status: 'playing' }
 
-type Action = { type: 'RELOAD_DAY' } | { type: 'SUBMIT_GUESS'; text: string }
+// One-time migration from the old two-key storage format (today-only slot +
+// status-only history) into a single per-day record. Runs at most once per
+// browser: after it saves DAYS_KEY, `loadJSON(DAYS_KEY, null)` will return a
+// non-null value (even `{}` for a fresh install) so this body never runs again.
+function loadDays(): DaysRecord {
+  const existing = loadJSON<DaysRecord | null>(DAYS_KEY, null)
+  if (existing) return existing
 
-function reducer(state: DayState, action: Action): DayState {
-  switch (action.type) {
-    case 'RELOAD_DAY':
-      return loadDay()
-    case 'SUBMIT_GUESS': {
-      if (state.status !== 'playing' || !action.text.trim()) return state
-      const correct = isCorrectGuess(action.text, state.logo)
-      const guesses = [...state.guesses, { text: action.text.trim(), correct }]
-      const status: GameStatus = correct ? 'won' : guesses.length >= MAX_TRIES ? 'lost' : 'playing'
-      return { ...state, guesses, status }
-    }
+  const migrated: DaysRecord = {}
+  const oldHistory = loadJSON<Record<string, GameStatus>>(OLD_HISTORY_KEY, {})
+  for (const [key, status] of Object.entries(oldHistory)) {
+    migrated[key] = { guesses: [], status }
   }
+  const oldToday = loadJSON<OldSavedToday | null>(OLD_TODAY_KEY, null)
+  if (oldToday) {
+    migrated[String(oldToday.dayIndex)] = { guesses: oldToday.guesses, status: oldToday.status }
+  }
+  saveJSON(DAYS_KEY, migrated)
+  return migrated
 }
 
 export function useGameState() {
-  const [state, dispatch] = useReducer(reducer, undefined, loadDay)
-  const [history, setHistory] = useState<Record<string, GameStatus>>(() => loadJSON(HISTORY_KEY, {}))
+  const [todayIndex, setTodayIndex] = useState(() => dayIndexFor(now()))
+  const [activeDayIndex, setActiveDayIndex] = useState(() => dayIndexFor(now()))
+  const [pinnedToToday, setPinnedToToday] = useState(true)
+  const [days, setDays] = useState<DaysRecord>(loadDays)
   const [dark, setDark] = useState<boolean>(() => {
     try {
       return localStorage.getItem(DARK_KEY) === '1'
@@ -65,15 +62,14 @@ export function useGameState() {
   const [archiveOpen, setArchiveOpen] = useState(false)
   const [, forceTick] = useState(0)
 
-  // Persist today's progress, and fold a finished day into history, whenever they change.
+  const logo = pickLogo(LOGOS, activeDayIndex)
+  const dayRecord = days[String(activeDayIndex)] ?? EMPTY_DAY
+  const isToday = activeDayIndex === todayIndex
+
+  // Persist per-day state whenever it changes.
   useEffect(() => {
-    saveJSON(TODAY_KEY, { dayIndex: state.dayIndex, guesses: state.guesses, status: state.status })
-    if (state.status !== 'playing' && history[String(state.dayIndex)] !== state.status) {
-      const next = { ...history, [String(state.dayIndex)]: state.status }
-      saveJSON(HISTORY_KEY, next)
-      setHistory(next)
-    }
-  }, [state.dayIndex, state.guesses, state.status, history])
+    saveJSON(DAYS_KEY, days)
+  }, [days])
 
   // Persist dark-mode preference and reflect it on <html data-theme>.
   useEffect(() => {
@@ -85,44 +81,81 @@ export function useGameState() {
     }
   }, [dark])
 
-  // Tick every second; reload the day if it has rolled over since the last tick.
+  // Tick every second; if the real day has rolled over and we're pinned to
+  // today, follow it. If the user has navigated to a past day (unpinned),
+  // leave them there through a rollover.
   useEffect(() => {
     const id = setInterval(() => {
-      if (dayIndexFor(now()) !== state.dayIndex) {
-        dispatch({ type: 'RELOAD_DAY' })
-        setValue('')
+      const freshTodayIndex = dayIndexFor(now())
+      if (freshTodayIndex !== todayIndex) {
+        setTodayIndex(freshTodayIndex)
+        if (pinnedToToday) {
+          setActiveDayIndex(freshTodayIndex)
+          setValue('')
+        }
       } else {
         forceTick((t) => t + 1)
       }
     }, 1000)
     return () => clearInterval(id)
-  }, [state.dayIndex])
+  }, [todayIndex, pinnedToToday])
 
   // React to devtools clock changes immediately, not just on the next 1s tick.
   useEffect(
     () =>
       subscribeClock(() => {
-        dispatch({ type: 'RELOAD_DAY' })
-        setValue('')
+        const freshTodayIndex = dayIndexFor(now())
+        setTodayIndex(freshTodayIndex)
+        if (pinnedToToday) {
+          setActiveDayIndex(freshTodayIndex)
+          setValue('')
+        }
       }),
-    [],
+    [pinnedToToday],
   )
 
-  const streak = computeStreak(history, state.dayIndex)
+  const history: Record<string, GameStatus> = {}
+  for (const [key, record] of Object.entries(days)) {
+    if (record.status !== 'playing') {
+      history[key] = record.status
+    }
+  }
+  const streak = computeStreak(history, todayIndex)
 
   function submitGuess(text: string) {
-    dispatch({ type: 'SUBMIT_GUESS', text })
+    if (dayRecord.status !== 'playing' || !text.trim()) return
+    const correct = isCorrectGuess(text, logo)
+    const guesses = [...dayRecord.guesses, { text: text.trim(), correct }]
+    const status: GameStatus = correct ? 'won' : guesses.length >= MAX_TRIES ? 'lost' : 'playing'
+    setDays((prev) => ({ ...prev, [String(activeDayIndex)]: { guesses, status } }))
+    setValue('')
+  }
+
+  function viewDay(dayIndex: number) {
+    setPinnedToToday(false)
+    setActiveDayIndex(dayIndex)
+    setValue('')
+    setArchiveOpen(false)
+  }
+
+  function returnToToday() {
+    setPinnedToToday(true)
+    setActiveDayIndex(todayIndex)
     setValue('')
   }
 
   return {
-    dayIndex: state.dayIndex,
-    logo: state.logo,
-    guesses: state.guesses,
-    status: state.status,
+    dayIndex: activeDayIndex,
+    todayIndex,
+    isToday,
+    logo,
+    guesses: dayRecord.guesses,
+    status: dayRecord.status,
     value,
     setValue,
     submitGuess,
+    viewDay,
+    returnToToday,
     archiveOpen,
     toggleArchive: () => setArchiveOpen((v) => !v),
     dark,

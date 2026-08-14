@@ -29,10 +29,22 @@ function Home() {
           dark={g.dark}
           onToggleDark={g.toggleDark}
         />
-        <ArchivePanel open={g.archiveOpen} dayIndex={g.dayIndex} history={g.history} />
+        <ArchivePanel
+          open={g.archiveOpen}
+          dayIndex={g.todayIndex}
+          activeDayIndex={g.dayIndex}
+          history={g.history}
+          onSelectDay={g.viewDay}
+        />
         <main className="game-area">
           <div className="card">
-            <LogoCard dayIndex={g.dayIndex} status={g.status} logo={g.logo} />
+            <LogoCard
+              dayIndex={g.dayIndex}
+              status={g.status}
+              logo={g.logo}
+              isToday={g.isToday}
+              onBackToday={g.returnToToday}
+            />
             <GuessTiles guesses={g.guesses} />
             {isPlaying && (
               <GuessForm
@@ -45,7 +57,14 @@ function Home() {
               />
             )}
             {!isPlaying && (
-              <RevealPanel logo={g.logo} guesses={g.guesses} maxTries={g.maxTries} streak={g.streak} />
+              <RevealPanel
+                logo={g.logo}
+                guesses={g.guesses}
+                maxTries={g.maxTries}
+                streak={g.streak}
+                isToday={g.isToday}
+                onBackToday={g.returnToToday}
+              />
             )}
           </div>
         </main>

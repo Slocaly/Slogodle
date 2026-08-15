@@ -36,7 +36,7 @@ export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelect
   }
 
   return (
-    <div className="archive-panel" hidden={!open}>
+    <div className={'archive-panel' + (open ? ' archive-panel-open' : '')}>
       <div className="archive-days">{open ? rows : null}</div>
     </div>
   )

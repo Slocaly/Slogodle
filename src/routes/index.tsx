@@ -23,19 +23,21 @@ function Home() {
     <>
       <PhysicsLogoPile dayIndex={g.dayIndex} excludeName={g.logo.name} />
       <div className="page">
-        <GameHeader
-          archiveOpen={g.archiveOpen}
-          onToggleArchive={g.toggleArchive}
-          dark={g.dark}
-          onToggleDark={g.toggleDark}
-        />
-        <ArchivePanel
-          open={g.archiveOpen}
-          dayIndex={g.todayIndex}
-          activeDayIndex={g.dayIndex}
-          history={g.history}
-          onSelectDay={g.viewDay}
-        />
+        <div className="header-wrap">
+          <GameHeader
+            archiveOpen={g.archiveOpen}
+            onToggleArchive={g.toggleArchive}
+            dark={g.dark}
+            onToggleDark={g.toggleDark}
+          />
+          <ArchivePanel
+            open={g.archiveOpen}
+            dayIndex={g.todayIndex}
+            activeDayIndex={g.dayIndex}
+            history={g.history}
+            onSelectDay={g.viewDay}
+          />
+        </div>
         <main className="game-area">
           <div className="card">
             <LogoCard

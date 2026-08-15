@@ -112,6 +112,11 @@ a:hover {
   will-change: transform;
 }
 
+.header-wrap {
+  position: relative;
+  z-index: 2;
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -190,14 +195,27 @@ a:hover {
 }
 
 .archive-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 5;
   border-bottom: 1px solid var(--border);
   background: var(--panel-bg);
   backdrop-filter: blur(10px);
-  pointer-events: auto;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-6px);
+  visibility: hidden;
+  transition: opacity 0.32s ease, transform 0.32s ease, visibility 0s linear 0.32s;
 }
 
-.archive-panel:not([hidden]) {
-  display: block;
+.archive-panel-open {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  transition: opacity 0.32s ease, transform 0.32s ease;
 }
 
 .archive-days {

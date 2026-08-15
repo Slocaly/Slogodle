@@ -25,29 +25,25 @@ const LAUNCH_UPWARD_SPEED_VARIANCE = 12
 
 export interface PileLogo {
   key: string
+  aspect: number
 }
 
 export interface CreateLogoPileSimulationOptions {
   container: HTMLElement
   logos: PileLogo[]
-  getElement: (key: string) => SVGSVGElement | null
+  getElement: (key: string) => HTMLElement | null
   reducedMotion: boolean
 }
 
 export interface LogoPileSimulation {
   destroy(): void
-  /** Flings the given (already-mounted) element keys in from a screen edge, staggered. */
-  launchFromSide(keys: string[], side: 'left' | 'right'): void
+  /** Flings the given (already-mounted) entries in from a screen edge, staggered. */
+  launchFromSide(entries: PileLogo[], side: 'left' | 'right'): void
 }
 
-// Crops an element's viewBox to its drawn content and sizes it within the pile's
-// body-size range. Shared by the initial top-down spawn and side launches.
-function sizeElement(el: SVGSVGElement): { width: number; height: number } | null {
-  const bbox = el.getBBox()
-  if (bbox.width <= 0 || bbox.height <= 0) return null
-  el.setAttribute('viewBox', `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`)
-  const aspect = bbox.width / bbox.height
-
+// Sizes an element within the pile's body-size range, from its icon's intrinsic aspect
+// ratio. Shared by the initial top-down spawn and side launches.
+function sizeElement(el: HTMLElement, aspect: number): { width: number; height: number } {
   const longEdge = BODY_SIZE_MIN + Math.random() * (BODY_SIZE_MAX - BODY_SIZE_MIN)
   const width = aspect >= 1 ? longEdge : longEdge * aspect
   const height = aspect >= 1 ? longEdge / aspect : longEdge
@@ -90,7 +86,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
   let width = 0
   let height = 0
   let boundaries: Matter.Body[] = []
-  let pileBodies: { body: Matter.Body; el: SVGSVGElement; width: number; height: number }[] = []
+  let pileBodies: { body: Matter.Body; el: HTMLElement; width: number; height: number }[] = []
   let spawned = false
 
   function sync() {
@@ -186,11 +182,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
       const el = getElement(logo.key)
       if (!el) return []
 
-      // Crop to the actual drawn content (not the padded viewBox) so the physics
-      // hitbox matches the visible logo instead of leaving gaps around it.
-      const sized = sizeElement(el)
-      if (!sized) return []
-      const { width: bodyWidth, height: bodyHeight } = sized
+      const { width: bodyWidth, height: bodyHeight } = sizeElement(el, logo.aspect)
       const x = bodyWidth / 2 + Math.random() * Math.max(width - bodyWidth, 1)
       const y = reducedMotion
         ? height - bodyHeight / 2 - Math.random() * 60
@@ -212,14 +204,12 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
 
   const launchTimers: ReturnType<typeof setTimeout>[] = []
 
-  function launchFromSide(keys: string[], side: 'left' | 'right') {
-    keys.forEach((key, i) => {
+  function launchFromSide(entries: PileLogo[], side: 'left' | 'right') {
+    entries.forEach((entry, i) => {
       const timer = setTimeout(() => {
-        const el = getElement(key)
+        const el = getElement(entry.key)
         if (!el) return
-        const sized = sizeElement(el)
-        if (!sized) return
-        const { width: bodyWidth, height: bodyHeight } = sized
+        const { width: bodyWidth, height: bodyHeight } = sizeElement(el, entry.aspect)
 
         const x = reducedMotion
           ? bodyWidth / 2 + Math.random() * Math.max(width - bodyWidth, 1)

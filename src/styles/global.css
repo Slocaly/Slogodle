@@ -402,15 +402,15 @@ a:hover {
 }
 
 #logo-svg {
-  color: var(--text);
+  display: block;
 }
 
 #logo-svg[data-status="won"] {
-  color: var(--success);
+  filter: drop-shadow(0 0 12px var(--success));
 }
 
 #logo-svg[data-status="lost"] {
-  color: var(--faint);
+  filter: grayscale(1) opacity(0.5);
 }
 
 .guesses {

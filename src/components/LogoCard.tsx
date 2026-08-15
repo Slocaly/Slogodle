@@ -30,16 +30,7 @@ export function LogoCard({ dayIndex, status, logo, isToday, onBackToday }: LogoC
         )}
       </div>
       <div className="logo-wrap">
-        {/* svgPath comes from our own static data/logos.ts, never from user input */}
-        <svg
-          id="logo-svg"
-          width="100"
-          height="100"
-          viewBox={logo.viewBox}
-          xmlns="http://www.w3.org/2000/svg"
-          data-status={status}
-          dangerouslySetInnerHTML={{ __html: logo.svgPath }}
-        />
+        <img id="logo-svg" width="100" height="100" src={logo.icon} alt="" data-status={status} />
       </div>
     </>
   )

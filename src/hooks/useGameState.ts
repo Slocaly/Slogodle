@@ -58,7 +58,6 @@ export function useGameState() {
       return false
     }
   })
-  const [value, setValue] = useState('')
   const [archiveOpen, setArchiveOpen] = useState(false)
 
   const logo = pickLogo(LOGOS, activeDayIndex)
@@ -89,7 +88,6 @@ export function useGameState() {
         setTodayIndex(freshTodayIndex)
         if (pinnedToToday) {
           setActiveDayIndex(freshTodayIndex)
-          setValue('')
         }
       }
     }, 1000)
@@ -104,7 +102,6 @@ export function useGameState() {
         setTodayIndex(freshTodayIndex)
         if (pinnedToToday) {
           setActiveDayIndex(freshTodayIndex)
-          setValue('')
         }
       }),
     [pinnedToToday],
@@ -125,20 +122,17 @@ export function useGameState() {
     const status: GameStatus = correct ? 'won' : guesses.length >= MAX_TRIES ? 'lost' : 'playing'
     setDays((prev) => ({ ...prev, [String(activeDayIndex)]: { guesses, status } }))
     console.log('submitGuess', text, 'correct', correct, 'status', status, 'guesses', guesses)
-    setValue('')
   }
 
   function viewDay(dayIndex: number) {
     setPinnedToToday(false)
     setActiveDayIndex(dayIndex)
-    setValue('')
     setArchiveOpen(false)
   }
 
   function returnToToday() {
     setPinnedToToday(true)
     setActiveDayIndex(todayIndex)
-    setValue('')
   }
 
   return {
@@ -148,8 +142,6 @@ export function useGameState() {
     logo,
     guesses: dayRecord.guesses,
     status: dayRecord.status,
-    value,
-    setValue,
     submitGuess,
     viewDay,
     returnToToday,

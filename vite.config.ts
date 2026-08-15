@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact from '@vitejs/plugin-react'
+import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
+import babel from '@rolldown/plugin-babel'
 import tsConfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
@@ -8,5 +9,6 @@ export default defineConfig({
     tsConfigPaths({ projects: ['./tsconfig.json'] }),
     tanstackStart(),
     viteReact(),
+    babel({ presets: [reactCompilerPreset()] }),
   ],
 })

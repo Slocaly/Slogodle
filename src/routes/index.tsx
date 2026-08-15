@@ -48,8 +48,7 @@ function Home() {
             <GuessTiles guesses={g.guesses} />
             {isPlaying && (
               <GuessForm
-                value={g.value}
-                onChange={g.setValue}
+                key={g.dayIndex}
                 onSubmit={g.submitGuess}
                 logo={g.logo}
                 attemptCount={g.guesses.length}

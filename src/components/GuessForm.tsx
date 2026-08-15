@@ -1,18 +1,17 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Combobox } from '@base-ui/react/combobox'
 import { LOGOS, type Logo } from '../data/logos'
 import { suggestionsFor } from '../lib/game-logic'
 
 interface GuessFormProps {
-  value: string
-  onChange: (value: string) => void
   onSubmit: (text: string) => void
   logo: Logo
   attemptCount: number
   maxTries: number
 }
 
-export function GuessForm({ value, onChange, onSubmit, logo, attemptCount, maxTries }: GuessFormProps) {
+export function GuessForm({ onSubmit, logo, attemptCount, maxTries }: GuessFormProps) {
+  const [value, setValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const suppressNextInputValueRef = useRef<string | null>(null)
   const suggestions = suggestionsFor(value, LOGOS, null)
@@ -30,12 +29,13 @@ export function GuessForm({ value, onChange, onSubmit, logo, attemptCount, maxTr
             suppressNextInputValueRef.current = null
             return
           }
-          onChange(next)
+          setValue(next)
         }}
         onValueChange={(name: string | null) => {
           if (name) {
             suppressNextInputValueRef.current = name
             onSubmit(name)
+            setValue('')
             inputRef.current?.focus()
           }
         }}

@@ -15,7 +15,6 @@
   --success: oklch(0.56 0.15 155);
   --danger: oklch(0.6 0.19 15);
   --accent-pink: oklch(0.78 0.14 350);
-  --accent-mint: oklch(0.82 0.1 170);
   --accent-yellow: oklch(0.87 0.13 95);
   --accent-lavender: oklch(0.8 0.1 300);
   --shadow-color: oklch(0.7 0.08 320 / 0.35);
@@ -37,7 +36,6 @@
   --success: oklch(0.65 0.14 155);
   --danger: oklch(0.65 0.18 20);
   --accent-pink: oklch(0.7 0.14 350);
-  --accent-mint: oklch(0.72 0.11 170);
   --accent-yellow: oklch(0.78 0.13 95);
   --accent-lavender: oklch(0.68 0.1 300);
   --shadow-color: oklch(0.12 0.05 300 / 0.55);
@@ -85,6 +83,25 @@ a {
 
 a:hover {
   color: oklch(0.45 0.18 340);
+}
+
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--card-bg);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 12px;
 }
 
 .page {
@@ -153,11 +170,15 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: color 0.15s;
+  transition: color 0.15s, transform 0.1s;
 }
 
 .archive-toggle:hover {
   color: var(--accent-pink);
+}
+
+.archive-toggle:active {
+  transform: translateY(1px);
 }
 
 .archive-arrow {
@@ -374,11 +395,15 @@ a:hover {
   font-weight: 600;
   color: var(--muted);
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color 0.15s, transform 0.1s;
 }
 
 .back-today-btn:hover {
   color: var(--accent-pink);
+}
+
+.back-today-btn:active {
+  transform: translateY(1px);
 }
 
 .logo-wrap {

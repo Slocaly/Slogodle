@@ -51,7 +51,7 @@ function Home() {
             onSelectDay={g.viewDay}
           />
         </div>
-        <main className="game-area">
+        <main className="game-area" id="main">
           <div className="card">
             <LogoCard
               dayIndex={g.dayIndex}

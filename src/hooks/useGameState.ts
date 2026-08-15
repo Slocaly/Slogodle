@@ -121,7 +121,6 @@ export function useGameState() {
     const guesses = [...dayRecord.guesses, { text: text.trim(), correct }]
     const status: GameStatus = correct ? 'won' : guesses.length >= MAX_TRIES ? 'lost' : 'playing'
     setDays((prev) => ({ ...prev, [String(activeDayIndex)]: { guesses, status } }))
-    console.log('submitGuess', text, 'correct', correct, 'status', status, 'guesses', guesses)
     return { status, attempts: guesses.length }
   }
 

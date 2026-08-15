@@ -19,6 +19,8 @@ export function LogoCard({ dayIndex, status, logo, isToday, onBackToday }: LogoC
         ? m.logo_label_solved({ day: dayIndex + 1 })
         : m.logo_label_missed({ day: dayIndex + 1 })
 
+  const alt = status === 'playing' ? m.logo_alt_playing() : m.logo_alt_revealed({ name: logo.name })
+
   return (
     <>
       <div className="day-label-row">
@@ -30,7 +32,7 @@ export function LogoCard({ dayIndex, status, logo, isToday, onBackToday }: LogoC
         )}
       </div>
       <div className="logo-wrap">
-        <img id="logo-svg" width="100" height="100" src={logo.icon} alt="" data-status={status} />
+        <img id="logo-svg" width="100" height="100" src={logo.icon} alt={alt} data-status={status} />
       </div>
     </>
   )

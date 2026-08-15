@@ -17,5 +17,12 @@
   "archive_status_unplayed": "Not played",
   "logo_label_playing": "GUESS THE LOGO · #{day}",
   "logo_label_solved": "SOLVED — #{day}",
-  "logo_label_missed": "MISSED — #{day}"
+  "logo_label_missed": "MISSED — #{day}",
+  "logo_alt_playing": "Mystery logo to guess",
+  "logo_alt_revealed": "{name} logo",
+  "site_description": "Guess the tech logo of the day in three tries. A new puzzle every day.",
+  "not_found_title": "Wrong guess.",
+  "not_found_message": "That page doesn't exist. Even three hints won't help with this one.",
+  "not_found_cta": "Back to today's logo",
+  "skip_to_content": "Skip to content"
 }

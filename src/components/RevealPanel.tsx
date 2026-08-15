@@ -1,4 +1,5 @@
-import { now } from '../lib/clock'
+import { useEffect, useState } from 'react'
+import { now, subscribe as subscribeClock } from '../lib/clock'
 import { nextLocalMidnight, formatCountdown, type Guess } from '../lib/game-logic'
 import type { Logo } from '../data/logos'
 
@@ -11,7 +12,27 @@ interface RevealPanelProps {
   onBackToday: () => void
 }
 
+function useCountdown(active: boolean): string {
+  const [label, setLabel] = useState(() => formatCountdown(nextLocalMidnight(now()).getTime() - now().getTime()))
+
+  useEffect(() => {
+    if (!active) return
+    const update = () => setLabel(formatCountdown(nextLocalMidnight(now()).getTime() - now().getTime()))
+    update()
+    const id = setInterval(update, 1000)
+    const unsubscribe = subscribeClock(update)
+    return () => {
+      clearInterval(id)
+      unsubscribe()
+    }
+  }, [active])
+
+  return label
+}
+
 export function RevealPanel({ logo, guesses, maxTries, streak, isToday, onBackToday }: RevealPanelProps) {
+  const countdown = useCountdown(isToday)
+
   return (
     <div className="reveal">
       <div className="reveal-name">{logo.name}</div>
@@ -26,7 +47,7 @@ export function RevealPanel({ logo, guesses, maxTries, streak, isToday, onBackTo
       {isToday ? (
         <div className="meta-row">
           <span>streak {streak}</span>
-          <span>next in {formatCountdown(nextLocalMidnight(now()).getTime() - now().getTime())}</span>
+          <span>next in {countdown}</span>
         </div>
       ) : (
         <div className="meta-row">

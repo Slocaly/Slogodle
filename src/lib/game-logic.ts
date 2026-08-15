@@ -30,13 +30,12 @@ export function isCorrectGuess(text: string, logo: Logo): boolean {
   return logo.aliases.includes(q)
 }
 
-export function suggestionsFor(value: string, bank: Logo[], excludeName: string | null): string[] {
+export function suggestionsFor(value: string, bank: Logo[], excludeName: string | null): { label: string; value: string }[] {
   if (!value || value.trim().length < 1) return []
   const q = value.trim().toLowerCase()
   return bank
-    .map((l) => l.name)
-    .filter((name) => name.toLowerCase().startsWith(q) && name !== excludeName)
-    .slice(0, 4)
+    .map((l) => ({ label: l.name, value: l.name }))
+    .filter((logo) => logo.label.toLowerCase().startsWith(q) && logo.label !== excludeName)
 }
 
 export function formatCountdown(ms: number): string {

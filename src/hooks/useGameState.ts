@@ -60,7 +60,6 @@ export function useGameState() {
   })
   const [value, setValue] = useState('')
   const [archiveOpen, setArchiveOpen] = useState(false)
-  const [, forceTick] = useState(0)
 
   const logo = pickLogo(LOGOS, activeDayIndex)
   const dayRecord = days[String(activeDayIndex)] ?? EMPTY_DAY
@@ -71,7 +70,6 @@ export function useGameState() {
     saveJSON(DAYS_KEY, days)
   }, [days])
 
-  // Persist dark-mode preference and reflect it on <html data-theme>.
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? 'dark' : 'light'
     try {
@@ -81,9 +79,9 @@ export function useGameState() {
     }
   }, [dark])
 
-  // Tick every second; if the real day has rolled over and we're pinned to
-  // today, follow it. If the user has navigated to a past day (unpinned),
-  // leave them there through a rollover.
+  // Check once a second whether the real day has rolled over; if it has and
+  // we're pinned to today, follow it. If the user has navigated to a past
+  // day (unpinned), leave them there through a rollover.
   useEffect(() => {
     const id = setInterval(() => {
       const freshTodayIndex = dayIndexFor(now())
@@ -93,8 +91,6 @@ export function useGameState() {
           setActiveDayIndex(freshTodayIndex)
           setValue('')
         }
-      } else {
-        forceTick((t) => t + 1)
       }
     }, 1000)
     return () => clearInterval(id)
@@ -128,6 +124,7 @@ export function useGameState() {
     const guesses = [...dayRecord.guesses, { text: text.trim(), correct }]
     const status: GameStatus = correct ? 'won' : guesses.length >= MAX_TRIES ? 'lost' : 'playing'
     setDays((prev) => ({ ...prev, [String(activeDayIndex)]: { guesses, status } }))
+    console.log('submitGuess', text, 'correct', correct, 'status', status, 'guesses', guesses)
     setValue('')
   }
 

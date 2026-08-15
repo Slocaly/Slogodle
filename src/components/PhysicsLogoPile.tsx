@@ -4,7 +4,7 @@ import { LOGOS } from '../data/logos'
 import { pickDailySequence } from '../lib/dailyRandom'
 import { createLogoPileSimulation } from '../lib/physicsLogoPile'
 
-const PILE_SIZE = 150
+const PILE_SIZE = 50
 const TINTS = ['var(--accent-pink)', 'var(--accent-mint)', 'var(--accent-yellow)', 'var(--accent-lavender)']
 
 interface PhysicsLogoPileProps {
@@ -59,7 +59,6 @@ export function PhysicsLogoPile({ dayIndex, excludeName }: PhysicsLogoPileProps)
           viewBox={slot.viewBox}
           style={{ color: TINTS[i % TINTS.length] }}
           xmlns="http://www.w3.org/2000/svg"
-          // svgPath comes from our own static data/logos.ts, never from user input
           dangerouslySetInnerHTML={{ __html: slot.svgPath }}
         />
       ))}

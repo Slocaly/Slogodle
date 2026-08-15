@@ -411,15 +411,10 @@ a:hover {
   display: flex;
 }
 
-.input-wrap {
-  position: relative;
-  width: 100%;
-  margin-bottom: 16px;
-}
-
 .guess-input {
   width: 100%;
   height: 52px;
+  margin-bottom: 16px;
   border: 3px solid var(--text);
   border-radius: 999px;
   background: var(--card-bg);
@@ -442,24 +437,20 @@ a:hover {
   transform: translateY(2px);
 }
 
+.suggestions-positioner {
+  z-index: 20;
+}
+
 .suggestions {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 8px);
+  width: var(--anchor-width);
   background: var(--card-bg);
   border: 3px solid var(--text);
   border-radius: 20px;
   overflow: hidden;
-  z-index: 2;
-}
-
-.suggestions:not([hidden]) {
-  display: block;
 }
 
 .suggestion {
-  padding: 10px 4px;
+  padding: 10px 15px;
   font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
@@ -469,7 +460,8 @@ a:hover {
   transition: background 0.12s, color 0.12s;
 }
 
-.suggestion:hover {
+.suggestion:hover,
+.suggestion[data-highlighted] {
   background: var(--accent-lavender);
   color: var(--text);
 }

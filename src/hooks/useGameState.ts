@@ -122,6 +122,7 @@ export function useGameState() {
     const status: GameStatus = correct ? 'won' : guesses.length >= MAX_TRIES ? 'lost' : 'playing'
     setDays((prev) => ({ ...prev, [String(activeDayIndex)]: { guesses, status } }))
     console.log('submitGuess', text, 'correct', correct, 'status', status, 'guesses', guesses)
+    return { status, attempts: guesses.length }
   }
 
   function viewDay(dayIndex: number) {
@@ -135,6 +136,14 @@ export function useGameState() {
     setActiveDayIndex(todayIndex)
   }
 
+  function resetDay() {
+    setDays((prev) => {
+      const next = { ...prev }
+      delete next[String(activeDayIndex)]
+      return next
+    })
+  }
+
   return {
     dayIndex: activeDayIndex,
     todayIndex,
@@ -145,6 +154,7 @@ export function useGameState() {
     submitGuess,
     viewDay,
     returnToToday,
+    resetDay,
     archiveOpen,
     toggleArchive: () => setArchiveOpen((v) => !v),
     dark,

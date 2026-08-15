@@ -1,9 +1,10 @@
 // src/routes/index.tsx
 import { createFileRoute } from '@tanstack/react-router'
+import { useRef } from 'react'
 import { useGameState } from '../hooks/useGameState'
 import { GameHeader } from '../components/GameHeader'
 import { ArchivePanel } from '../components/ArchivePanel'
-import { PhysicsLogoPile } from '../components/PhysicsLogoPile'
+import { PhysicsLogoPile, type PhysicsLogoPileHandle } from '../components/PhysicsLogoPile'
 import { LogoCard } from '../components/LogoCard'
 import { GuessTiles } from '../components/GuessTiles'
 import { GuessForm } from '../components/GuessForm'
@@ -18,10 +19,22 @@ export const Route = createFileRoute('/')({
 function Home() {
   const g = useGameState()
   const isPlaying = g.status === 'playing'
+  const pileRef = useRef<PhysicsLogoPileHandle>(null)
+
+  function handleGuess(text: string) {
+    const result = g.submitGuess(text)
+    if (result?.status === 'won') {
+      pileRef.current?.launchWin(g.maxTries + 1 - result.attempts)
+    }
+  }
+
+  function handleFakeLaunch() {
+    pileRef.current?.launchWin(g.maxTries)
+  }
 
   return (
     <>
-      <PhysicsLogoPile dayIndex={g.dayIndex} excludeName={g.logo.name} />
+      <PhysicsLogoPile ref={pileRef} dayIndex={g.dayIndex} logo={g.logo} />
       <div className="page">
         <div className="header-wrap">
           <GameHeader
@@ -51,7 +64,7 @@ function Home() {
             {isPlaying && (
               <GuessForm
                 key={g.dayIndex}
-                onSubmit={g.submitGuess}
+                onSubmit={handleGuess}
                 logo={g.logo}
                 attemptCount={g.guesses.length}
                 maxTries={g.maxTries}
@@ -69,7 +82,7 @@ function Home() {
             )}
           </div>
         </main>
-        {import.meta.env.DEV && <DevtoolsPanel />}
+        {import.meta.env.DEV && <DevtoolsPanel onResetDay={g.resetDay} onFakeLaunch={handleFakeLaunch} />}
       </div>
     </>
   )

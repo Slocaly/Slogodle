@@ -1,15 +1,22 @@
 // src/components/PhysicsLogoPile.tsx
-import { useEffect, useMemo, useRef } from 'react'
-import { LOGOS } from '../data/logos'
+import { useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react'
+import { flushSync } from 'react-dom'
+import { LOGOS, type Logo } from '../data/logos'
 import { pickDailySequence } from '../lib/dailyRandom'
-import { createLogoPileSimulation } from '../lib/physicsLogoPile'
+import { createLogoPileSimulation, type LogoPileSimulation } from '../lib/physicsLogoPile'
 
 const PILE_SIZE = 50
 const TINTS = ['var(--accent-pink)', 'var(--accent-mint)', 'var(--accent-yellow)', 'var(--accent-lavender)']
 
+export interface PhysicsLogoPileHandle {
+  /** Flings `count` copies of today's logo in from a random screen edge. */
+  launchWin(count: number): void
+}
+
 interface PhysicsLogoPileProps {
   dayIndex: number
-  excludeName: string
+  logo: Logo
+  ref?: Ref<PhysicsLogoPileHandle>
 }
 
 interface PileSlot {
@@ -19,17 +26,28 @@ interface PileSlot {
   svgPath: string
 }
 
-export function PhysicsLogoPile({ dayIndex, excludeName }: PhysicsLogoPileProps) {
+export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const elementRefs = useRef(new Map<string, SVGSVGElement>())
+  const simRef = useRef<LogoPileSimulation | null>(null)
+  const launchBatchRef = useRef(0)
+  const [launchSlots, setLaunchSlots] = useState<PileSlot[]>([])
 
   const slots = useMemo<PileSlot[]>(
     () =>
-      pickDailySequence(LOGOS.filter((logo) => logo.name !== excludeName), dayIndex * 97 + 13, PILE_SIZE).map(
-        (logo, i) => ({ slotKey: `${logo.name}#${i}`, name: logo.name, viewBox: logo.viewBox, svgPath: logo.svgPath }),
-      ),
-    [dayIndex, excludeName],
+      pickDailySequence(LOGOS.filter((l) => l.name !== logo.name), dayIndex * 97 + 13, PILE_SIZE).map((l, i) => ({
+        slotKey: `${l.name}#${i}`,
+        name: l.name,
+        viewBox: l.viewBox,
+        svgPath: l.svgPath,
+      })),
+    [dayIndex, logo.name],
   )
+
+  // A win's launched logos belong to that day only — drop them when navigating away.
+  useEffect(() => {
+    setLaunchSlots([])
+  }, [dayIndex])
 
   useEffect(() => {
     const container = containerRef.current
@@ -42,13 +60,42 @@ export function PhysicsLogoPile({ dayIndex, excludeName }: PhysicsLogoPileProps)
       getElement: (key) => elementRefs.current.get(key) ?? null,
       reducedMotion,
     })
+    simRef.current = simulation
 
-    return () => simulation.destroy()
+    return () => {
+      simRef.current = null
+      simulation.destroy()
+    }
   }, [slots])
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      launchWin(count) {
+        const sim = simRef.current
+        if (!sim) return
+        const side: 'left' | 'right' = Math.random() < 0.5 ? 'left' : 'right'
+        const batchId = launchBatchRef.current++
+        const newSlots: PileSlot[] = Array.from({ length: count }, (_, i) => ({
+          slotKey: `win-${batchId}-${i}`,
+          name: logo.name,
+          viewBox: logo.viewBox,
+          svgPath: logo.svgPath,
+        }))
+        // Elements must be mounted (for their bounding box) before the simulation can grab them.
+        flushSync(() => setLaunchSlots((prev) => [...prev, ...newSlots]))
+        sim.launchFromSide(
+          newSlots.map((s) => s.slotKey),
+          side,
+        )
+      },
+    }),
+    [logo],
+  )
 
   return (
     <div className="physics-pile" ref={containerRef} aria-hidden="true">
-      {slots.map((slot, i) => (
+      {[...slots, ...launchSlots].map((slot, i) => (
         <svg
           key={slot.slotKey}
           ref={(el) => {

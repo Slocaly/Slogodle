@@ -9,7 +9,13 @@ function formatDateInput(date: Date): string {
   return `${y}-${m}-${d}`
 }
 
-export function DevtoolsPanel() {
+export function DevtoolsPanel({
+  onResetDay,
+  onFakeLaunch,
+}: {
+  onResetDay: () => void
+  onFakeLaunch: () => void
+}) {
   useClock() // subscribes this component to clock-offset changes so it re-renders
   const [open, setOpen] = useState(false)
   const [dateInput, setDateInput] = useState(() => formatDateInput(now()))
@@ -59,6 +65,14 @@ export function DevtoolsPanel() {
             </button>
             <button type="button" onClick={() => resetClock()}>
               Reset to now
+            </button>
+          </div>
+          <div className="devtools-row">
+            <button type="button" onClick={onResetDay}>
+              Reset day
+            </button>
+            <button type="button" onClick={onFakeLaunch}>
+              🎉 Fake win
             </button>
           </div>
         </div>

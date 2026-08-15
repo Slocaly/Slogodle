@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { Combobox } from '@base-ui/react/combobox'
 import { LOGOS, type Logo } from '../data/logos'
 import { suggestionsFor } from '../lib/game-logic'
+import { m } from '../paraglide/messages.js'
 
 interface GuessFormProps {
   onSubmit: (text: string) => void
@@ -15,7 +16,11 @@ export function GuessForm({ onSubmit, logo, attemptCount, maxTries }: GuessFormP
   const inputRef = useRef<HTMLInputElement>(null)
   const suppressNextInputValueRef = useRef<string | null>(null)
   const suggestions = suggestionsFor(value, LOGOS, null)
-  const hints = ['Wrong guess reveals a hint.', `Industry: ${logo.industry}`, `Founded: ${logo.founded}`]
+  const hints = [
+    m.hint_wrong_guess(),
+    m.hint_industry({ industry: logo.industry }),
+    m.hint_founded({ founded: logo.founded }),
+  ]
   const hint = hints[Math.min(attemptCount, hints.length - 1)]
 
   return (
@@ -44,7 +49,7 @@ export function GuessForm({ onSubmit, logo, attemptCount, maxTries }: GuessFormP
           ref={inputRef}
           data-form-type="other"
           className="guess-input"
-          placeholder="WHAT'S THIS LOGO?"
+          placeholder={m.guess_placeholder()}
         />
         {suggestions.length > 0 && (
           <Combobox.Portal>

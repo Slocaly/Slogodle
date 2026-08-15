@@ -165,6 +165,33 @@ a:hover {
   color: var(--faint);
 }
 
+.locale-toggle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  transition: color 0.15s, background 0.15s, transform 0.2s;
+}
+
+.locale-toggle:hover {
+  color: var(--accent-pink);
+  background: var(--toggle-bg);
+}
+
+.locale-toggle:active {
+  transform: scale(0.9);
+}
+
 .dark-toggle {
   width: 30px;
   height: 30px;

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { now, subscribe as subscribeClock } from '../lib/clock'
 import { nextLocalMidnight, formatCountdown, type Guess } from '../lib/game-logic'
 import type { Logo } from '../data/logos'
+import { m } from '../paraglide/messages.js'
 
 interface RevealPanelProps {
   logo: Logo
@@ -46,13 +47,13 @@ export function RevealPanel({ logo, guesses, maxTries, streak, isToday, onBackTo
       </div>
       {isToday ? (
         <div className="meta-row">
-          <span>streak {streak}</span>
-          <span>next in {countdown}</span>
+          <span>{m.meta_streak({ streak })}</span>
+          <span>{m.meta_next_in({ countdown })}</span>
         </div>
       ) : (
         <div className="meta-row">
           <button type="button" className="back-today-btn" onClick={onBackToday}>
-            ← Back to today
+            {m.back_to_today()}
           </button>
         </div>
       )}

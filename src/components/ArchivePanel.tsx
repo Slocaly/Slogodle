@@ -1,5 +1,6 @@
 import { LOGOS } from '../data/logos'
 import { pickLogo, type GameStatus } from '../lib/game-logic'
+import { m } from '../paraglide/messages.js'
 
 const ARCHIVE_DAYS = 5
 
@@ -18,7 +19,8 @@ export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelect
     if (idx < 0) continue
     const result = history[String(idx)]
     const statusClass = result === 'won' ? 'archive-won' : result === 'lost' ? 'archive-lost' : 'archive-unplayed'
-    const statusLabel = result === 'won' ? 'Solved' : result === 'lost' ? 'Missed' : 'Not played'
+    const statusLabel =
+      result === 'won' ? m.archive_status_solved() : result === 'lost' ? m.archive_status_missed() : m.archive_status_unplayed()
     const name = result === 'won' || result === 'lost' ? pickLogo(LOGOS, idx).name : null
     rows.push(
       <button

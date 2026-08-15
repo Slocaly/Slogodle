@@ -1,0 +1,21 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "site_title": "Slogodle",
+  "archive_toggle": "Jours précédents",
+  "theme_toggle_to_light": "Passer en mode clair",
+  "theme_toggle_to_dark": "Passer en mode sombre",
+  "locale_toggle_label": "Changer de langue",
+  "guess_placeholder": "QUEL EST CE LOGO ?",
+  "hint_wrong_guess": "Une mauvaise réponse révèle un indice.",
+  "hint_industry": "Secteur : {industry}",
+  "hint_founded": "Fondée en : {founded}",
+  "back_to_today": "← Retour à aujourd'hui",
+  "meta_streak": "série {streak}",
+  "meta_next_in": "prochain dans {countdown}",
+  "archive_status_solved": "Résolu",
+  "archive_status_missed": "Manqué",
+  "archive_status_unplayed": "Pas joué",
+  "logo_label_playing": "DEVINE LE LOGO · #{day}",
+  "logo_label_solved": "RÉSOLU — #{day}",
+  "logo_label_missed": "MANQUÉ — #{day}"
+}

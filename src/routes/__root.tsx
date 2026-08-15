@@ -1,12 +1,14 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
 import globalCss from '../styles/global.css?url'
+import { getLocale } from '../paraglide/runtime.js'
+import { m } from '../paraglide/messages.js'
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width' },
-      { title: 'Guess the Logo' },
+      { title: m.site_title() },
     ],
     links: [
       { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
@@ -32,7 +34,7 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <html lang="en">
+    <html lang={getLocale()}>
       <head>
         <HeadContent />
       </head>

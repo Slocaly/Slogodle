@@ -12,6 +12,7 @@
   "back_to_today": "← Back to today",
   "meta_streak": "streak {streak}",
   "meta_next_in": "next in {countdown}",
+  "reveal_github_link": "View {name} on GitHub",
   "archive_status_solved": "Solved",
   "archive_status_missed": "Missed",
   "archive_status_unplayed": "Not played",

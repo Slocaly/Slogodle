@@ -12,6 +12,7 @@
   "back_to_today": "← Retour à aujourd'hui",
   "meta_streak": "série {streak}",
   "meta_next_in": "prochain dans {countdown}",
+  "reveal_github_link": "Voir {name} sur GitHub",
   "archive_status_solved": "Résolu",
   "archive_status_missed": "Manqué",
   "archive_status_unplayed": "Pas joué",

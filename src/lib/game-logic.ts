@@ -27,7 +27,7 @@ export function pickLogo(bank: Logo[], dayIndex: number): Logo {
 
 export function isCorrectGuess(text: string, logo: Logo): boolean {
   const q = text.trim().toLowerCase()
-  return logo.aliases.includes(q)
+  return logo.name.toLowerCase() === q
 }
 
 export function suggestionsFor(value: string, bank: Logo[], excludeName: string | null): { label: string; value: string }[] {

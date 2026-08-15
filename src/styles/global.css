@@ -578,6 +578,49 @@ a:hover {
   animation: revealFade 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s backwards;
 }
 
+.github-link-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  color: var(--muted);
+  margin-bottom: 22px;
+  transition: color 0.15s, background 0.15s, transform 0.1s;
+  animation: revealFade 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.12s backwards;
+}
+
+.github-link-btn:hover {
+  color: var(--accent-pink);
+  background: var(--toggle-bg);
+}
+
+.github-link-btn:active {
+  transform: scale(0.9);
+}
+
+.github-link-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.tooltip-popup {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 2px solid var(--text);
+  border-radius: 10px;
+  padding: 6px 12px;
+  box-shadow: 0 3px 0 var(--shadow-color);
+  white-space: nowrap;
+}
+
 .share-grid {
   display: flex;
   gap: 6px;

@@ -4,6 +4,9 @@ import Matter from 'matter-js'
 const WALL_THICKNESS = 60
 const BODY_SIZE_MIN = 64
 const BODY_SIZE_MAX = 104
+const MOBILE_BREAKPOINT = 640
+const BODY_SIZE_MIN_MOBILE = 36
+const BODY_SIZE_MAX_MOBILE = 60
 const RESIZE_DEBOUNCE_MS = 150
 // Logos spawn staggered above the viewport's top edge (behind the header, which sits
 // in front due to z-index) and fall the full page height into the band. The ceiling
@@ -39,9 +42,12 @@ export interface LogoPileSimulation {
 }
 
 // Sizes an element within the pile's body-size range, from its icon's intrinsic aspect
-// ratio. Shared by the initial top-down spawn and side launches.
-function sizeElement(el: HTMLElement, aspect: number): { width: number; height: number } {
-  const longEdge = BODY_SIZE_MIN + Math.random() * (BODY_SIZE_MAX - BODY_SIZE_MIN)
+// ratio. Shared by the initial top-down spawn and side launches. `containerWidth` scales
+// the range down on narrow (mobile) viewports so the pile doesn't feel oversized there.
+function sizeElement(el: HTMLElement, aspect: number, containerWidth: number): { width: number; height: number } {
+  const [sizeMin, sizeMax] =
+    containerWidth < MOBILE_BREAKPOINT ? [BODY_SIZE_MIN_MOBILE, BODY_SIZE_MAX_MOBILE] : [BODY_SIZE_MIN, BODY_SIZE_MAX]
+  const longEdge = sizeMin + Math.random() * (sizeMax - sizeMin)
   const width = aspect >= 1 ? longEdge : longEdge * aspect
   const height = aspect >= 1 ? longEdge / aspect : longEdge
 
@@ -152,7 +158,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
       const el = getElement(logo.key)
       if (!el) return []
 
-      const { width: bodyWidth, height: bodyHeight } = sizeElement(el, logo.aspect)
+      const { width: bodyWidth, height: bodyHeight } = sizeElement(el, logo.aspect, width)
       const x = bodyWidth / 2 + Math.random() * Math.max(width - bodyWidth, 1)
       const y = reducedMotion
         ? height - bodyHeight / 2 - Math.random() * 60
@@ -179,7 +185,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
       const timer = setTimeout(() => {
         const el = getElement(entry.key)
         if (!el) return
-        const { width: bodyWidth, height: bodyHeight } = sizeElement(el, entry.aspect)
+        const { width: bodyWidth, height: bodyHeight } = sizeElement(el, entry.aspect, width)
 
         const x = reducedMotion
           ? bodyWidth / 2 + Math.random() * Math.max(width - bodyWidth, 1)

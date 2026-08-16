@@ -818,6 +818,65 @@ a:hover {
   cursor: pointer;
 }
 
+@media (max-width: 640px) {
+  .page {
+    min-height: 100dvh;
+  }
+
+  .header {
+    padding: 14px 20px;
+  }
+
+  .archive-days {
+    padding: 14px 20px;
+    gap: 16px;
+  }
+
+  .game-area {
+    padding: 16px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 340px;
+    padding: 28px 22px;
+    border-radius: 24px;
+  }
+
+  .logo-wrap {
+    height: 96px;
+    margin-bottom: 18px;
+  }
+
+  .logo-wrap::before {
+    width: 116px;
+    height: 116px;
+  }
+
+  .day-label-row {
+    margin-bottom: 20px;
+  }
+
+  .guesses {
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .guess-tile {
+    height: 38px;
+    font-size: 13px;
+  }
+
+  .guess-input {
+    height: 46px;
+    margin-bottom: 12px;
+  }
+
+  .dots {
+    margin-bottom: 14px;
+  }
+}
+
 @media (prefers-reduced-transparency: reduce) {
   .header,
   .archive-panel,

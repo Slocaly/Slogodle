@@ -4,8 +4,10 @@ import { flushSync } from 'react-dom'
 import { LOGOS, type Logo } from '../data/logos'
 import { pickDailySequence } from '../lib/dailyRandom'
 import { createLogoPileSimulation, type LogoPileSimulation } from '../lib/physicsLogoPile'
+import { getStickerIconSrc } from '../lib/stickerIcons'
 
 const PILE_SIZE = 50
+const STICKER_LOGOS = import.meta.env.VITE_STICKER_LOGOS !== 'false'
 
 export interface PhysicsLogoPileHandle {
   /** Flings `count` copies of today's logo in from a random screen edge. */
@@ -98,8 +100,16 @@ export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
         <img
           key={slot.slotKey}
           ref={(el) => {
-            if (el) elementRefs.current.set(slot.slotKey, el)
-            else elementRefs.current.delete(slot.slotKey)
+            if (el) {
+              elementRefs.current.set(slot.slotKey, el)
+              if (STICKER_LOGOS) {
+                getStickerIconSrc(slot.icon).then((src) => {
+                  if (elementRefs.current.get(slot.slotKey) === el) el.src = src
+                })
+              }
+            } else {
+              elementRefs.current.delete(slot.slotKey)
+            }
           }}
           className="physics-pile-logo"
           src={slot.icon}

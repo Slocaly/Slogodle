@@ -11,9 +11,6 @@ const RESIZE_DEBOUNCE_MS = 150
 // it instead of falling through.
 const SPAWN_STAGGER = 300
 const CEILING_MARGIN = 100
-const CURSOR_RADIUS = 45
-const CURSOR_PUSH_RADIUS = CURSOR_RADIUS + 70
-const CURSOR_PUSH_FORCE = 0.15
 const EXPLOSION_RADIUS = 425
 const EXPLOSION_STRENGTH = 82
 const LAUNCH_STAGGER = 90
@@ -86,12 +83,19 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
   let width = 0
   let height = 0
   let boundaries: Matter.Body[] = []
-  let pileBodies: { body: Matter.Body; el: HTMLElement; width: number; height: number }[] = []
+  let pileBodies: { body: Matter.Body; el: HTMLElement; rotateEl: HTMLElement; width: number; height: number }[] = []
   let spawned = false
 
+  // Rotation lives on this inner element, separate from the outer element's position, so
+  // that a tooltip anchored to the outer element never spins or flips with the logo.
+  function getRotateEl(el: HTMLElement): HTMLElement {
+    return el.querySelector<HTMLElement>('.physics-pile-rotate') ?? el
+  }
+
   function sync() {
-    for (const { body, el, width: w, height: h } of pileBodies) {
-      el.style.transform = `translate(${body.position.x - w / 2}px, ${body.position.y - h / 2}px) rotate(${body.angle}rad)`
+    for (const { body, el, rotateEl, width: w, height: h } of pileBodies) {
+      el.style.transform = `translate(${body.position.x - w / 2}px, ${body.position.y - h / 2}px)`
+      rotateEl.style.transform = `rotate(${body.angle}rad)`
     }
   }
   Matter.Events.on(engine, 'afterUpdate', sync)
@@ -105,40 +109,6 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
     constraint: { stiffness: 0.2, render: { visible: false } },
   })
   Matter.Composite.add(engine.world, mouseConstraint)
-
-  // A static body that follows the pointer so it physically bumps logos aside on
-  // hover/touch-move, without needing to click-and-drag anything.
-  const cursorBody = Matter.Bodies.circle(-9999, -9999, CURSOR_RADIUS, {
-    isStatic: true,
-    friction: 0,
-  })
-  Matter.Composite.add(engine.world, cursorBody)
-
-  function handlePointerMove(event: PointerEvent) {
-    const rect = container.getBoundingClientRect()
-    Matter.Body.setPosition(cursorBody, { x: event.clientX - rect.left, y: event.clientY - rect.top })
-  }
-  function handlePointerLeave() {
-    Matter.Body.setPosition(cursorBody, { x: -9999, y: -9999 })
-  }
-  container.addEventListener('pointermove', handlePointerMove)
-  container.addEventListener('pointerleave', handlePointerLeave)
-
-  // On top of the passive block above, actively shove any logo the cursor gets
-  // close to — falloff with distance so it feels like a touch, not a constant wind.
-  function applyCursorPush() {
-    const cx = cursorBody.position.x
-    const cy = cursorBody.position.y
-    for (const { body } of pileBodies) {
-      const dx = body.position.x - cx
-      const dy = body.position.y - cy
-      const dist = Math.sqrt(dx * dx + dy * dy)
-      if (dist === 0 || dist > CURSOR_PUSH_RADIUS) continue
-      const strength = (1 - dist / CURSOR_PUSH_RADIUS) * CURSOR_PUSH_FORCE
-      Matter.Body.applyForce(body, body.position, { x: (dx / dist) * strength, y: (dy / dist) * strength })
-    }
-  }
-  Matter.Events.on(engine, 'beforeUpdate', applyCursorPush)
 
   // A one-shot radial impulse on click/tap — everything nearby gets flung outward
   // at once, on top of whatever velocity it already had.
@@ -197,7 +167,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
         Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 1)
       }
 
-      return [{ body, el, width: bodyWidth, height: bodyHeight }]
+      return [{ body, el, rotateEl: getRotateEl(el), width: bodyWidth, height: bodyHeight }]
     })
     Matter.Composite.add(engine.world, pileBodies.map((entry) => entry.body))
   }
@@ -231,7 +201,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
           Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 1)
         }
 
-        pileBodies.push({ body, el, width: bodyWidth, height: bodyHeight })
+        pileBodies.push({ body, el, rotateEl: getRotateEl(el), width: bodyWidth, height: bodyHeight })
         Matter.Composite.add(engine.world, body)
       }, i * LAUNCH_STAGGER)
       launchTimers.push(timer)
@@ -263,10 +233,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
       clearTimeout(resizeTimer)
       for (const timer of launchTimers) clearTimeout(timer)
       resizeObserver.disconnect()
-      container.removeEventListener('pointermove', handlePointerMove)
-      container.removeEventListener('pointerleave', handlePointerLeave)
       container.removeEventListener('pointerdown', handlePointerDown)
-      Matter.Events.off(engine, 'beforeUpdate', applyCursorPush)
       Matter.Events.off(engine, 'afterUpdate', sync)
       Matter.Runner.stop(runner)
       Matter.Composite.clear(engine.world, false)

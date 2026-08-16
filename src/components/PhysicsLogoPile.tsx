@@ -29,7 +29,8 @@ interface PileSlot {
 
 export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const elementRefs = useRef(new Map<string, HTMLImageElement>())
+  const elementRefs = useRef(new Map<string, HTMLDivElement>())
+  const imgRefs = useRef(new Map<string, HTMLImageElement>())
   const simRef = useRef<LogoPileSimulation | null>(null)
   const launchBatchRef = useRef(0)
   const [launchSlots, setLaunchSlots] = useState<PileSlot[]>([])
@@ -97,24 +98,38 @@ export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
   return (
     <div className="physics-pile" ref={containerRef} aria-hidden="true">
       {[...slots, ...launchSlots].map((slot) => (
-        <img
+        <div
           key={slot.slotKey}
           ref={(el) => {
             if (el) {
               elementRefs.current.set(slot.slotKey, el)
-              if (STICKER_LOGOS) {
-                getStickerIconSrc(slot.icon).then((src) => {
-                  if (elementRefs.current.get(slot.slotKey) === el) el.src = src
-                })
-              }
             } else {
               elementRefs.current.delete(slot.slotKey)
             }
           }}
-          className="physics-pile-logo"
-          src={slot.icon}
-          alt=""
-        />
+          className="physics-pile-item"
+        >
+          <div className="physics-pile-rotate">
+            <img
+              ref={(el) => {
+                if (el) {
+                  imgRefs.current.set(slot.slotKey, el)
+                  if (STICKER_LOGOS) {
+                    getStickerIconSrc(slot.icon).then((src) => {
+                      if (imgRefs.current.get(slot.slotKey) === el) el.src = src
+                    })
+                  }
+                } else {
+                  imgRefs.current.delete(slot.slotKey)
+                }
+              }}
+              className="physics-pile-logo"
+              src={slot.icon}
+              alt=""
+            />
+          </div>
+          <span className="physics-pile-tooltip">{slot.name}</span>
+        </div>
       ))}
     </div>
   )

@@ -122,11 +122,61 @@ a:hover {
   touch-action: none;
 }
 
-.physics-pile-logo {
+.physics-pile-item {
   position: absolute;
   top: 0;
   left: 0;
   will-change: transform;
+}
+
+/* Hovering lifts the whole item above every other pile item, so the tooltip below
+   can never end up hidden under a neighboring (later-painted) logo. */
+.physics-pile-item:hover {
+  z-index: 999999;
+}
+
+/* Rotation is scoped to this inner element (separate from .physics-pile-item's own
+   translate) so the tooltip, anchored to the outer element, never spins or flips
+   upside down along with the logo. */
+.physics-pile-rotate {
+  width: 100%;
+  height: 100%;
+}
+
+.physics-pile-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.physics-pile-item:hover .physics-pile-logo {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 10px var(--shadow-color));
+}
+
+.physics-pile-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translate(-50%, -6px);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  backdrop-filter: blur(10px);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 999999;
+}
+
+.physics-pile-item:hover .physics-pile-tooltip {
+  opacity: 1;
 }
 
 .header-wrap {

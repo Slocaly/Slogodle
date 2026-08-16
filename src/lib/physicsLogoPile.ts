@@ -109,13 +109,6 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
   const runner = Matter.Runner.create()
   Matter.Runner.run(runner, engine)
 
-  const mouse = Matter.Mouse.create(container)
-  const mouseConstraint = Matter.MouseConstraint.create(engine, {
-    mouse,
-    constraint: { stiffness: 0.2, render: { visible: false } },
-  })
-  Matter.Composite.add(engine.world, mouseConstraint)
-
   // A one-shot radial impulse on click/tap — everything nearby gets flung outward
   // at once, on top of whatever velocity it already had.
   function handlePointerDown(event: PointerEvent) {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { now, isSimulated, setSimulatedDate, nudgeDays, resetClock, subscribe as subscribeClock } from '../lib/clock'
 import { useClock } from '../hooks/useClock'
+import styles from './DevtoolsPanel.module.css'
 
 function formatDateInput(date: Date): string {
   const y = date.getFullYear()
@@ -31,24 +32,24 @@ export function DevtoolsPanel({
   }
 
   return (
-    <div className="devtools">
+    <div className={styles.devtools}>
       <button
         type="button"
-        className="devtools-toggle"
+        className={styles.devtoolsToggle}
         aria-label="Toggle day simulator"
         onClick={() => setOpen((o) => !o)}
       >
         🛠
       </button>
       {open && (
-        <div className="devtools-panel">
-          <div className="devtools-row">
+        <div className={styles.devtoolsPanel}>
+          <div className={styles.devtoolsRow}>
             {isSimulated() ? `Simulated: ${now().toDateString()}` : 'Real time'}
           </div>
-          <div className="devtools-row">
+          <div className={styles.devtoolsRow}>
             <input
               type="date"
-              className="devtools-date"
+              className={styles.devtoolsDate}
               value={dateInput}
               onChange={(e) => setDateInput(e.target.value)}
             />
@@ -56,7 +57,7 @@ export function DevtoolsPanel({
               Jump
             </button>
           </div>
-          <div className="devtools-row">
+          <div className={styles.devtoolsRow}>
             <button type="button" onClick={() => nudgeDays(-1)}>
               −1 day
             </button>
@@ -67,7 +68,7 @@ export function DevtoolsPanel({
               Reset to now
             </button>
           </div>
-          <div className="devtools-row">
+          <div className={styles.devtoolsRow}>
             <button type="button" onClick={onResetDay}>
               Reset day
             </button>

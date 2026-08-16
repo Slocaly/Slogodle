@@ -4,6 +4,8 @@ import { now, subscribe as subscribeClock } from '../lib/clock'
 import { nextLocalMidnight, formatCountdown, type Guess } from '../lib/game-logic'
 import type { Logo } from '../data/logos'
 import { m } from '../paraglide/messages.js'
+import shared from '../styles/shared.module.css'
+import styles from './RevealPanel.module.css'
 
 interface RevealPanelProps {
   logo: Logo
@@ -36,12 +38,12 @@ export function RevealPanel({ logo, guesses, maxTries, streak, isToday, onBackTo
   const countdown = useCountdown(isToday)
 
   return (
-    <div className="reveal">
-      <div className="reveal-name">{logo.name}</div>
-      <div className="reveal-fact">{logo.funFact}</div>
+    <div className={styles.reveal}>
+      <div className={shared.revealName}>{logo.name}</div>
+      <div className={shared.revealFact}>{logo.funFact}</div>
       <Tooltip.Root>
         <Tooltip.Trigger
-          className="github-link-btn"
+          className={styles.githubLinkBtn}
           render={
             <a href={logo.gitLink} target="_blank" rel="noreferrer noopener" aria-label={m.reveal_github_link({ name: logo.name })} />
           }
@@ -52,25 +54,25 @@ export function RevealPanel({ logo, guesses, maxTries, streak, isToday, onBackTo
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Positioner sideOffset={8}>
-            <Tooltip.Popup className="tooltip-popup">{m.reveal_github_link({ name: logo.name })}</Tooltip.Popup>
+            <Tooltip.Popup className={styles.tooltipPopup}>{m.reveal_github_link({ name: logo.name })}</Tooltip.Popup>
           </Tooltip.Positioner>
         </Tooltip.Portal>
       </Tooltip.Root>
-      <div className="share-grid">
+      <div className={styles.shareGrid}>
         {Array.from({ length: maxTries }, (_, i) => {
           const g = guesses[i]
-          const cls = g ? (g.correct ? 'share-correct' : 'share-wrong') : 'share-empty'
-          return <span key={i} className={'share-cell ' + cls} />
+          const cls = g ? (g.correct ? styles.shareCorrect : styles.shareWrong) : styles.shareEmpty
+          return <span key={i} className={`${styles.shareCell} ${cls}`} />
         })}
       </div>
       {isToday ? (
-        <div className="meta-row">
+        <div className={styles.metaRow}>
           <span>{m.meta_streak({ streak })}</span>
           <span>{m.meta_next_in({ countdown })}</span>
         </div>
       ) : (
-        <div className="meta-row">
-          <button type="button" className="back-today-btn" onClick={onBackToday}>
+        <div className={styles.metaRow}>
+          <button type="button" className={shared.backTodayBtn} onClick={onBackToday}>
             {m.back_to_today()}
           </button>
         </div>

@@ -1,5 +1,6 @@
 import { getLocale, locales, setLocale } from '../paraglide/runtime.js'
 import { m } from '../paraglide/messages.js'
+import styles from './GameHeader.module.css'
 
 interface GameHeaderProps {
   archiveOpen: boolean
@@ -12,16 +13,16 @@ export function GameHeader({ archiveOpen, onToggleArchive, dark, onToggleDark }:
   const locale = getLocale()
 
   return (
-    <header className="header">
-      <span className="title">{m.site_title()}</span>
-      <div className="header-actions">
-        <button type="button" className="archive-toggle" onClick={onToggleArchive}>
+    <header className={styles.header}>
+      <span className={styles.title}>{m.site_title()}</span>
+      <div className={styles.headerActions}>
+        <button type="button" className={styles.archiveToggle} onClick={onToggleArchive}>
           <span>{m.archive_toggle()}</span>
-          <span className="archive-arrow">{archiveOpen ? '▲' : '▼'}</span>
+          <span className={styles.archiveArrow}>{archiveOpen ? '▲' : '▼'}</span>
         </button>
         <button
           type="button"
-          className="locale-toggle"
+          className={styles.localeToggle}
           aria-label={m.locale_toggle_label()}
           onClick={() => setLocale(locales[(locales.indexOf(locale) + 1) % locales.length]!)}
         >
@@ -29,7 +30,7 @@ export function GameHeader({ archiveOpen, onToggleArchive, dark, onToggleDark }:
         </button>
         <button
           type="button"
-          className="dark-toggle"
+          className={styles.darkToggle}
           aria-label={dark ? m.theme_toggle_to_light() : m.theme_toggle_to_dark()}
           onClick={onToggleDark}
         >

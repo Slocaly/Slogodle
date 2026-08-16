@@ -1,0 +1,97 @@
+.playArea {
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+.playArea:not([hidden]) {
+  display: flex;
+}
+
+.guessInput {
+  width: 100%;
+  height: 52px;
+  margin-bottom: 16px;
+  border: 3px solid var(--text);
+  border-radius: 999px;
+  background: var(--card-bg);
+  padding: 0 20px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--text);
+  outline: none;
+  font-family: "Fredoka", sans-serif;
+  box-shadow: 0 4px 0 var(--accent-pink);
+  transform: translateY(0);
+  transition: box-shadow 0.1s, transform 0.1s;
+}
+
+.guessInput:focus {
+  box-shadow: 0 2px 0 var(--accent-pink);
+  transform: translateY(2px);
+}
+
+.suggestionsPositioner {
+  z-index: 20;
+}
+
+.suggestions {
+  width: var(--anchor-width);
+  background: var(--card-bg);
+  border: 3px solid var(--text);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.suggestion {
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.suggestion:hover,
+.suggestion[data-highlighted] {
+  background: var(--accent-lavender);
+  color: var(--text);
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.dot {
+  width: 32px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.dotUsed {
+  background: var(--danger);
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .guessInput {
+    height: 46px;
+    margin-bottom: 12px;
+  }
+
+  .dots {
+    margin-bottom: 14px;
+  }
+}

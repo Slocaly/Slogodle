@@ -2,6 +2,8 @@
 import type { Logo } from '../data/logos'
 import type { GameStatus } from '../lib/game-logic'
 import { m } from '../paraglide/messages.js'
+import shared from '../styles/shared.module.css'
+import styles from './LogoCard.module.css'
 
 interface LogoCardProps {
   dayIndex: number
@@ -23,16 +25,16 @@ export function LogoCard({ dayIndex, status, logo, isToday, onBackToday }: LogoC
 
   return (
     <>
-      <div className="day-label-row">
-        <div className="day-label">{label}</div>
+      <div className={shared.dayLabelRow}>
+        <div className={shared.dayLabel}>{label}</div>
         {!isToday && (
-          <button type="button" className="back-today-btn" onClick={onBackToday}>
+          <button type="button" className={shared.backTodayBtn} onClick={onBackToday}>
             {m.back_to_today()}
           </button>
         )}
       </div>
-      <div className="logo-wrap">
-        <img id="logo-svg" width="100" height="100" src={logo.icon} alt={alt} data-status={status} />
+      <div className={styles.logoWrap}>
+        <img className={styles.logoSvg} width="100" height="100" src={logo.icon} alt={alt} data-status={status} />
       </div>
     </>
   )

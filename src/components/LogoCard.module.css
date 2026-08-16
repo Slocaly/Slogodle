@@ -1,0 +1,43 @@
+.logoWrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 140px;
+  margin-bottom: 28px;
+}
+
+.logoWrap::before {
+  content: "";
+  position: absolute;
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-lavender) 0%, transparent 72%);
+  opacity: 0.55;
+  z-index: -1;
+}
+
+.logoSvg {
+  display: block;
+}
+
+.logoSvg[data-status="won"] {
+  filter: drop-shadow(0 0 12px var(--success));
+}
+
+.logoSvg[data-status="lost"] {
+  filter: grayscale(1) opacity(0.5);
+}
+
+@media (max-width: 640px) {
+  .logoWrap {
+    height: 96px;
+    margin-bottom: 18px;
+  }
+
+  .logoWrap::before {
+    width: 116px;
+    height: 116px;
+  }
+}

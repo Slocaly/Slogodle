@@ -5,6 +5,7 @@ import { LOGOS, type Logo } from '../data/logos'
 import { pickDailySequence } from '../lib/dailyRandom'
 import { createLogoPileSimulation, type LogoPileSimulation } from '../lib/physicsLogoPile'
 import { getStickerIconSrc } from '../lib/stickerIcons'
+import styles from './PhysicsLogoPile.module.css'
 
 const PILE_SIZE = 50
 const STICKER_LOGOS = import.meta.env.VITE_STICKER_LOGOS !== 'false'
@@ -96,7 +97,7 @@ export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
   )
 
   return (
-    <div className="physics-pile" ref={containerRef} aria-hidden="true">
+    <div className={styles.physicsPile} ref={containerRef} aria-hidden="true">
       {[...slots, ...launchSlots].map((slot) => (
         <div
           key={slot.slotKey}
@@ -107,9 +108,9 @@ export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
               elementRefs.current.delete(slot.slotKey)
             }
           }}
-          className="physics-pile-item"
+          className={styles.physicsPileItem}
         >
-          <div className="physics-pile-rotate">
+          <div className={styles.physicsPileRotate} data-pile-rotate>
             <img
               ref={(el) => {
                 if (el) {
@@ -123,12 +124,12 @@ export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
                   imgRefs.current.delete(slot.slotKey)
                 }
               }}
-              className="physics-pile-logo"
+              className={styles.physicsPileLogo}
               src={slot.icon}
               alt=""
             />
           </div>
-          <span className="physics-pile-tooltip">{slot.name}</span>
+          <span className={styles.physicsPileTooltip}>{slot.name}</span>
         </div>
       ))}
     </div>

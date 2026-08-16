@@ -95,7 +95,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
   // Rotation lives on this inner element, separate from the outer element's position, so
   // that a tooltip anchored to the outer element never spins or flips with the logo.
   function getRotateEl(el: HTMLElement): HTMLElement {
-    return el.querySelector<HTMLElement>('.physics-pile-rotate') ?? el
+    return el.querySelector<HTMLElement>('[data-pile-rotate]') ?? el
   }
 
   function sync() {

@@ -1,17 +1,18 @@
 import { Link } from '@tanstack/react-router'
 import { m } from '../paraglide/messages.js'
+import shared from '../styles/shared.module.css'
 
 export function NotFoundPage() {
   return (
-    <div className="page">
-      <main className="game-area" id="main">
-        <div className="card">
-          <div className="day-label-row">
-            <div className="day-label">404</div>
+    <div className={shared.page}>
+      <main className={shared.gameArea} id="main">
+        <div className={shared.card}>
+          <div className={shared.dayLabelRow}>
+            <div className={shared.dayLabel}>404</div>
           </div>
-          <div className="reveal-name">{m.not_found_title()}</div>
-          <p className="reveal-fact">{m.not_found_message()}</p>
-          <Link to="/" className="back-today-btn">
+          <div className={shared.revealName}>{m.not_found_title()}</div>
+          <p className={shared.revealFact}>{m.not_found_message()}</p>
+          <Link to="/" className={shared.backTodayBtn}>
             {m.not_found_cta()}
           </Link>
         </div>

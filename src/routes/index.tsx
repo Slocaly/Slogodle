@@ -10,6 +10,8 @@ import { GuessTiles } from '../components/GuessTiles'
 import { GuessForm } from '../components/GuessForm'
 import { RevealPanel } from '../components/RevealPanel'
 import { DevtoolsPanel } from '../components/DevtoolsPanel'
+import shared from '../styles/shared.module.css'
+import styles from './index.module.css'
 
 export const Route = createFileRoute('/')({
   ssr: false,
@@ -35,8 +37,8 @@ function Home() {
   return (
     <>
       <PhysicsLogoPile ref={pileRef} dayIndex={g.dayIndex} logo={g.logo} />
-      <div className="page">
-        <div className="header-wrap">
+      <div className={shared.page}>
+        <div className={styles.headerWrap}>
           <GameHeader
             archiveOpen={g.archiveOpen}
             onToggleArchive={g.toggleArchive}
@@ -51,8 +53,8 @@ function Home() {
             onSelectDay={g.viewDay}
           />
         </div>
-        <main className="game-area" id="main">
-          <div className="card">
+        <main className={shared.gameArea} id="main">
+          <div className={shared.card}>
             <LogoCard
               dayIndex={g.dayIndex}
               status={g.status}

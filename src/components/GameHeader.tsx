@@ -1,4 +1,3 @@
-import { getLocale, locales, setLocale } from '../paraglide/runtime.js'
 import { m } from '../paraglide/messages.js'
 import styles from './GameHeader.module.css'
 
@@ -10,8 +9,6 @@ interface GameHeaderProps {
 }
 
 export function GameHeader({ archiveOpen, onToggleArchive, dark, onToggleDark }: GameHeaderProps) {
-  const locale = getLocale()
-
   return (
     <header className={styles.header}>
       <span className={styles.title}>{m.site_title()}</span>
@@ -19,14 +16,6 @@ export function GameHeader({ archiveOpen, onToggleArchive, dark, onToggleDark }:
         <button type="button" className={styles.archiveToggle} onClick={onToggleArchive}>
           <span>{m.archive_toggle()}</span>
           <span className={styles.archiveArrow}>{archiveOpen ? '▲' : '▼'}</span>
-        </button>
-        <button
-          type="button"
-          className={styles.localeToggle}
-          aria-label={m.locale_toggle_label()}
-          onClick={() => setLocale(locales[(locales.indexOf(locale) + 1) % locales.length]!)}
-        >
-          {locale.toUpperCase()}
         </button>
         <button
           type="button"

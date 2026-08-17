@@ -41,6 +41,29 @@
   border-color: transparent;
 }
 
+.searchInput {
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  width: 280px;
+  max-width: 100%;
+  margin-left: auto;
+}
+
+.searchInput:focus {
+  outline: 2px solid var(--accent-yellow);
+  outline-offset: 1px;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 14px;
+}
+
 .tableWrap {
   overflow-x: auto;
   border: 1px solid var(--border);

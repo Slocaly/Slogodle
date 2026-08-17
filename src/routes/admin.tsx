@@ -31,6 +31,7 @@ function dateForOffset(offset: number): string {
 function AdminPage() {
   const [sortMode, setSortMode] = useState<SortMode>('alpha')
   const [viewMode, setViewMode] = useState<ViewMode>('table')
+  const [search, setSearch] = useState('')
 
   const todayIndex = ((dayIndexFor(now()) % LOGOS.length) + LOGOS.length) % LOGOS.length
   const rows = LOGOS.map((logo, index) => ({
@@ -38,10 +39,13 @@ function AdminPage() {
     offset: (index - todayIndex + LOGOS.length) % LOGOS.length,
   }))
 
+  const query = search.trim().toLowerCase()
+  const filteredRows = query ? rows.filter(({ logo }) => logo.name.toLowerCase().includes(query)) : rows
+
   const sortedRows =
     sortMode === 'alpha'
-      ? [...rows].sort((a, b) => a.logo.name.localeCompare(b.logo.name))
-      : [...rows].sort((a, b) => a.offset - b.offset)
+      ? [...filteredRows].sort((a, b) => a.logo.name.localeCompare(b.logo.name))
+      : [...filteredRows].sort((a, b) => a.offset - b.offset)
 
   return (
     <div className={styles.page}>
@@ -81,9 +85,18 @@ function AdminPage() {
         >
           Grid
         </button>
+        <input
+          type="text"
+          className={styles.searchInput}
+          placeholder="Search by name…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
-      {viewMode === 'table' ? (
+      {sortedRows.length === 0 ? (
+        <p className={styles.empty}>No logos match "{search}".</p>
+      ) : viewMode === 'table' ? (
         <div className={styles.tableWrap}>
           <table className={styles.table}>
             <thead>

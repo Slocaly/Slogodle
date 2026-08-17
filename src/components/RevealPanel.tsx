@@ -56,13 +56,6 @@ export function RevealPanel({ logo, isToday, onBackToday, dayIndex, guesses, sta
           <span>{copied ? m.share_copied() : m.share_button()}</span>
         </button>
       </div>
-      {!isToday && (
-        <div className={styles.metaRow}>
-          <button type="button" className={shared.backTodayBtn} onClick={onBackToday}>
-            {m.back_to_today()}
-          </button>
-        </div>
-      )}
     </div>
   )
 }

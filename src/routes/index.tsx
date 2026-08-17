@@ -87,8 +87,6 @@ function Home() {
               {!isPlaying && (
                 <RevealPanel
                   logo={g.logo}
-                  isToday={g.isToday}
-                  onBackToday={g.returnToToday}
                   dayIndex={g.dayIndex}
                   guesses={g.guesses}
                   status={g.status}

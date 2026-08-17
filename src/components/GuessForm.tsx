@@ -9,20 +9,17 @@ interface GuessFormProps {
   onSubmit: (text: string) => void
   logo: Logo
   attemptCount: number
-  maxTries: number
 }
 
-export function GuessForm({ onSubmit, logo, attemptCount, maxTries }: GuessFormProps) {
+export function GuessForm({ onSubmit, logo, attemptCount }: GuessFormProps) {
   const [value, setValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const suppressNextInputValueRef = useRef<string | null>(null)
   const suggestions = suggestionsFor(value, LOGOS, null)
-  const hints = [
-    m.hint_wrong_guess(),
-    m.hint_industry({ industry: logo.industry }),
+  const revealedHints = [
     m.hint_founded({ founded: logo.founded }),
-  ]
-  const hint = hints[Math.min(attemptCount, hints.length - 1)]
+    m.hint_industry({ industry: logo.industry }),
+  ].slice(0, attemptCount)
 
   return (
     <div className={styles.playArea}>
@@ -68,12 +65,18 @@ export function GuessForm({ onSubmit, logo, attemptCount, maxTries }: GuessFormP
           </Combobox.Portal>
         )}
       </Combobox.Root>
-      <div className={styles.dots}>
-        {Array.from({ length: maxTries }, (_, i) => (
-          <span key={i} className={`${styles.dot} ${i < attemptCount ? styles.dotUsed : ''}`} />
-        ))}
-      </div>
-      <div className={styles.hint}>{hint}</div>
+      {attemptCount === 0 ? (
+        <div className={styles.hintPrompt}>{m.hint_wrong_guess()}</div>
+      ) : (
+        <div className={styles.hints}>
+          {revealedHints.map((hint, i) => (
+            <div key={hint} className={styles.hint}>
+              <span className={styles.hintLabel}>{m.hint_label({ n: i + 1 })}</span>
+              <span className={styles.hintText}>{hint}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

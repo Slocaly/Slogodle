@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Tooltip } from '@base-ui/react/tooltip'
 import { now, subscribe as subscribeClock } from '../lib/clock'
-import { nextLocalMidnight, formatCountdown, type Guess } from '../lib/game-logic'
+import { nextLocalMidnight, formatCountdown } from '../lib/game-logic'
 import type { Logo } from '../data/logos'
 import { m } from '../paraglide/messages.js'
 import shared from '../styles/shared.module.css'
@@ -9,8 +9,6 @@ import styles from './RevealPanel.module.css'
 
 interface RevealPanelProps {
   logo: Logo
-  guesses: Guess[]
-  maxTries: number
   streak: number
   isToday: boolean
   onBackToday: () => void
@@ -34,12 +32,11 @@ function useCountdown(active: boolean): string {
   return label
 }
 
-export function RevealPanel({ logo, guesses, maxTries, streak, isToday, onBackToday }: RevealPanelProps) {
+export function RevealPanel({ logo, streak, isToday, onBackToday }: RevealPanelProps) {
   const countdown = useCountdown(isToday)
 
   return (
     <div className={styles.reveal}>
-      <div className={shared.revealName}>{logo.name}</div>
       <div className={shared.revealFact}>{logo.funFact}</div>
       <Tooltip.Root>
         <Tooltip.Trigger
@@ -58,13 +55,6 @@ export function RevealPanel({ logo, guesses, maxTries, streak, isToday, onBackTo
           </Tooltip.Positioner>
         </Tooltip.Portal>
       </Tooltip.Root>
-      <div className={styles.shareGrid}>
-        {Array.from({ length: maxTries }, (_, i) => {
-          const g = guesses[i]
-          const cls = g ? (g.correct ? styles.shareCorrect : styles.shareWrong) : styles.shareEmpty
-          return <span key={i} className={`${styles.shareCell} ${cls}`} />
-        })}
-      </div>
       {isToday ? (
         <div className={styles.metaRow}>
           <span>{m.meta_streak({ streak })}</span>

@@ -61,6 +61,8 @@ function Home() {
               logo={g.logo}
               isToday={g.isToday}
               onBackToday={g.returnToToday}
+              guesses={g.guesses}
+              maxTries={g.maxTries}
             />
             <GuessTiles guesses={g.guesses} />
             {isPlaying && (
@@ -69,14 +71,11 @@ function Home() {
                 onSubmit={handleGuess}
                 logo={g.logo}
                 attemptCount={g.guesses.length}
-                maxTries={g.maxTries}
               />
             )}
             {!isPlaying && (
               <RevealPanel
                 logo={g.logo}
-                guesses={g.guesses}
-                maxTries={g.maxTries}
                 streak={g.streak}
                 isToday={g.isToday}
                 onBackToday={g.returnToToday}

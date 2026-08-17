@@ -5,6 +5,24 @@
   font-family: "Fredoka", sans-serif;
 }
 
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.backLink {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--accent-pink);
+}
+
 .title {
   margin: 0 0 20px;
   font-size: 24px;

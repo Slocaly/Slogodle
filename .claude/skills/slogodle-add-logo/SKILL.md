@@ -32,7 +32,7 @@ If, after using WebSearch/WebFetch, you're still genuinely unsure about a field 
 
 ## 3. Edit the file
 
-- Append new entries at the end of the `LOGOS` array, in alphabetical order by `name` among the new batch.
+- Append new entries at the end of the `LOGOS` array. Never reorder the array as a whole or insert new entries alphabetically — the existing entries' order must stay exactly as-is; new logos always go after the last existing entry.
 - Match the existing formatting exactly: 2-space indent, double-quoted strings, trailing comma after every property including the last, object entries separated by a blank-free `},\n  {`.
 - For `funFact`, follow the file's existing convention: keep `funFact: "..."` on one line if it stays reasonably short like the majority of entries; when it runs long, wrap it exactly like the `Vue.js`/`React Router` entries do — `funFact:` alone on its line, the quoted string indented 6 spaces on the next line.
 - Remove any stale entries you flagged in step 1 (dead icon reference), but only after telling the user about them in your summary — don't silently drop data if you're unsure a removal is correct.

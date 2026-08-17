@@ -1,4 +1,5 @@
 import { m } from '../paraglide/messages.js'
+import { DarkModeToggle } from './DarkModeToggle'
 import styles from './GameHeader.module.css'
 
 interface GameHeaderProps {
@@ -19,23 +20,7 @@ export function GameHeader({ archiveOpen, onToggleArchive, dark, onToggleDark }:
             <path d="M3 10h18M8 3v4M16 3v4" />
           </svg>
         </button>
-        <button
-          type="button"
-          className={styles.darkToggle}
-          aria-label={dark ? m.theme_toggle_to_light() : m.theme_toggle_to_dark()}
-          onClick={onToggleDark}
-        >
-          {dark ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-            </svg>
-          )}
-        </button>
+        <DarkModeToggle dark={dark} onToggle={onToggleDark} />
       </div>
     </header>
   )

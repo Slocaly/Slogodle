@@ -78,35 +78,6 @@
   transform: scale(0.9);
 }
 
-.darkToggle {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border: none;
-  padding: 0;
-  color: var(--muted);
-  transition: color 0.15s, background 0.15s, transform 0.2s;
-}
-
-.darkToggle:hover {
-  color: var(--accent-pink);
-  background: var(--toggle-bg);
-}
-
-.darkToggle:active {
-  transform: scale(0.9);
-}
-
-.darkToggle svg {
-  width: 18px;
-  height: 18px;
-}
-
 @media (max-width: 640px) {
   .header {
     padding: 14px 20px;

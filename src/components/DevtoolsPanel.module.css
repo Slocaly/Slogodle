@@ -52,7 +52,8 @@
   padding: 4px;
 }
 
-.devtoolsRow button {
+.devtoolsRow button,
+.devtoolsLink {
   font: inherit;
   color: var(--text);
   background: var(--card-bg);
@@ -60,6 +61,12 @@
   border-radius: 8px;
   padding: 4px 8px;
   cursor: pointer;
+}
+
+.devtoolsLink {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
 }
 
 @media (prefers-reduced-transparency: reduce) {

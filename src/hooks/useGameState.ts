@@ -3,12 +3,12 @@ import { LOGOS, type Logo } from '../data/logos'
 import { loadJSON, saveJSON } from '../lib/storage'
 import { now, subscribe as subscribeClock } from '../lib/clock'
 import { dayIndexFor, pickLogo, isCorrectGuess, computeStreak, type Guess, type GameStatus } from '../lib/game-logic'
+import { useDarkMode } from './useDarkMode'
 
 const MAX_TRIES = 3
 const OLD_TODAY_KEY = 'logodle_today_v1'
 const OLD_HISTORY_KEY = 'logodle_history_v1'
 const DAYS_KEY = 'logodle_days_v1'
-const DARK_KEY = 'logodle_dark_v1'
 
 interface DayRecord {
   guesses: Guess[]
@@ -51,13 +51,7 @@ export function useGameState() {
   const [activeDayIndex, setActiveDayIndex] = useState(() => dayIndexFor(now()))
   const [pinnedToToday, setPinnedToToday] = useState(true)
   const [days, setDays] = useState<DaysRecord>(loadDays)
-  const [dark, setDark] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(DARK_KEY) === '1'
-    } catch (e) {
-      return false
-    }
-  })
+  const { dark, toggleDark } = useDarkMode()
   const [archiveOpen, setArchiveOpen] = useState(false)
 
   const logo = pickLogo(LOGOS, activeDayIndex)
@@ -68,15 +62,6 @@ export function useGameState() {
   useEffect(() => {
     saveJSON(DAYS_KEY, days)
   }, [days])
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = dark ? 'dark' : 'light'
-    try {
-      localStorage.setItem(DARK_KEY, dark ? '1' : '0')
-    } catch (e) {
-      // best-effort, matches current behavior
-    }
-  }, [dark])
 
   // Check once a second whether the real day has rolled over; if it has and
   // we're pinned to today, follow it. If the user has navigated to a past
@@ -157,7 +142,7 @@ export function useGameState() {
     archiveOpen,
     toggleArchive: () => setArchiveOpen((v) => !v),
     dark,
-    toggleDark: () => setDark((d) => !d),
+    toggleDark,
     history,
     streak,
     maxTries: MAX_TRIES,

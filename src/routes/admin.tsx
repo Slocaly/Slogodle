@@ -1,8 +1,10 @@
-import { createFileRoute, notFound } from '@tanstack/react-router'
+import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { useState } from 'react'
 import { LOGOS } from '../data/logos'
 import { dayIndexFor } from '../lib/game-logic'
 import { now } from '../lib/clock'
+import { useDarkMode } from '../hooks/useDarkMode'
+import { DarkModeToggle } from '../components/DarkModeToggle'
 import styles from './admin.module.css'
 
 export const Route = createFileRoute('/admin')({
@@ -29,6 +31,7 @@ function dateForOffset(offset: number): string {
 }
 
 function AdminPage() {
+  const { dark, toggleDark } = useDarkMode()
   const [sortMode, setSortMode] = useState<SortMode>('alpha')
   const [viewMode, setViewMode] = useState<ViewMode>('table')
   const [search, setSearch] = useState('')
@@ -49,6 +52,13 @@ function AdminPage() {
 
   return (
     <div className={styles.page}>
+      <div className={styles.topBar}>
+        <Link to="/" className={styles.backLink}>
+          ← Back to game
+        </Link>
+        <DarkModeToggle dark={dark} onToggle={toggleDark} />
+      </div>
+
       <h1 className={styles.title}>Admin — Logos ({LOGOS.length})</h1>
 
       <div className={styles.sortRow}>

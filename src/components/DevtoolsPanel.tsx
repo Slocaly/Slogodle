@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { now, isSimulated, setSimulatedDate, nudgeDays, resetClock, subscribe as subscribeClock } from '../lib/clock'
 import { useClock } from '../hooks/useClock'
 import styles from './DevtoolsPanel.module.css'
@@ -75,6 +76,11 @@ export function DevtoolsPanel({
             <button type="button" onClick={onFakeLaunch}>
               🎉 Fake win
             </button>
+          </div>
+          <div className={styles.devtoolsRow}>
+            <Link to="/admin" className={styles.devtoolsLink}>
+              Admin
+            </Link>
           </div>
         </div>
       )}

@@ -14,9 +14,13 @@ function formatDateInput(date: Date): string {
 export function DevtoolsPanel({
   onResetDay,
   onFakeLaunch,
+  onAddRandomLogos,
+  onResetPileToFound,
 }: {
   onResetDay: () => void
   onFakeLaunch: () => void
+  onAddRandomLogos: () => void
+  onResetPileToFound: () => void
 }) {
   useClock() // subscribes this component to clock-offset changes so it re-renders
   const [open, setOpen] = useState(false)
@@ -75,6 +79,14 @@ export function DevtoolsPanel({
             </button>
             <button type="button" onClick={onFakeLaunch}>
               🎉 Fake win
+            </button>
+          </div>
+          <div className={styles.devtoolsRow}>
+            <button type="button" onClick={onAddRandomLogos}>
+              🎲 +10 random logos
+            </button>
+            <button type="button" onClick={onResetPileToFound}>
+              🧹 Reset pile
             </button>
           </div>
           <div className={styles.devtoolsRow}>

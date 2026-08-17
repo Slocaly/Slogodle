@@ -39,6 +39,8 @@ export interface LogoPileSimulation {
   destroy(): void
   /** Flings the given (already-mounted) entries in from a screen edge, staggered. */
   launchFromSide(entries: PileLogo[], side: 'left' | 'right'): void
+  /** Removes every body whose key isn't in `keepKeys`. */
+  removeAllExcept(keepKeys: string[]): void
 }
 
 // Sizes an element within the pile's body-size range, from its icon's intrinsic aspect
@@ -89,7 +91,8 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
   let width = 0
   let height = 0
   let boundaries: Matter.Body[] = []
-  let pileBodies: { body: Matter.Body; el: HTMLElement; rotateEl: HTMLElement; width: number; height: number }[] = []
+  let pileBodies: { key: string; body: Matter.Body; el: HTMLElement; rotateEl: HTMLElement; width: number; height: number }[] =
+    []
   let spawned = false
 
   // Rotation lives on this inner element, separate from the outer element's position, so
@@ -166,7 +169,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
         Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 1)
       }
 
-      return [{ body, el, rotateEl: getRotateEl(el), width: bodyWidth, height: bodyHeight }]
+      return [{ key: logo.key, body, el, rotateEl: getRotateEl(el), width: bodyWidth, height: bodyHeight }]
     })
     Matter.Composite.add(engine.world, pileBodies.map((entry) => entry.body))
   }
@@ -200,11 +203,22 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
           Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 1)
         }
 
-        pileBodies.push({ body, el, rotateEl: getRotateEl(el), width: bodyWidth, height: bodyHeight })
+        pileBodies.push({ key: entry.key, body, el, rotateEl: getRotateEl(el), width: bodyWidth, height: bodyHeight })
         Matter.Composite.add(engine.world, body)
       }, i * LAUNCH_STAGGER)
       launchTimers.push(timer)
     })
+  }
+
+  function removeAllExcept(keepKeys: string[]) {
+    const keepSet = new Set(keepKeys)
+    const toRemove = pileBodies.filter((entry) => !keepSet.has(entry.key))
+    if (!toRemove.length) return
+    Matter.Composite.remove(
+      engine.world,
+      toRemove.map((entry) => entry.body),
+    )
+    pileBodies = pileBodies.filter((entry) => keepSet.has(entry.key))
   }
 
   let resizeTimer: ReturnType<typeof setTimeout> | undefined
@@ -228,6 +242,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
 
   return {
     launchFromSide,
+    removeAllExcept,
     destroy() {
       clearTimeout(resizeTimer)
       for (const timer of launchTimers) clearTimeout(timer)

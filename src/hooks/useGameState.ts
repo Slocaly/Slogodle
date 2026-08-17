@@ -24,6 +24,22 @@ interface OldSavedToday {
 }
 
 const EMPTY_DAY: DayRecord = { guesses: [], status: 'playing' }
+// A since-fixed devtools bug briefly wrote fake "won" records at day indices in this
+// range to simulate pile logos. Purge any that made it into a real browser's storage.
+const BOGUS_DAY_INDEX_THRESHOLD = -1_000_000
+
+function stripBogusDays(days: DaysRecord): DaysRecord {
+  const clean: DaysRecord = {}
+  let removedAny = false
+  for (const [key, record] of Object.entries(days)) {
+    if (Number(key) <= BOGUS_DAY_INDEX_THRESHOLD) {
+      removedAny = true
+      continue
+    }
+    clean[key] = record
+  }
+  return removedAny ? clean : days
+}
 
 // One-time migration from the old two-key storage format (today-only slot +
 // status-only history) into a single per-day record. Runs at most once per
@@ -31,7 +47,11 @@ const EMPTY_DAY: DayRecord = { guesses: [], status: 'playing' }
 // non-null value (even `{}` for a fresh install) so this body never runs again.
 function loadDays(): DaysRecord {
   const existing = loadJSON<DaysRecord | null>(DAYS_KEY, null)
-  if (existing) return existing
+  if (existing) {
+    const cleaned = stripBogusDays(existing)
+    if (cleaned !== existing) saveJSON(DAYS_KEY, cleaned)
+    return cleaned
+  }
 
   const migrated: DaysRecord = {}
   const oldHistory = loadJSON<Record<string, GameStatus>>(OLD_HISTORY_KEY, {})

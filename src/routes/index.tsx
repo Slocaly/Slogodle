@@ -35,6 +35,14 @@ function Home() {
     pileRef.current?.launchWin(g.maxTries)
   }
 
+  function handleAddRandomLogos() {
+    pileRef.current?.addRandomLogos(10)
+  }
+
+  function handleResetPileToFound() {
+    pileRef.current?.resetToFound()
+  }
+
   return (
     <>
       <PhysicsLogoPile ref={pileRef} dayIndex={g.dayIndex} logo={g.logo} foundLogos={g.foundLogos} />
@@ -90,7 +98,14 @@ function Home() {
             </div>
           </div>
         </main>
-        {import.meta.env.DEV && <DevtoolsPanel onResetDay={g.resetDay} onFakeLaunch={handleFakeLaunch} />}
+        {import.meta.env.DEV && (
+          <DevtoolsPanel
+            onResetDay={g.resetDay}
+            onFakeLaunch={handleFakeLaunch}
+            onAddRandomLogos={handleAddRandomLogos}
+            onResetPileToFound={handleResetPileToFound}
+          />
+        )}
       </div>
     </>
   )

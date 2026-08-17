@@ -1,7 +1,7 @@
 // src/components/PhysicsLogoPile.tsx
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react'
 import { flushSync } from 'react-dom'
-import type { Logo } from '../data/logos'
+import { LOGOS, type Logo } from '../data/logos'
 import { createLogoPileSimulation, type LogoPileSimulation } from '../lib/physicsLogoPile'
 import { getStickerIconSrc } from '../lib/stickerIcons'
 import styles from './PhysicsLogoPile.module.css'
@@ -11,6 +11,10 @@ const STICKER_LOGOS = import.meta.env.VITE_STICKER_LOGOS !== 'false'
 export interface PhysicsLogoPileHandle {
   /** Flings `count` copies of today's logo in from a random screen edge. */
   launchWin(count: number): void
+  /** Flings `count` random logos in from a random screen edge, purely visual. */
+  addRandomLogos(count: number): void
+  /** Clears any launched (win or random) logos, leaving only the found ones. */
+  resetToFound(): void
 }
 
 interface PhysicsLogoPileProps {
@@ -93,8 +97,34 @@ export function PhysicsLogoPile({ dayIndex, logo, foundLogos, ref }: PhysicsLogo
           side,
         )
       },
+      addRandomLogos(count) {
+        const sim = simRef.current
+        if (!sim) return
+        const side: 'left' | 'right' = Math.random() < 0.5 ? 'left' : 'right'
+        const batchId = launchBatchRef.current++
+        const newSlots: PileSlot[] = Array.from({ length: count }, (_, i) => {
+          const random = LOGOS[Math.floor(Math.random() * LOGOS.length)]
+          return {
+            slotKey: `random-${batchId}-${i}`,
+            name: random.name,
+            icon: random.icon,
+            aspect: random.aspect,
+          }
+        })
+        flushSync(() => setLaunchSlots((prev) => [...prev, ...newSlots]))
+        sim.launchFromSide(
+          newSlots.map((s) => ({ key: s.slotKey, aspect: s.aspect })),
+          side,
+        )
+      },
+      resetToFound() {
+        const sim = simRef.current
+        if (!sim) return
+        sim.removeAllExcept(initialSlots.map((s) => s.slotKey))
+        setLaunchSlots([])
+      },
     }),
-    [logo],
+    [logo, initialSlots],
   )
 
   return (

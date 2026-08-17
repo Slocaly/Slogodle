@@ -9,6 +9,7 @@ import { LogoCard } from '../components/LogoCard'
 import { GuessTiles } from '../components/GuessTiles'
 import { GuessForm } from '../components/GuessForm'
 import { RevealPanel } from '../components/RevealPanel'
+import { CountdownTimer } from '../components/CountdownTimer'
 import { DevtoolsPanel } from '../components/DevtoolsPanel'
 import shared from '../styles/shared.module.css'
 import styles from './index.module.css'
@@ -36,7 +37,7 @@ function Home() {
 
   return (
     <>
-      <PhysicsLogoPile ref={pileRef} dayIndex={g.dayIndex} logo={g.logo} />
+      <PhysicsLogoPile ref={pileRef} dayIndex={g.dayIndex} logo={g.logo} foundLogos={g.foundLogos} />
       <div className={shared.page}>
         <div className={styles.headerWrap}>
           <GameHeader
@@ -54,33 +55,39 @@ function Home() {
           />
         </div>
         <main className={shared.gameArea} id="main">
-          <div className={shared.card}>
-            <LogoCard
-              dayIndex={g.dayIndex}
-              status={g.status}
-              logo={g.logo}
-              isToday={g.isToday}
-              onBackToday={g.returnToToday}
-              guesses={g.guesses}
-              maxTries={g.maxTries}
-            />
-            <GuessTiles guesses={g.guesses} />
-            {isPlaying && (
-              <GuessForm
-                key={g.dayIndex}
-                onSubmit={handleGuess}
+          <div className={styles.cardStack}>
+            {!isPlaying && g.isToday && <CountdownTimer />}
+            <div className={shared.card}>
+              <LogoCard
+                dayIndex={g.dayIndex}
+                status={g.status}
                 logo={g.logo}
-                attemptCount={g.guesses.length}
-              />
-            )}
-            {!isPlaying && (
-              <RevealPanel
-                logo={g.logo}
-                streak={g.streak}
                 isToday={g.isToday}
                 onBackToday={g.returnToToday}
+                guesses={g.guesses}
+                maxTries={g.maxTries}
               />
-            )}
+              <GuessTiles guesses={g.guesses} />
+              {isPlaying && (
+                <GuessForm
+                  key={g.dayIndex}
+                  onSubmit={handleGuess}
+                  logo={g.logo}
+                  attemptCount={g.guesses.length}
+                />
+              )}
+              {!isPlaying && (
+                <RevealPanel
+                  logo={g.logo}
+                  isToday={g.isToday}
+                  onBackToday={g.returnToToday}
+                  dayIndex={g.dayIndex}
+                  guesses={g.guesses}
+                  status={g.status}
+                  maxTries={g.maxTries}
+                />
+              )}
+            </div>
           </div>
         </main>
         {import.meta.env.DEV && <DevtoolsPanel onResetDay={g.resetDay} onFakeLaunch={handleFakeLaunch} />}

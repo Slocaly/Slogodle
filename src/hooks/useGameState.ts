@@ -93,9 +93,14 @@ export function useGameState() {
   )
 
   const history: Record<string, GameStatus> = {}
+  const foundLogos: { dayIndex: number; logo: Logo; count: number }[] = []
   for (const [key, record] of Object.entries(days)) {
     if (record.status !== 'playing') {
       history[key] = record.status
+    }
+    if (record.status === 'won') {
+      const dayIndex = Number(key)
+      foundLogos.push({ dayIndex, logo: pickLogo(LOGOS, dayIndex), count: MAX_TRIES + 1 - record.guesses.length })
     }
   }
   const streak = computeStreak(history, todayIndex)
@@ -144,6 +149,7 @@ export function useGameState() {
     dark,
     toggleDark,
     history,
+    foundLogos,
     streak,
     maxTries: MAX_TRIES,
   }

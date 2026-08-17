@@ -4,47 +4,51 @@
   align-items: center;
 }
 
-.githubLinkBtn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: none;
+.actionsRow {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  border: none;
-  padding: 0;
-  color: var(--muted);
-  margin-bottom: 22px;
-  transition: color 0.15s, background 0.15s, transform 0.1s;
+  gap: 10px;
+  margin-top: 16px;
   animation: revealFade 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.12s backwards;
 }
 
-.githubLinkBtn:hover {
-  color: var(--accent-pink);
+.githubLinkBtn,
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 999px;
   background: var(--toggle-bg);
+  color: var(--text);
+  padding: 10px 18px 10px 14px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, transform 0.1s;
 }
 
-.githubLinkBtn:active {
-  transform: scale(0.9);
+.githubLinkBtn:hover,
+.shareBtn:hover {
+  color: var(--text);
+  background: var(--accent-yellow);
+  transform: translateY(-1px);
 }
 
-.githubLinkBtn svg {
+.githubLinkBtn:active,
+.shareBtn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.githubLinkBtn svg,
+.shareBtn svg {
   width: 18px;
   height: 18px;
-}
-
-.tooltipPopup {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text);
-  background: var(--card-bg);
-  border: 2px solid var(--text);
-  border-radius: 10px;
-  padding: 6px 12px;
-  box-shadow: 0 3px 0 var(--shadow-color);
-  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .metaRow {

@@ -36,6 +36,7 @@ export function suggestionsFor(value: string, bank: Logo[], excludeName: string 
   return bank
     .map((l) => ({ label: l.name, value: l.name }))
     .filter((logo) => logo.label.toLowerCase().startsWith(q) && logo.label !== excludeName)
+    .slice(0, 5)
 }
 
 export function formatCountdown(ms: number): string {
@@ -62,4 +63,19 @@ export function computeStreak(history: Record<string, GameStatus>, todayIndex: n
     i -= 1
   }
   return streak
+}
+
+export function buildShareText(params: {
+  intro: string
+  title: string
+  dayIndex: number
+  guesses: Guess[]
+  status: GameStatus
+  maxTries: number
+  origin: string
+}): string {
+  const { intro, title, dayIndex, guesses, status, maxTries, origin } = params
+  const score = status === 'won' ? `${guesses.length}/${maxTries}` : `X/${maxTries}`
+  const grid = guesses.map((g) => (g.correct ? '🟩' : '🟥')).join('')
+  return `${intro}\n${title} #${dayIndex + 1} ${score}\n\n${grid}\n\n${origin}`
 }

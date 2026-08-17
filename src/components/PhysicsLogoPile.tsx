@@ -1,13 +1,11 @@
 // src/components/PhysicsLogoPile.tsx
-import { useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react'
+import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react'
 import { flushSync } from 'react-dom'
-import { LOGOS, type Logo } from '../data/logos'
-import { pickDailySequence } from '../lib/dailyRandom'
+import type { Logo } from '../data/logos'
 import { createLogoPileSimulation, type LogoPileSimulation } from '../lib/physicsLogoPile'
 import { getStickerIconSrc } from '../lib/stickerIcons'
 import styles from './PhysicsLogoPile.module.css'
 
-const PILE_SIZE = 50
 const STICKER_LOGOS = import.meta.env.VITE_STICKER_LOGOS !== 'false'
 
 export interface PhysicsLogoPileHandle {
@@ -18,6 +16,7 @@ export interface PhysicsLogoPileHandle {
 interface PhysicsLogoPileProps {
   dayIndex: number
   logo: Logo
+  foundLogos: { dayIndex: number; logo: Logo; count: number }[]
   ref?: Ref<PhysicsLogoPileHandle>
 }
 
@@ -28,7 +27,7 @@ interface PileSlot {
   aspect: number
 }
 
-export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
+export function PhysicsLogoPile({ dayIndex, logo, foundLogos, ref }: PhysicsLogoPileProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const elementRefs = useRef(new Map<string, HTMLDivElement>())
   const imgRefs = useRef(new Map<string, HTMLImageElement>())
@@ -36,15 +35,17 @@ export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
   const launchBatchRef = useRef(0)
   const [launchSlots, setLaunchSlots] = useState<PileSlot[]>([])
 
-  const slots = useMemo<PileSlot[]>(
-    () =>
-      pickDailySequence(LOGOS.filter((l) => l.name !== logo.name), dayIndex * 97 + 13, PILE_SIZE).map((l, i) => ({
-        slotKey: `${l.name}#${i}`,
-        name: l.name,
-        icon: l.icon,
-        aspect: l.aspect,
+  // Snapshot of everything already found as of page load (across all days). Taken
+  // once so a win during this session is only ever added via launchWin, never here.
+  const [initialSlots] = useState<PileSlot[]>(() =>
+    foundLogos.flatMap((entry) =>
+      Array.from({ length: entry.count }, (_, i) => ({
+        slotKey: `found-${entry.dayIndex}#${i}`,
+        name: entry.logo.name,
+        icon: entry.logo.icon,
+        aspect: entry.logo.aspect,
       })),
-    [dayIndex, logo.name],
+    ),
   )
 
   // A win's launched logos belong to that day only — drop them when navigating away.
@@ -59,7 +60,7 @@ export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const simulation = createLogoPileSimulation({
       container,
-      logos: slots.map((slot) => ({ key: slot.slotKey, aspect: slot.aspect })),
+      logos: initialSlots.map((slot) => ({ key: slot.slotKey, aspect: slot.aspect })),
       getElement: (key) => elementRefs.current.get(key) ?? null,
       reducedMotion,
     })
@@ -69,7 +70,7 @@ export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
       simRef.current = null
       simulation.destroy()
     }
-  }, [slots])
+  }, [initialSlots])
 
   useImperativeHandle(
     ref,
@@ -98,7 +99,7 @@ export function PhysicsLogoPile({ dayIndex, logo, ref }: PhysicsLogoPileProps) {
 
   return (
     <div className={styles.physicsPile} ref={containerRef} aria-hidden="true">
-      {[...slots, ...launchSlots].map((slot) => (
+      {[...initialSlots, ...launchSlots].map((slot) => (
         <div
           key={slot.slotKey}
           ref={(el) => {

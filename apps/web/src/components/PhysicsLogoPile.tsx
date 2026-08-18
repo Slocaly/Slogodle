@@ -1,7 +1,7 @@
 // src/components/PhysicsLogoPile.tsx
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react'
 import { flushSync } from 'react-dom'
-import { LOGOS, type Logo } from '../data/logos'
+import { LOGOS, type Logo } from '@slogodle/logos'
 import { createLogoPileSimulation, type LogoPileSimulation } from '../lib/physicsLogoPile'
 import { getStickerIconSrc } from '../lib/stickerIcons'
 import styles from './PhysicsLogoPile.module.css'

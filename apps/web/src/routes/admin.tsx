@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { useState } from 'react'
-import { LOGOS } from '../data/logos'
+import { LOGOS } from '@slogodle/logos'
 import { dayIndexFor } from '../lib/game-logic'
 import { now } from '../lib/clock'
 import { useDarkMode } from '../hooks/useDarkMode'

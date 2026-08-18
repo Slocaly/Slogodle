@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { LOGOS, type Logo } from '../data/logos'
+import { LOGOS, type Logo } from '@slogodle/logos'
 import { loadJSON, saveJSON } from '../lib/storage'
 import { now, subscribe as subscribeClock } from '../lib/clock'
 import { dayIndexFor, pickLogo, isCorrectGuess, computeStreak, type Guess, type GameStatus } from '../lib/game-logic'

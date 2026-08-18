@@ -1,11 +1,21 @@
-# Guess the Logo
+# Slogodle
 
-A daily logo-guessing game built with TanStack Start (React + TypeScript).
+Monorepo for the logo-guessing game and related tools.
+
+## Layout
+
+| Path              | Description                                    |
+| :----------------- | :---------------------------------------------- |
+| `apps/web`         | The game itself — TanStack Start (React + TS)  |
+| `packages/logos`   | Shared logo assets and metadata                |
 
 ## Commands
 
+Run from the repo root:
+
 | Command          | Action                                |
 | :---------------- | :------------------------------------ |
-| `pnpm run dev`     | Starts the dev server                 |
-| `pnpm run build`   | Production build                      |
-| `pnpm run start`   | Preview a production build            |
+| `pnpm install`     | Install all workspace dependencies    |
+| `pnpm run dev`     | Starts the web app's dev server       |
+| `pnpm run build`   | Production build of the web app       |
+| `pnpm run start`   | Preview the web app's production build|

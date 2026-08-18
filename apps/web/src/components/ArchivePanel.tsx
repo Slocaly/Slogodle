@@ -1,4 +1,4 @@
-import { LOGOS } from '../data/logos'
+import { LOGOS } from '@slogodle/logos'
 import { pickLogo, type GameStatus } from '../lib/game-logic'
 import { m } from '../paraglide/messages.js'
 import styles from './ArchivePanel.module.css'

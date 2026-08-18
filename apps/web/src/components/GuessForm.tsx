@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Combobox } from '@base-ui/react/combobox'
-import { LOGOS, type Logo } from '../data/logos'
+import { LOGOS, type Logo } from '@slogodle/logos'
 import { suggestionsFor } from '../lib/game-logic'
 import { m } from '../paraglide/messages.js'
 import styles from './GuessForm.module.css'

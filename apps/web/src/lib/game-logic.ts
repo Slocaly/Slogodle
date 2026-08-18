@@ -1,4 +1,4 @@
-import type { Logo } from '../data/logos'
+import type { Logo } from '@slogodle/logos'
 
 const EPOCH = new Date(2024, 0, 1)
 

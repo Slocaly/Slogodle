@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Logo } from '../data/logos'
+import type { Logo } from '@slogodle/logos'
 import { buildShareText, type GameStatus, type Guess } from '../lib/game-logic'
 import { m } from '../paraglide/messages.js'
 import shared from '../styles/shared.module.css'

@@ -11,6 +11,10 @@
   position: absolute;
   top: 0;
   left: 0;
+  /* Parked off-screen until JS gives it a real size + transform (via inline style,
+     which overrides this). Without this, a freshly-mounted item briefly shows at its
+     unsized intrinsic dimensions pinned to this container's top-left corner. */
+  transform: translate(-200vw, -200vh);
   will-change: transform;
 }
 

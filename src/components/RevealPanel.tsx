@@ -7,15 +7,13 @@ import styles from './RevealPanel.module.css'
 
 interface RevealPanelProps {
   logo: Logo
-  isToday: boolean
-  onBackToday: () => void
   dayIndex: number
   guesses: Guess[]
   status: GameStatus
   maxTries: number
 }
 
-export function RevealPanel({ logo, isToday, onBackToday, dayIndex, guesses, status, maxTries }: RevealPanelProps) {
+export function RevealPanel({ logo, dayIndex, guesses, status, maxTries }: RevealPanelProps) {
   const [copied, setCopied] = useState(false)
 
   async function handleShare() {

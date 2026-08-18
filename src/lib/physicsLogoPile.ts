@@ -177,21 +177,31 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
   const launchTimers: ReturnType<typeof setTimeout>[] = []
 
   function launchFromSide(entries: PileLogo[], side: 'left' | 'right') {
-    entries.forEach((entry, i) => {
+    // Size and place every element at its spawn point synchronously, before the first
+    // paint after mount. Otherwise the freshly-mounted (still unsized, untransformed)
+    // element briefly shows at its CSS default — top-left of the pile container, at the
+    // logo's raw intrinsic size — until its staggered timer below gets around to it.
+    const prepared = entries.flatMap((entry) => {
+      const el = getElement(entry.key)
+      if (!el) return []
+      const { width: bodyWidth, height: bodyHeight } = sizeElement(el, entry.aspect, width)
+
+      const x = reducedMotion
+        ? bodyWidth / 2 + Math.random() * Math.max(width - bodyWidth, 1)
+        : side === 'left'
+          ? bodyWidth / 2 + 10
+          : width - bodyWidth / 2 - 10
+      const y = reducedMotion
+        ? height - bodyHeight / 2 - Math.random() * 60
+        : bodyHeight + Math.random() * Math.max(height - bodyHeight * 3, 1) - height * LAUNCH_HEIGHT_LIFT_RATIO
+
+      el.style.transform = `translate(${x - bodyWidth / 2}px, ${y - bodyHeight / 2}px)`
+
+      return [{ key: entry.key, el, bodyWidth, bodyHeight, x, y }]
+    })
+
+    prepared.forEach(({ key, el, bodyWidth, bodyHeight, x, y }, i) => {
       const timer = setTimeout(() => {
-        const el = getElement(entry.key)
-        if (!el) return
-        const { width: bodyWidth, height: bodyHeight } = sizeElement(el, entry.aspect, width)
-
-        const x = reducedMotion
-          ? bodyWidth / 2 + Math.random() * Math.max(width - bodyWidth, 1)
-          : side === 'left'
-            ? bodyWidth / 2 + 10
-            : width - bodyWidth / 2 - 10
-        const y = reducedMotion
-          ? height - bodyHeight / 2 - Math.random() * 60
-          : bodyHeight + Math.random() * Math.max(height - bodyHeight * 3, 1) - height * LAUNCH_HEIGHT_LIFT_RATIO
-
         const body = createPileBody(x, y, bodyWidth, bodyHeight)
 
         if (!reducedMotion) {
@@ -203,7 +213,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
           Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 1)
         }
 
-        pileBodies.push({ key: entry.key, body, el, rotateEl: getRotateEl(el), width: bodyWidth, height: bodyHeight })
+        pileBodies.push({ key, body, el, rotateEl: getRotateEl(el), width: bodyWidth, height: bodyHeight })
         Matter.Composite.add(engine.world, body)
       }, i * LAUNCH_STAGGER)
       launchTimers.push(timer)

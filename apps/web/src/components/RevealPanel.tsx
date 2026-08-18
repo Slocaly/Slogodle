@@ -11,12 +11,14 @@ interface RevealPanelProps {
   guesses: Guess[]
   status: GameStatus
   maxTries: number
+  playClick: () => void
 }
 
-export function RevealPanel({ logo, dayIndex, guesses, status, maxTries }: RevealPanelProps) {
+export function RevealPanel({ logo, dayIndex, guesses, status, maxTries, playClick }: RevealPanelProps) {
   const [copied, setCopied] = useState(false)
 
   async function handleShare() {
+    playClick()
     const text = buildShareText({
       intro: status === 'won' ? m.share_intro_won() : m.share_intro_lost(),
       title: m.site_title(),

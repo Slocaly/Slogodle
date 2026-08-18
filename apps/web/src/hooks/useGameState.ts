@@ -4,6 +4,7 @@ import { loadJSON, saveJSON } from '../lib/storage'
 import { now, subscribe as subscribeClock } from '../lib/clock'
 import { dayIndexFor, pickLogo, isCorrectGuess, computeStreak, type Guess, type GameStatus } from '../lib/game-logic'
 import { useDarkMode } from './useDarkMode'
+import { useSoundSettings } from './useSoundSettings'
 
 const MAX_TRIES = 3
 const OLD_TODAY_KEY = 'logodle_today_v1'
@@ -72,6 +73,7 @@ export function useGameState() {
   const [pinnedToToday, setPinnedToToday] = useState(true)
   const [days, setDays] = useState<DaysRecord>(loadDays)
   const { dark, toggleDark } = useDarkMode()
+  const { soundEnabled, toggleSound } = useSoundSettings()
   const [archiveOpen, setArchiveOpen] = useState(false)
 
   const logo = pickLogo(LOGOS, activeDayIndex)
@@ -168,6 +170,8 @@ export function useGameState() {
     toggleArchive: () => setArchiveOpen((v) => !v),
     dark,
     toggleDark,
+    soundEnabled,
+    toggleSound,
     history,
     foundLogos,
     streak,

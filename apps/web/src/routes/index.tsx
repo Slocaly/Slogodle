@@ -2,6 +2,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useRef } from 'react'
 import { useGameState } from '../hooks/useGameState'
+import { useSoundEffects } from '../hooks/useSoundEffects'
 import { GameHeader } from '../components/GameHeader'
 import { ArchivePanel } from '../components/ArchivePanel'
 import { PhysicsLogoPile, type PhysicsLogoPileHandle } from '../components/PhysicsLogoPile'
@@ -23,11 +24,17 @@ function Home() {
   const g = useGameState()
   const isPlaying = g.status === 'playing'
   const pileRef = useRef<PhysicsLogoPileHandle>(null)
+  const { playClick, playWrongGuess, playWin, playLose } = useSoundEffects(g.soundEnabled)
 
   function handleGuess(text: string) {
     const result = g.submitGuess(text)
     if (result?.status === 'won') {
+      playWin()
       pileRef.current?.launchWin(g.maxTries + 1 - result.attempts)
+    } else if (result?.status === 'lost') {
+      playLose()
+    } else if (result?.status === 'playing') {
+      playWrongGuess()
     }
   }
 
@@ -53,6 +60,9 @@ function Home() {
             onToggleArchive={g.toggleArchive}
             dark={g.dark}
             onToggleDark={g.toggleDark}
+            soundEnabled={g.soundEnabled}
+            onToggleSound={g.toggleSound}
+            playClick={playClick}
           />
           <ArchivePanel
             open={g.archiveOpen}
@@ -91,6 +101,7 @@ function Home() {
                   guesses={g.guesses}
                   status={g.status}
                   maxTries={g.maxTries}
+                  playClick={playClick}
                 />
               )}
             </div>

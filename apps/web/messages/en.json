@@ -4,6 +4,8 @@
   "archive_toggle": "Past days",
   "theme_toggle_to_light": "Switch to light mode",
   "theme_toggle_to_dark": "Switch to dark mode",
+  "sound_toggle_to_on": "Turn sound on",
+  "sound_toggle_to_off": "Turn sound off",
   "locale_toggle_label": "Switch language",
   "guess_placeholder": "WHAT'S THIS LOGO?",
   "hint_wrong_guess": "Wrong guess reveals a hint.",

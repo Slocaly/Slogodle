@@ -2351,4 +2351,24 @@ export const LOGOS: Logo[] = [
     aspect: 1.28,
     gitLink: "https://github.com/cakephp/cakephp",
   },
+  {
+    name: "Analog",
+    industry: "Angular meta-framework",
+    founded: 2022,
+    funFact:
+      "Analog was created by Angular Google Developer Expert Brandon Roberts to bring the fullstack meta-framework pattern of Next.js and Nuxt to Angular, powered by Vite and Nitro.",
+    icon: "/logos/analog.svg",
+    aspect: 1.407,
+    gitLink: "https://github.com/analogjs/analog",
+  },
+  {
+    name: "Atomico",
+    industry: "Web components library",
+    founded: 2018,
+    funFact:
+      "Atomico brings React-style hooks, JSX, and a virtual DOM to native Web Components, letting developers write custom elements as plain functions instead of classes.",
+    icon: "/logos/atomicojs.svg",
+    aspect: 0.996,
+    gitLink: "https://github.com/atomicojs/atomico",
+  },
 ]

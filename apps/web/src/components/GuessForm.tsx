@@ -3,6 +3,8 @@ import { Combobox } from '@base-ui/react/combobox'
 import { LOGOS, type Logo } from '@slogodle/logos'
 import { suggestionsFor } from '../lib/game-logic'
 import { m } from '../paraglide/messages.js'
+import { GuessHints } from './GuessHints'
+import { GuessSuggestions } from './GuessSuggestions'
 import styles from './GuessForm.module.css'
 
 interface GuessFormProps {
@@ -14,12 +16,27 @@ interface GuessFormProps {
 export function GuessForm({ onSubmit, logo, attemptCount }: GuessFormProps) {
   const [value, setValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  // base-ui fires onInputValueChange with the picked label right after onValueChange;
+  // this ref swallows that one call so the input doesn't flash the label before clearing.
   const suppressNextInputValueRef = useRef<string | null>(null)
   const suggestions = suggestionsFor(value, LOGOS, null)
-  const revealedHints = [
-    m.hint_founded({ founded: logo.founded }),
-    m.hint_industry({ industry: logo.industry }),
-  ].slice(0, attemptCount)
+
+  function handleInputValueChange(next: string) {
+    if (suppressNextInputValueRef.current === next) {
+      suppressNextInputValueRef.current = null
+      return
+    }
+    setValue(next)
+  }
+
+  function handleValueChange(name: string | null) {
+    if (name) {
+      suppressNextInputValueRef.current = name
+      onSubmit(name)
+      setValue('')
+      inputRef.current?.focus()
+    }
+  }
 
   return (
     <div className={styles.playArea}>
@@ -27,21 +44,8 @@ export function GuessForm({ onSubmit, logo, attemptCount }: GuessFormProps) {
         items={suggestions}
         filter={null}
         inputValue={value}
-        onInputValueChange={(next) => {
-          if (suppressNextInputValueRef.current === next) {
-            suppressNextInputValueRef.current = null
-            return
-          }
-          setValue(next)
-        }}
-        onValueChange={(name: string | null) => {
-          if (name) {
-            suppressNextInputValueRef.current = name
-            onSubmit(name)
-            setValue('')
-            inputRef.current?.focus()
-          }
-        }}
+        onInputValueChange={handleInputValueChange}
+        onValueChange={handleValueChange}
       >
         <Combobox.Input
           ref={inputRef}
@@ -49,34 +53,9 @@ export function GuessForm({ onSubmit, logo, attemptCount }: GuessFormProps) {
           className={styles.guessInput}
           placeholder={m.guess_placeholder()}
         />
-        {suggestions.length > 0 && (
-          <Combobox.Portal>
-            <Combobox.Positioner className={styles.suggestionsPositioner} sideOffset={8}>
-              <Combobox.Popup className={styles.suggestions}>
-                <Combobox.List>
-                  {(logo: { label: string; value: string }) => (
-                    <Combobox.Item key={logo.value} value={logo.value} className={styles.suggestion}>
-                      {logo.label}
-                    </Combobox.Item>
-                  )}
-                </Combobox.List>
-              </Combobox.Popup>
-            </Combobox.Positioner>
-          </Combobox.Portal>
-        )}
+        <GuessSuggestions suggestions={suggestions} />
       </Combobox.Root>
-      {attemptCount === 0 ? (
-        <div className={styles.hintPrompt}>{m.hint_wrong_guess()}</div>
-      ) : (
-        <div className={styles.hints}>
-          {revealedHints.map((hint, i) => (
-            <div key={hint} className={styles.hint}>
-              <span className={styles.hintLabel}>{m.hint_label({ n: i + 1 })}</span>
-              <span className={styles.hintText}>{hint}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      <GuessHints logo={logo} attemptCount={attemptCount} />
     </div>
   )
 }

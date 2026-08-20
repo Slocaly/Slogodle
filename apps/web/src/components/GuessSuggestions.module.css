@@ -1,0 +1,28 @@
+.suggestionsPositioner {
+  z-index: 20;
+}
+
+.suggestions {
+  width: var(--anchor-width);
+  background: var(--card-bg);
+  border: 3px solid var(--text);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.suggestion {
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.suggestion:hover,
+.suggestion[data-highlighted] {
+  background: var(--accent-lavender);
+  color: var(--text);
+}

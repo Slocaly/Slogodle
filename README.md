@@ -11,11 +11,12 @@ Monorepo for the logo-guessing game and related tools.
 
 ## Commands
 
-Run from the repo root:
+Run from the repo root ([Turborepo](https://turborepo.com) orchestrates and caches tasks across workspaces):
 
-| Command          | Action                                |
-| :---------------- | :------------------------------------ |
-| `pnpm install`     | Install all workspace dependencies    |
-| `pnpm run dev`     | Starts the web app's dev server       |
-| `pnpm run build`   | Production build of the web app       |
-| `pnpm run start`   | Preview the web app's production build|
+| Command          | Action                                          |
+| :---------------- | :----------------------------------------------- |
+| `pnpm install`     | Install all workspace dependencies              |
+| `pnpm run dev`     | Starts the dev server for every app             |
+| `pnpm run build`   | Production build of every workspace with a build task |
+| `pnpm run start`   | Preview the web app's production build          |
+| `pnpm run lint`    | Lint every workspace with a lint task            |

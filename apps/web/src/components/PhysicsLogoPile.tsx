@@ -158,6 +158,7 @@ export function PhysicsLogoPile({ dayIndex, logo, foundLogos, ref }: PhysicsLogo
               className={styles.physicsPileLogo}
               src={slot.icon}
               alt=""
+              draggable={false}
             />
           </div>
           <span className={styles.physicsPileTooltip}>{slot.name}</span>

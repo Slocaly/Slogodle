@@ -1,0 +1,53 @@
+.hintPrompt {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.hints {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+}
+
+.hint {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  background: var(--accent-lavender);
+  border-radius: 16px;
+  padding: 10px 18px;
+  box-shadow: 0 3px 0 var(--shadow-color);
+  animation: hintPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hintLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hintText {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+@keyframes hintPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateY(6px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

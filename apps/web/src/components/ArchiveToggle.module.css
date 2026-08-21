@@ -1,0 +1,28 @@
+.archiveToggle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  color: var(--muted);
+  transition: color 0.15s, background 0.15s, transform 0.2s;
+}
+
+.archiveToggle:hover {
+  color: var(--accent-pink);
+  background: var(--toggle-bg);
+}
+
+.archiveToggle:active {
+  transform: scale(0.9);
+}
+
+.archiveToggle svg {
+  width: 18px;
+  height: 18px;
+}

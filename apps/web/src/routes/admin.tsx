@@ -1,54 +1,61 @@
-import { createFileRoute, Link, notFound } from '@tanstack/react-router'
-import { useState } from 'react'
-import { LOGOS } from '@slogodle/logos'
-import { dayIndexFor } from '../lib/game-logic'
-import { now } from '../lib/clock'
-import { useDarkMode } from '../hooks/useDarkMode'
-import { DarkModeToggle } from '../components/DarkModeToggle'
-import styles from './admin.module.css'
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useState } from "react";
+import { LOGOS } from "@slogodle/logos";
+import { dayIndexFor } from "../lib/game-logic";
+import { now } from "../lib/clock";
+import { useDarkMode } from "../hooks/useDarkMode";
+import { DarkModeToggle } from "../components/DarkModeToggle";
+import styles from "./admin.module.css";
 
-export const Route = createFileRoute('/admin')({
+export const Route = createFileRoute("/admin")({
   ssr: false,
   beforeLoad: () => {
     if (!import.meta.env.DEV) {
-      throw notFound()
+      throw notFound();
     }
   },
   component: AdminPage,
-})
+});
 
-type SortMode = 'alpha' | 'day'
-type ViewMode = 'table' | 'grid'
+type SortMode = "alpha" | "day";
+type ViewMode = "table" | "grid";
 
 function dayOffsetLabel(offset: number): string {
-  return offset === 0 ? 'Today' : `+${offset}d`
+  return offset === 0 ? "Today" : `+${offset}d`;
 }
 
 function dateForOffset(offset: number): string {
-  const d = now()
-  d.setDate(d.getDate() + offset)
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+  const d = now();
+  d.setDate(d.getDate() + offset);
+  return d.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 function AdminPage() {
-  const { dark, toggleDark } = useDarkMode()
-  const [sortMode, setSortMode] = useState<SortMode>('alpha')
-  const [viewMode, setViewMode] = useState<ViewMode>('table')
-  const [search, setSearch] = useState('')
+  const { dark, toggleDark } = useDarkMode();
+  const [sortMode, setSortMode] = useState<SortMode>("alpha");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [search, setSearch] = useState("");
 
-  const todayIndex = ((dayIndexFor(now()) % LOGOS.length) + LOGOS.length) % LOGOS.length
+  const todayIndex =
+    ((dayIndexFor(now()) % LOGOS.length) + LOGOS.length) % LOGOS.length;
   const rows = LOGOS.map((logo, index) => ({
     logo,
     offset: (index - todayIndex + LOGOS.length) % LOGOS.length,
-  }))
+  }));
 
-  const query = search.trim().toLowerCase()
-  const filteredRows = query ? rows.filter(({ logo }) => logo.name.toLowerCase().includes(query)) : rows
+  const query = search.trim().toLowerCase();
+  const filteredRows = query
+    ? rows.filter(({ logo }) => logo.name.toLowerCase().includes(query))
+    : rows;
 
   const sortedRows =
-    sortMode === 'alpha'
+    sortMode === "alpha"
       ? [...filteredRows].sort((a, b) => a.logo.name.localeCompare(b.logo.name))
-      : [...filteredRows].sort((a, b) => a.offset - b.offset)
+      : [...filteredRows].sort((a, b) => a.offset - b.offset);
 
   return (
     <div className={styles.page}>
@@ -56,7 +63,7 @@ function AdminPage() {
         <Link to="/" className={styles.backLink}>
           ← Back to game
         </Link>
-        <DarkModeToggle dark={dark} onToggle={toggleDark} />
+        <DarkModeToggle dark={dark} onDarkModeToggle={toggleDark} />
       </div>
 
       <h1 className={styles.title}>Admin — Logos ({LOGOS.length})</h1>
@@ -65,15 +72,15 @@ function AdminPage() {
         <span className={styles.sortLabel}>Sort by</span>
         <button
           type="button"
-          className={`${styles.sortBtn} ${sortMode === 'alpha' ? styles.sortBtnActive : ''}`}
-          onClick={() => setSortMode('alpha')}
+          className={`${styles.sortBtn} ${sortMode === "alpha" ? styles.sortBtnActive : ""}`}
+          onClick={() => setSortMode("alpha")}
         >
           Alphabetical
         </button>
         <button
           type="button"
-          className={`${styles.sortBtn} ${sortMode === 'day' ? styles.sortBtnActive : ''}`}
-          onClick={() => setSortMode('day')}
+          className={`${styles.sortBtn} ${sortMode === "day" ? styles.sortBtnActive : ""}`}
+          onClick={() => setSortMode("day")}
         >
           Day (starting today)
         </button>
@@ -83,15 +90,15 @@ function AdminPage() {
         <span className={styles.sortLabel}>View</span>
         <button
           type="button"
-          className={`${styles.sortBtn} ${viewMode === 'table' ? styles.sortBtnActive : ''}`}
-          onClick={() => setViewMode('table')}
+          className={`${styles.sortBtn} ${viewMode === "table" ? styles.sortBtnActive : ""}`}
+          onClick={() => setViewMode("table")}
         >
           Table
         </button>
         <button
           type="button"
-          className={`${styles.sortBtn} ${viewMode === 'grid' ? styles.sortBtnActive : ''}`}
-          onClick={() => setViewMode('grid')}
+          className={`${styles.sortBtn} ${viewMode === "grid" ? styles.sortBtnActive : ""}`}
+          onClick={() => setViewMode("grid")}
         >
           Grid
         </button>
@@ -106,7 +113,7 @@ function AdminPage() {
 
       {sortedRows.length === 0 ? (
         <p className={styles.empty}>No logos match "{search}".</p>
-      ) : viewMode === 'table' ? (
+      ) : viewMode === "table" ? (
         <div className={styles.tableWrap}>
           <table className={styles.table}>
             <thead>
@@ -122,8 +129,10 @@ function AdminPage() {
               {sortedRows.map(({ logo, offset }) => (
                 <tr
                   key={logo.name}
-                  className={`${styles.clickableRow} ${offset === 0 ? styles.todayRow : ''}`}
-                  onClick={() => window.open(logo.gitLink, '_blank', 'noopener,noreferrer')}
+                  className={`${styles.clickableRow} ${offset === 0 ? styles.todayRow : ""}`}
+                  onClick={() =>
+                    window.open(logo.gitLink, "_blank", "noopener,noreferrer")
+                  }
                 >
                   <td className={styles.iconCell}>
                     <img src={logo.icon} alt="" width={28} height={28} />
@@ -142,7 +151,10 @@ function AdminPage() {
       ) : (
         <div className={styles.grid}>
           {sortedRows.map(({ logo, offset }) => (
-            <div key={logo.name} className={`${styles.gridCell} ${offset === 0 ? styles.todayRow : ''}`}>
+            <div
+              key={logo.name}
+              className={`${styles.gridCell} ${offset === 0 ? styles.todayRow : ""}`}
+            >
               <img src={logo.icon} alt="" width={120} height={120} />
               <span className={styles.gridName}>{logo.name}</span>
             </div>
@@ -150,5 +162,5 @@ function AdminPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

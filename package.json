@@ -2,6 +2,7 @@
   "name": "slogodle",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.31.0",
   "engines": {
     "node": ">=22.12.0"
   },

@@ -3,11 +3,33 @@
 }
 
 .suggestions {
+  position: relative;
   width: var(--anchor-width);
   background: var(--card-bg);
   border: 3px solid var(--text);
   border-radius: 20px;
   overflow: hidden;
+}
+
+.suggestions[data-scrollable]::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 28px;
+  background: linear-gradient(to bottom, transparent, var(--card-bg));
+  pointer-events: none;
+}
+
+.suggestionsList {
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.suggestionsList::-webkit-scrollbar {
+  display: none;
 }
 
 .suggestion {

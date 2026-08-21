@@ -36,7 +36,6 @@ export function suggestionsFor(value: string, bank: Logo[], excludeName: string 
   return bank
     .map((l) => ({ label: l.name, value: l.name }))
     .filter((logo) => logo.label.toLowerCase().startsWith(q) && logo.label !== excludeName)
-    .slice(0, 5)
 }
 
 export function formatCountdown(ms: number): string {

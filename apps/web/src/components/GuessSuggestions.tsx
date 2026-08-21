@@ -7,8 +7,8 @@ export function GuessSuggestions({ suggestions }: { suggestions: { label: string
   return (
     <Combobox.Portal>
       <Combobox.Positioner className={styles.suggestionsPositioner} sideOffset={8}>
-        <Combobox.Popup className={styles.suggestions}>
-          <Combobox.List>
+        <Combobox.Popup className={styles.suggestions} data-scrollable={suggestions.length >= 7 || undefined}>
+          <Combobox.List className={styles.suggestionsList}>
             {(logo: { label: string; value: string }) => (
               <Combobox.Item key={logo.value} value={logo.value} className={styles.suggestion}>
                 {logo.label}

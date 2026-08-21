@@ -1,62 +1,71 @@
 // src/routes/index.tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { useRef } from 'react'
-import { useGameState } from '../hooks/useGameState'
-import { useSoundEffects } from '../hooks/useSoundEffects'
-import { GameHeader } from '../components/GameHeader'
-import { ArchivePanel } from '../components/ArchivePanel'
-import { PhysicsLogoPile, type PhysicsLogoPileHandle } from '../components/PhysicsLogoPile'
-import { LogoCard } from '../components/LogoCard'
-import { GuessTiles } from '../components/GuessTiles'
-import { GuessForm } from '../components/GuessForm'
-import { RevealPanel } from '../components/RevealPanel'
-import { CountdownTimer } from '../components/CountdownTimer'
-import { DevtoolsPanel } from '../components/DevtoolsPanel'
-import shared from '../styles/shared.module.css'
-import styles from './index.module.css'
+import { createFileRoute } from "@tanstack/react-router";
+import { useRef } from "react";
+import { useGameState } from "../hooks/useGameState";
+import { useSoundEffects } from "../hooks/useSoundEffects";
+import { GameHeader } from "../components/GameHeader";
+import { ArchivePanel } from "../components/ArchivePanel";
+import {
+  PhysicsLogoPile,
+  type PhysicsLogoPileHandle,
+} from "../components/PhysicsLogoPile";
+import { LogoCard } from "../components/LogoCard";
+import { GuessTiles } from "../components/GuessTiles";
+import { GuessForm } from "../components/GuessForm";
+import { RevealPanel } from "../components/RevealPanel";
+import { CountdownTimer } from "../components/CountdownTimer";
+import { DevtoolsPanel } from "../components/DevtoolsPanel";
+import shared from "../styles/shared.module.css";
+import styles from "./index.module.css";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   ssr: false,
   component: Home,
-})
+});
 
 function Home() {
-  const g = useGameState()
-  const isPlaying = g.status === 'playing'
-  const pileRef = useRef<PhysicsLogoPileHandle>(null)
-  const { playClick, playWrongGuess, playWin, playLose } = useSoundEffects(g.soundEnabled)
+  const g = useGameState();
+  const isPlaying = g.status === "playing";
+  const pileRef = useRef<PhysicsLogoPileHandle>(null);
+  const { playClick, playWrongGuess, playWin, playLose } = useSoundEffects(
+    g.soundEnabled,
+  );
 
   function handleGuess(text: string) {
-    const result = g.submitGuess(text)
-    if (result?.status === 'won') {
-      playWin()
-      pileRef.current?.launchWin(g.maxTries + 1 - result.attempts)
-    } else if (result?.status === 'lost') {
-      playLose()
-    } else if (result?.status === 'playing') {
-      playWrongGuess()
+    const result = g.submitGuess(text);
+    if (result?.status === "won") {
+      playWin();
+      pileRef.current?.launchWin(g.maxTries + 1 - result.attempts);
+    } else if (result?.status === "lost") {
+      playLose();
+    } else if (result?.status === "playing") {
+      playWrongGuess();
     }
   }
 
   function handleFakeLaunch() {
-    pileRef.current?.launchWin(g.maxTries)
+    pileRef.current?.launchWin(g.maxTries);
   }
 
   function handleAddRandomLogos() {
-    pileRef.current?.addRandomLogos(10)
+    pileRef.current?.addRandomLogos(10);
   }
 
   function handleResetPileToFound() {
-    pileRef.current?.resetToFound()
+    pileRef.current?.resetToFound();
   }
 
   return (
     <>
-      <PhysicsLogoPile ref={pileRef} dayIndex={g.dayIndex} logo={g.logo} foundLogos={g.foundLogos} />
+      <PhysicsLogoPile
+        ref={pileRef}
+        dayIndex={g.dayIndex}
+        logo={g.logo}
+        foundLogos={g.foundLogos}
+      />
       <div className={shared.page}>
         <div className={styles.headerWrap}>
           <GameHeader
-            archiveOpen={g.archiveOpen}
             onToggleArchive={g.toggleArchive}
             dark={g.dark}
             onToggleDark={g.toggleDark}
@@ -117,5 +126,5 @@ function Home() {
         )}
       </div>
     </>
-  )
+  );
 }

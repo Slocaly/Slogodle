@@ -14,6 +14,7 @@ import { GuessTiles } from "../components/GuessTiles";
 import { GuessForm } from "../components/GuessForm";
 import { RevealPanel } from "../components/RevealPanel";
 import { CountdownTimer } from "../components/CountdownTimer";
+import { BackToTodayButton } from "../components/BackToTodayButton";
 import { DevtoolsPanel } from "../components/DevtoolsPanel";
 import shared from "../styles/shared.module.css";
 import styles from "./index.module.css";
@@ -84,13 +85,12 @@ function Home() {
         <main className={shared.gameArea} id="main">
           <div className={styles.cardStack}>
             {!isPlaying && g.isToday && <CountdownTimer />}
+            {!g.isToday && <BackToTodayButton onBackToday={g.returnToToday} />}
             <div className={shared.card}>
               <LogoCard
                 dayIndex={g.dayIndex}
                 status={g.status}
                 logo={g.logo}
-                isToday={g.isToday}
-                onBackToday={g.returnToToday}
                 guesses={g.guesses}
                 maxTries={g.maxTries}
               />

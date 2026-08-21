@@ -11,73 +11,6 @@
   left: 0;
 }
 
-.statusBadge {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  color: oklch(1 0 0);
-  box-shadow: 0 4px 10px -2px var(--shadow-color);
-  animation: badgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.statusWon {
-  background: var(--success);
-}
-
-.statusLost {
-  background: var(--danger);
-}
-
-.dots {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 34px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.dot {
-  width: 20px;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--border);
-}
-
-.dotCorrect {
-  background: var(--success);
-}
-
-.dotWrong {
-  background: var(--danger);
-}
-
-@keyframes badgePop {
-  0% {
-    transform: scale(0);
-  }
-  60% {
-    transform: scale(1.15);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.backRow {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
 .nameRow {
   margin-bottom: 6px;
 }
@@ -150,21 +83,6 @@
     width: calc(100% + 16px);
     height: 28px;
     margin: -4px -8px 16px;
-  }
-
-  .statusBadge {
-    width: 28px;
-    height: 28px;
-  }
-
-  .dots {
-    height: 28px;
-    gap: 6px;
-  }
-
-  .dot {
-    width: 16px;
-    height: 6px;
   }
 
   .nameText {

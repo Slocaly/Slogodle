@@ -1,0 +1,37 @@
+.dots {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 20px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.dotCorrect {
+  background: var(--success);
+}
+
+.dotWrong {
+  background: var(--danger);
+}
+
+@media (max-width: 640px) {
+  .dots {
+    height: 28px;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 16px;
+    height: 6px;
+  }
+}

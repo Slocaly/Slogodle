@@ -4,11 +4,11 @@ import { GuessTheLogo, REVEAL_SCENE_FRAMES } from "./compositions/GuessTheLogo";
 import { GuessTheLogoSchema } from "./compositions/GuessTheLogo/schema";
 import {
   LogoMultipleChoice,
-  getChoicesFrames,
-  QUESTION_FRAMES,
-  REVEAL_HOLD_FRAMES,
-} from "./compositions/LogoMultipleChoice";
+} from "./compositions/LogoMultipleChoice/LogoMultipleChoice";
 import { LogoMultipleChoiceSchema } from "./compositions/LogoMultipleChoice/schema";
+import { OUTRO_FRAMES } from "./compositions/Outro";
+import { QUESTION_FRAMES, REVEAL_HOLD_FRAMES } from "./compositions/LogoMultipleChoice/constants";
+import { getChoicesFrames } from "./compositions/LogoMultipleChoice/utils/get-choices-frames";
 
 const defaultGuess = pickRandomLogo();
 const defaultQuiz = pickLogoQuiz();
@@ -26,10 +26,10 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
-        durationInFrames={90 + REVEAL_SCENE_FRAMES}
-        defaultProps={{ logoName: defaultGuess.name, revealDelayInFrames: 90 }}
+        durationInFrames={150 + REVEAL_SCENE_FRAMES + OUTRO_FRAMES}
+        defaultProps={{ logoName: defaultGuess.name, revealDelayInFrames: 150 }}
         calculateMetadata={({ props }) => ({
-          durationInFrames: props.revealDelayInFrames + REVEAL_SCENE_FRAMES,
+          durationInFrames: props.revealDelayInFrames + REVEAL_SCENE_FRAMES + OUTRO_FRAMES,
         })}
       />
       <Composition
@@ -40,10 +40,12 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         durationInFrames={
-          QUESTION_FRAMES + getChoicesFrames(defaultDecoyNames.length + 1) + REVEAL_HOLD_FRAMES
+          QUESTION_FRAMES +
+          getChoicesFrames(defaultDecoyNames.length + 1) +
+          REVEAL_HOLD_FRAMES +
+          OUTRO_FRAMES
         }
         defaultProps={{
-          questionText: `Which of these is the ${defaultQuiz.target.name} logo?`,
           targetLogoName: defaultQuiz.target.name,
           decoyLogoNames: defaultDecoyNames,
         }}
@@ -51,7 +53,8 @@ export const RemotionRoot: React.FC = () => {
           durationInFrames:
             QUESTION_FRAMES +
             getChoicesFrames(props.decoyLogoNames.length + 1) +
-            REVEAL_HOLD_FRAMES,
+            REVEAL_HOLD_FRAMES +
+            OUTRO_FRAMES,
         })}
       />
     </>

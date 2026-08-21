@@ -8,9 +8,9 @@ const { fontFamily } = loadFont("normal", {
 export const theme = {
   fontFamily,
   colors: {
-    bg1: "oklch(0.93 0.045 320)",
-    bg2: "oklch(0.94 0.05 190)",
-    bg3: "oklch(0.95 0.05 80)",
+    bg1: "oklch(0.90 0.065 320)",
+    bg2: "oklch(0.93 0.075 190)",
+    bg3: "oklch(0.955 0.075 80)",
     cardBg: "oklch(0.995 0.01 90)",
     text: "oklch(0.28 0.05 290)",
     muted: "oklch(0.5 0.04 290)",

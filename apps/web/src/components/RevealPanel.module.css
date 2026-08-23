@@ -51,6 +51,15 @@
   flex-shrink: 0;
 }
 
+.revealDescription {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 8px;
+  animation: revealFade 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s backwards;
+}
+
 .metaRow {
   display: flex;
   align-items: center;

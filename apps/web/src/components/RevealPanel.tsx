@@ -48,6 +48,7 @@ export function RevealPanel({
 
   return (
     <div className={styles.reveal}>
+      <div className={styles.revealDescription}>{logo.description}</div>
       <div className={shared.revealFact}>{logo.funFact}</div>
       <div className={styles.actionsRow}>
         <a

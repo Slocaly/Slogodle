@@ -236,7 +236,7 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
             opacity: descriptionOpacity,
           }}
         >
-          {logo.funFact}
+          {logo.description}
         </div>
       )}
       {revealed && (

@@ -46,7 +46,7 @@ export const RevealedInfo = ({ target, revealAt }: { target: Logo; revealAt: num
                         opacity: descriptionOpacity,
                     }}
                 >
-                    {target.funFact}
+                    {target.description}
                 </div>
             </div>
             <div

@@ -9,5 +9,13 @@
   "main": "dist/server/server.js",
   "assets": {
     "directory": "dist/client"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "slogodle",
+      "database_id": "d993c41e-9dc1-4065-aa03-7988fca0ff06",
+      "migrations_dir": "migrations"
+    }
+  ]
 }

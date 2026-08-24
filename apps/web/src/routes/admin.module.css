@@ -166,3 +166,103 @@
   font-weight: 600;
   text-align: center;
 }
+
+.r2List {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.r2Card {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card-bg);
+}
+
+.r2CardHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.r2CardHeader img {
+  display: block;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.r2Body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.r2Fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.r2FieldFull {
+  grid-column: 1 / -1;
+}
+
+.r2Input,
+.r2Textarea {
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.r2Textarea {
+  resize: vertical;
+  min-height: 44px;
+}
+
+.r2CardFooter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.r2SaveBtn {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--accent-yellow);
+  border: none;
+  border-radius: 999px;
+  padding: 6px 16px;
+  cursor: pointer;
+}
+
+.r2SaveBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.r2Error {
+  color: var(--accent-pink);
+  font-size: 12px;
+}
+
+.r2Saved {
+  color: var(--muted);
+  font-size: 12px;
+}

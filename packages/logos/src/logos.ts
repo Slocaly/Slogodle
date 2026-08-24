@@ -2835,4 +2835,699 @@ export const LOGOS: Logo[] = [
     aspect: 1.004,
     gitLink: "https://github.com/ruby/ruby",
   },
+  {
+    name: "Autoprefixer",
+    industry: "PostCSS plugin",
+    founded: 2013,
+    description:
+      "Autoprefixer is a PostCSS plugin that parses CSS and automatically adds vendor prefixes using values from the Can I Use database.",
+    funFact:
+      "Autoprefixer's first prototype was built on top of the Rework CSS toolkit and was originally named 'rework-vendors' before creator Andrey Sitnik spun it into its own project.",
+    icon: "/logos/autoprefixer.svg",
+    aspect: 1.326,
+    gitLink: "https://github.com/postcss/autoprefixer",
+  },
+  {
+    name: "AVA",
+    industry: "Testing framework",
+    founded: 2014,
+    description:
+      "AVA is a Node.js test runner that runs tests concurrently in separate processes, with a concise API and detailed error output.",
+    funFact:
+      "AVA's name isn't an acronym — its creators simply liked that it's the Andromeda galaxy, pronounced /ˈeɪvə/.",
+    icon: "/logos/ava.svg",
+    aspect: 1.829,
+    gitLink: "https://github.com/avajs/ava",
+  },
+  {
+    name: "Base UI",
+    industry: "UI component library",
+    founded: 2024,
+    description:
+      "Base UI is an unstyled React component library that provides accessible, headless building blocks for design systems without prescribing any styling solution.",
+    funFact:
+      "Base UI is a joint project from the original creators of Radix, Floating UI, and Material UI, several of whom left Radix's earlier home to build it under MUI's full-time backing.",
+    icon: "/logos/base-ui.svg",
+    aspect: 0.708,
+    gitLink: "https://github.com/mui/base-ui",
+  },
+  {
+    name: "Blitz.js",
+    industry: "Fullstack web framework",
+    founded: 2020,
+    description:
+      "Blitz.js is a fullstack React framework built on top of Next.js, inspired by Ruby on Rails, that adds a 'Zero-API' data layer so client code can call server code directly.",
+    funFact:
+      "Creator Brandon Bayer publicly announced Blitz in February 2020 with only a couple hundred lines of prototype code, before it later pivoted from a standalone framework into a toolkit.",
+    icon: "/logos/blitzjs.svg",
+    aspect: 0.65,
+    gitLink: "https://github.com/blitz-js/blitz",
+  },
+  {
+    name: "Brain.js",
+    industry: "Machine learning library",
+    founded: 2016,
+    description:
+      "Brain.js is a JavaScript library for building and training neural networks, with optional GPU acceleration in the browser and Node.js.",
+    funFact:
+      "Brain.js began as Robert Plummer's 2016 fork of Heather Arthur's earlier 'brain' library, which she had stopped maintaining around 2014.",
+    icon: "/logos/brainjs.svg",
+    aspect: 1,
+    gitLink: "https://github.com/BrainJS/brain.js",
+  },
+  {
+    name: "CodeIgniter",
+    industry: "PHP framework",
+    founded: 2006,
+    description:
+      "CodeIgniter is a lightweight PHP web framework designed for building applications quickly with minimal configuration.",
+    funFact:
+      "CodeIgniter was created by Rick Ellis at EllisLab as an offshoot of classes from their ExpressionEngine CMS, and stewardship later passed to the British Columbia Institute of Technology (BCIT) in 2014.",
+    icon: "/logos/codeigniter.svg",
+    aspect: 0.81,
+    gitLink: "https://github.com/codeigniter4/CodeIgniter4",
+  },
+  {
+    name: "CodeRabbit",
+    industry: "AI code review platform",
+    founded: 2023,
+    description:
+      "CodeRabbit is an AI-powered code review platform that automatically analyzes pull requests and provides contextual feedback, summaries, and suggested fixes.",
+    funFact:
+      "CodeRabbit was founded by Harjot Gill in 2023 and reached a $1.5 billion valuation within about two years of launching.",
+    icon: "/logos/coderabbit.svg",
+    aspect: 1,
+    gitLink: "https://github.com/coderabbitai",
+  },
+  {
+    name: "Convex",
+    industry: "Backend platform",
+    founded: 2021,
+    description:
+      "Convex is a backend platform that combines a reactive, transactional database with serverless TypeScript functions that sync results to clients in real time.",
+    funFact:
+      "Convex's founders — Jamie Turner, James Cowling, and Sujay Jayakar — previously built Dropbox's exabyte-scale 'Magic Pocket' storage system before starting the company.",
+    icon: "/logos/convex.svg",
+    aspect: 0.97,
+    gitLink: "https://github.com/get-convex/convex-backend",
+  },
+  {
+    name: "Apache Cordova",
+    industry: "Mobile app framework",
+    founded: 2008,
+    description:
+      "Apache Cordova is a framework for building mobile apps using HTML, CSS, and JavaScript, wrapped in a native container with access to device APIs.",
+    funFact:
+      "Cordova began as PhoneGap, built by Nitobi Software at an iPhoneDevCamp hackathon in 2008; after Adobe acquired Nitobi in 2011, the code was donated to Apache and renamed after Cordova Street, where Nitobi's Vancouver office was located.",
+    icon: "/logos/cordova.svg",
+    aspect: 1.045,
+    gitLink: "https://github.com/apache/cordova",
+  },
+  {
+    name: "Crossplane",
+    industry: "Cloud infrastructure platform",
+    founded: 2018,
+    description:
+      "Crossplane is a CNCF framework that extends the Kubernetes API to provision and manage cloud infrastructure as custom resources.",
+    funFact:
+      "Crossplane was created by Upbound and publicly announced at KubeCon Seattle in December 2018, reusing Kubernetes' own control-plane machinery to manage infrastructure outside the cluster.",
+    icon: "/logos/crossplane.svg",
+    aspect: 0.474,
+    gitLink: "https://github.com/crossplane/crossplane",
+  },
+  {
+    name: "Deno",
+    industry: "JavaScript runtime",
+    founded: 2018,
+    description:
+      "Deno is a secure-by-default runtime for JavaScript and TypeScript that runs outside the browser with built-in TypeScript support and no npm-style node_modules folder.",
+    funFact:
+      "Deno was created by Ryan Dahl, the original creator of Node.js, and its name is an anagram of 'Node' — he unveiled it in a 2018 talk titled '10 Things I Regret About Node.js.'",
+    icon: "/logos/deno.svg",
+    aspect: 1,
+    gitLink: "https://github.com/denoland/deno",
+  },
+  {
+    name: "Directus",
+    industry: "Headless CMS platform",
+    founded: 2012,
+    description:
+      "Directus is an open-source data platform that wraps any SQL database with instant REST and GraphQL APIs and a customizable admin app, functioning as a headless CMS.",
+    funFact:
+      "Founder Ben Haynes first built Directus as an internal tool at his own digital agency, and it wasn't until years later, in 2015, that he and co-founder Rijk van Zanten turned it into a dedicated full-time startup.",
+    icon: "/logos/directus.svg",
+    aspect: 0.996,
+    gitLink: "https://github.com/directus/directus",
+  },
+  {
+    name: "Django",
+    industry: "Python web framework",
+    founded: 2005,
+    description:
+      "Django is a high-level Python web framework that emphasizes rapid development and a 'batteries included' philosophy, with a built-in ORM and admin interface.",
+    funFact:
+      "Django is named after jazz guitarist Django Reinhardt, a favorite of co-creator Adrian Holovaty, and was released publicly under a BSD license in July 2005.",
+    icon: "/logos/django.svg",
+    aspect: 1,
+    gitLink: "https://github.com/django/django",
+  },
+  {
+    name: "Docus",
+    industry: "Documentation framework",
+    founded: 2020,
+    description:
+      "Docus is a documentation theme and toolkit built on Nuxt that turns Markdown content into a styled, searchable documentation site with minimal setup.",
+    funFact:
+      "Docus was rewritten from the ground up for its v3 release and now lives under the Nuxt Content team's GitHub org rather than its original NuxtLabs home.",
+    icon: "/logos/docus.svg",
+    aspect: 1.031,
+    gitLink: "https://github.com/nuxt-content/docus",
+  },
+  {
+    name: "Dokploy",
+    industry: "Deployment platform",
+    founded: 2024,
+    description:
+      "Dokploy is a free, self-hostable platform-as-a-service that lets developers deploy applications, databases, and static sites on their own servers, positioned as an open-source alternative to Vercel, Netlify, and Heroku.",
+    funFact:
+      "Dokploy was built and is primarily maintained by a single developer, Mauricio Siu, who launched it in June 2024.",
+    icon: "/logos/dokploy.svg",
+    aspect: 1.185,
+    gitLink: "https://github.com/dokploy/dokploy",
+  },
+  {
+    name: "EditorConfig",
+    industry: "Coding style standard",
+    founded: 2011,
+    description:
+      "EditorConfig is a file format and collection of editor plugins that maintain consistent coding styles, such as indentation and line endings, across different editors and IDEs.",
+    funFact:
+      "EditorConfig's .editorconfig file format was directly inspired by the layout of Git's own .gitconfig and .gitignore files.",
+    icon: "/logos/editorconfig.svg",
+    aspect: 1.032,
+    gitLink: "https://github.com/editorconfig/editorconfig",
+  },
+  {
+    name: "Elasticsearch",
+    industry: "Search and analytics engine",
+    founded: 2010,
+    description:
+      "Elasticsearch is a distributed, RESTful search and analytics engine built on Apache Lucene that stores and indexes data for fast full-text search and analytics.",
+    funFact:
+      "Elasticsearch creator Shay Banon originally built an earlier prototype called Compass in 2004 to help his wife search recipes while she studied at Le Cordon Bleu.",
+    icon: "/logos/elasticsearch.svg",
+    aspect: 0.889,
+    gitLink: "https://github.com/elastic/elasticsearch",
+  },
+  {
+    name: "Eleventy",
+    industry: "Static site generator",
+    founded: 2017,
+    description:
+      "Eleventy (11ty) is a simpler static site generator for JavaScript that supports multiple templating languages without imposing a client-side framework.",
+    funFact:
+      "Eleventy was created by Zach Leatherman as an alternative to Jekyll, and Netlify hired him to work on it full-time before the project moved under Font Awesome in 2024.",
+    icon: "/logos/eleventy.svg",
+    aspect: 1.196,
+    gitLink: "https://github.com/11ty/eleventy",
+  },
+  {
+    name: "Exome",
+    industry: "State management library",
+    founded: 2021,
+    description:
+      "Exome is a lightweight, framework-agnostic JavaScript state management library where classes extending a base Exome object hold state and their methods act as actions.",
+    funFact:
+      "Exome was created by developer Mārcis Bergmanis and supports nearly every major frontend framework — React, Vue, Svelte, Solid, Angular, Lit — plus vanilla JS from a single core.",
+    icon: "/logos/exome.svg",
+    aspect: 1,
+    gitLink: "https://github.com/Marcisbee/exome",
+  },
+  {
+    name: "Flowbite",
+    industry: "UI component library",
+    founded: 2021,
+    description:
+      "Flowbite is an open-source library of interactive UI components built on top of Tailwind CSS, along with a matching Figma design system.",
+    funFact:
+      "Flowbite was built by Zoltán Szőgyényi, who had previously created the popular free Tailwind CSS admin dashboard template 'Windmill Dashboard.'",
+    icon: "/logos/flowbite.svg",
+    aspect: 1,
+    gitLink: "https://github.com/themesberg/flowbite",
+  },
+  {
+    name: "Foundation",
+    industry: "CSS framework",
+    founded: 2011,
+    description:
+      "Foundation is a responsive front-end framework from ZURB providing a grid system, UI components, and templates for building websites and emails.",
+    funFact:
+      "Foundation grew out of ZURB's internal style guide, used across the design agency's own client projects since 2008, before being open-sourced as a standalone framework in 2011.",
+    icon: "/logos/foundation.svg",
+    aspect: 0.674,
+    gitLink: "https://github.com/foundation/foundation-sites",
+  },
+  {
+    name: "Framer",
+    industry: "No-code website builder",
+    founded: 2014,
+    description:
+      "Framer is a design and website-building tool that lets users design, prototype, and publish production websites from a single visual canvas.",
+    funFact:
+      "Framer began as a free JavaScript prototyping library before its makers pivoted the company toward a paid, no-code website builder in 2018 after growth stalled.",
+    icon: "/logos/framer.svg",
+    aspect: 0.667,
+    gitLink: "https://github.com/framer",
+  },
+  {
+    name: "Gin",
+    industry: "Web framework",
+    founded: 2014,
+    description:
+      "Gin is a high-performance HTTP web framework for Go, built on a radix-tree router that provides fast routing and middleware support for building APIs.",
+    funFact:
+      "Gin began life as the internal web framework for Fyve, a now-defunct social network startup, before its creators spun it out as a standalone open-source project.",
+    icon: "/logos/gin.svg",
+    aspect: 0.711,
+    gitLink: "https://github.com/gin-gonic/gin",
+  },
+  {
+    name: "JSON-LD",
+    industry: "Data interchange format",
+    founded: 2010,
+    description:
+      "JSON-LD is a W3C standard for encoding Linked Data using JSON, allowing structured data to be embedded in web pages and understood by search engines and other consumers.",
+    funFact:
+      "JSON-LD reached official W3C Recommendation status on January 16, 2014, after being championed since around 2010 by Manu Sporny and Dave Longley of Digital Bazaar.",
+    icon: "/logos/json-ld.svg",
+    aspect: 1.369,
+    gitLink: "https://github.com/json-ld/json-ld.org",
+  },
+  {
+    name: "JSON Schema",
+    industry: "Data validation standard",
+    founded: 2007,
+    description:
+      "JSON Schema is a vocabulary that lets you annotate and validate JSON documents, describing their expected structure, types, and constraints.",
+    funFact:
+      "JSON Schema traces back to a proposal Kris Zyp submitted to json.com on October 2, 2007 — years before it became a stable, widely adopted IETF/community specification.",
+    icon: "/logos/json-schema.svg",
+    aspect: 1.164,
+    gitLink: "https://github.com/json-schema-org/json-schema-spec",
+  },
+  {
+    name: "Kibo UI",
+    industry: "Component registry",
+    founded: 2024,
+    description:
+      "Kibo UI is a custom shadcn/ui component registry offering more complex, composable components — like Gantt charts, Kanban boards, and code editors — built on the same primitives and CSS variables as shadcn/ui.",
+    funFact:
+      "Kibo UI was created by developer Hayden Bleasel and was acquired by Shadcnblocks in late 2025, which now maintains the canonical repository.",
+    icon: "/logos/kibo-ui.svg",
+    aspect: 1.009,
+    gitLink: "https://github.com/shadcnblocks/kibo",
+  },
+  {
+    name: "Lemon Squeezy",
+    industry: "Merchant of record platform",
+    founded: 2021,
+    description:
+      "Lemon Squeezy is a merchant-of-record platform that handles payments, subscriptions, licensing, and global sales-tax compliance for software companies.",
+    funFact:
+      "Lemon Squeezy passed $1 million in annual recurring revenue just nine months after its 2021 public launch, and was acquired by Stripe in 2024 for an undisclosed sum.",
+    icon: "/logos/lemonsqueezy.svg",
+    aspect: 0.75,
+    gitLink: "https://github.com/lmsqueezy",
+  },
+  {
+    name: "Logstash",
+    industry: "Log processing pipeline",
+    founded: 2009,
+    description:
+      "Logstash is an open-source data processing pipeline that ingests, transforms, and ships logs and events from multiple sources into destinations like Elasticsearch.",
+    funFact:
+      "Logstash was created independently by sysadmin Jordan Sissel to wrangle his own sprawling log files, and only later did he discover Elasticsearch was the ideal place to store the data — Elastic hired him in 2013.",
+    icon: "/logos/logstash.svg",
+    aspect: 0.834,
+    gitLink: "https://github.com/elastic/logstash",
+  },
+  {
+    name: "Mailchimp",
+    industry: "Email marketing platform",
+    founded: 2001,
+    description:
+      "Mailchimp is an email marketing and marketing automation platform that helps businesses design campaigns, manage audiences, and track performance.",
+    funFact:
+      "Mailchimp started as a side project alongside founders Ben Chestnut and Dan Kurzius's web design agency, and the pair bootstrapped it profitably for two decades before Intuit acquired it for $12 billion in 2021.",
+    icon: "/logos/mailchimp.svg",
+    aspect: 0.88,
+    gitLink: "https://github.com/mailchimp",
+  },
+  {
+    name: "Malina.js",
+    industry: "Frontend compiler framework",
+    founded: 2020,
+    description:
+      "Malina.js is a compiler-based JavaScript framework, inspired by Svelte, that compiles components into small, dependency-free vanilla JavaScript at build time.",
+    funFact:
+      "'Malina' is the Russian and Slavic word for 'raspberry,' giving the framework a fruit-themed name unrelated to its technical purpose.",
+    icon: "/logos/malinajs.svg",
+    aspect: 0.78,
+    gitLink: "https://github.com/malinajs/malinajs",
+  },
+  {
+    name: "Matomo",
+    industry: "Web analytics platform",
+    founded: 2007,
+    description:
+      "Matomo is an open-source web analytics platform that lets organizations track and analyze visitor and app behavior while keeping full ownership of the data, typically self-hosted.",
+    funFact:
+      "Matomo was originally released in 2007 as Piwik, created by Matthieu Aubry, and was renamed to Matomo — Japanese for 'decent' — in January 2018 so the project could secure an exclusive brand name.",
+    icon: "/logos/matomo.svg",
+    aspect: 1.766,
+    gitLink: "https://github.com/matomo-org/matomo",
+  },
+  {
+    name: "Mermaid",
+    industry: "Diagramming and charting tool",
+    founded: 2014,
+    description:
+      "Mermaid is a JavaScript-based tool that renders diagrams and flowcharts from a simple, Markdown-inspired text syntax.",
+    funFact:
+      "Creator Knut Sveidqvist named the project after The Little Mermaid, which his children were watching around the time he built the first version in 2014.",
+    icon: "/logos/mermaid.svg",
+    aspect: 1,
+    gitLink: "https://github.com/mermaid-js/mermaid",
+  },
+  {
+    name: "Million",
+    industry: "React optimization library",
+    founded: 2021,
+    description:
+      "Million is an optimizing compiler that speeds up React rendering by replacing parts of React's virtual DOM diffing with a faster algorithm.",
+    funFact: "Million was created by Aiden Bai as a personal research project when he was just 16 years old.",
+    icon: "/logos/million.svg",
+    aspect: 1.407,
+    gitLink: "https://github.com/aidenybai/million",
+  },
+  {
+    name: "Motion",
+    industry: "Animation library",
+    founded: 2018,
+    description:
+      "Motion is an animation library for JavaScript, React, and Vue that pairs a simple declarative API with a hybrid hardware-accelerated engine.",
+    funFact:
+      "Motion was known as Framer Motion for years before its creator, Matt Perry, spun it out into an independent, framework-agnostic project in November 2024 — a separate project from the Framer design tool it was named after.",
+    icon: "/logos/motion.svg",
+    aspect: 2.858,
+    gitLink: "https://github.com/motiondivision/motion",
+  },
+  {
+    name: "n8n",
+    industry: "Workflow automation platform",
+    founded: 2019,
+    description:
+      "n8n is a fair-code workflow automation platform that lets users visually connect apps and APIs, combining a node-based builder with the option to write custom code.",
+    funFact:
+      "The name 'n8n' is a numeronym for 'nodemation' (n + the 8 letters 'odemation' + n), coined by founder Jan Oberhauser because he didn't want to type the full word repeatedly in the terminal.",
+    icon: "/logos/n8n.svg",
+    aspect: 1.9,
+    gitLink: "https://github.com/n8n-io/n8n",
+  },
+  {
+    name: "Neon",
+    industry: "Serverless database platform",
+    founded: 2021,
+    description:
+      "Neon is a serverless Postgres platform that separates storage from compute so databases can autoscale, branch like Git repositories, and scale to zero when idle.",
+    funFact:
+      "Neon was acquired by Databricks for roughly $1 billion in 2025; co-founder and CEO Nikita Shamgunov had previously run the database startup SingleStore before starting Neon.",
+    icon: "/logos/neon.svg",
+    aspect: 1,
+    gitLink: "https://github.com/neondatabase/neon",
+  },
+  {
+    name: "Nx",
+    industry: "Monorepo build system",
+    founded: 2017,
+    description:
+      "Nx is a build system with built-in tooling and caching designed to help manage and scale monorepos across multiple languages and frameworks.",
+    funFact:
+      "Nx was created by Jeff Cross and Victor Savkin, two engineers who left Google's Angular team in 2016 to found Nrwl, initially building Nx as an extension of the Angular CLI.",
+    icon: "/logos/nx.svg",
+    aspect: 1,
+    gitLink: "https://github.com/nrwl/nx",
+  },
+  {
+    name: "opencode",
+    industry: "AI coding agent",
+    founded: 2025,
+    description:
+      "opencode is an open-source, terminal-based AI coding agent that lets developers use any supported language model to read, edit, and run code directly in their own project.",
+    funFact:
+      "opencode's name came out of a dispute: developer Kujtim Hoxha's original 'TermAI' project was rebranded to OpenCode, after which Charm, maker of the terminal toolkit it was built on, renamed its own fork to 'Crush,' while the team behind this project kept the OpenCode name and later rebranded to Anomaly.",
+    icon: "/logos/opencode.svg",
+    aspect: 1,
+    gitLink: "https://github.com/anomalyco/opencode",
+  },
+  {
+    name: "Payload",
+    industry: "Headless CMS framework",
+    founded: 2021,
+    description:
+      "Payload is an open-source, TypeScript-based headless CMS and application framework built on Next.js that gives developers a full backend and admin panel out of the box.",
+    funFact:
+      "Payload was acquired by Figma in 2025, about four years after founder James Mikrut launched its first public beta in January 2021.",
+    icon: "/logos/payload.svg",
+    aspect: 1,
+    gitLink: "https://github.com/payloadcms/payload",
+  },
+  {
+    name: "PocketBase",
+    industry: "Backend-as-a-service platform",
+    founded: 2022,
+    description:
+      "PocketBase is an open-source backend that packages an embedded SQLite database, realtime subscriptions, authentication, file storage, and an admin dashboard into a single portable Go executable.",
+    funFact:
+      "PocketBase is built and maintained largely by a single Bulgarian developer, Gani Georgiev, who deliberately offers no official paid hosted cloud version, positioning it as a self-hosted alternative to Firebase and Supabase.",
+    icon: "/logos/pocket-base.svg",
+    aspect: 1,
+    gitLink: "https://github.com/pocketbase/pocketbase",
+  },
+  {
+    name: "Radix UI",
+    industry: "UI component library",
+    founded: 2020,
+    description:
+      "Radix UI (Radix Primitives) is an open-source library of low-level, unstyled, accessible component primitives for building custom design systems in React.",
+    funFact:
+      "Radix UI was originally built by design startup Modulz, which was acquired by WorkOS in 2022; several of its original creators later went on to build Base UI, a separate headless component library released with MUI in 2024.",
+    icon: "/logos/radix-ui.svg",
+    aspect: 0.68,
+    gitLink: "https://github.com/radix-ui/primitives",
+  },
+  {
+    name: "Rancher",
+    industry: "Kubernetes management platform",
+    founded: 2014,
+    description:
+      "Rancher is a complete platform for deploying and managing multiple Kubernetes clusters across any infrastructure, on-premises or in the cloud.",
+    funFact:
+      "Rancher Labs was founded by Sheng Liang, Shannon Williams, Darren Shepherd, and Will Chan — veterans of the earlier cloud startup Cloud.com — and was acquired by SUSE in 2020 for over $600 million.",
+    icon: "/logos/rancher.svg",
+    aspect: 2.116,
+    gitLink: "https://github.com/rancher/rancher",
+  },
+  {
+    name: "Redux-Saga",
+    industry: "State management middleware",
+    founded: 2015,
+    description:
+      "Redux-Saga is a middleware library that manages complex asynchronous side effects and data flows in Redux applications using JavaScript generator functions.",
+    funFact:
+      "Redux-Saga takes its name from the decades-old 'saga pattern' for coordinating distributed transactions, first described in a 1987 database-systems paper, repurposed here through ES6 generator functions.",
+    icon: "/logos/redux-saga.svg",
+    aspect: 1.631,
+    gitLink: "https://github.com/redux-saga/redux-saga",
+  },
+  {
+    name: "Resend",
+    industry: "Email API platform",
+    founded: 2023,
+    description:
+      "Resend is a transactional email API platform that lets developers send, manage, and track emails through a modern REST API and SDKs.",
+    funFact:
+      "Resend was built by Zeno Rocha and Bu Kinoshita, the team behind the open-source React Email project, before they turned it into a full sending platform through Y Combinator's Winter 2023 batch.",
+    icon: "/logos/resend.svg",
+    aspect: 1,
+    gitLink: "https://github.com/resend",
+  },
+  {
+    name: "Rspack",
+    industry: "JavaScript bundler",
+    founded: 2023,
+    description:
+      "Rspack is a Rust-based JavaScript bundler that provides a Webpack-compatible API and configuration for drop-in migration.",
+    funFact:
+      "Rspack was built by ByteDance's web infrastructure team after some of the company's Webpack builds had grown to take ten minutes to half an hour, and early internal migrations saw 5-10x build speedups.",
+    icon: "/logos/rspack.svg",
+    aspect: 1.287,
+    gitLink: "https://github.com/web-infra-dev/rspack",
+  },
+  {
+    name: "Scala",
+    industry: "Programming language",
+    founded: 2004,
+    description:
+      "Scala is a statically typed programming language that fuses object-oriented and functional programming and runs on the JVM.",
+    funFact:
+      "Scala's name is a portmanteau of 'scalable language,' reflecting Martin Odersky's goal of a language that works equally well for small scripts and large systems.",
+    icon: "/logos/scala.svg",
+    aspect: 0.615,
+    gitLink: "https://github.com/scala/scala",
+  },
+  {
+    name: "Shiki",
+    industry: "Syntax highlighter",
+    founded: 2018,
+    description:
+      "Shiki is a syntax highlighter that renders code into accurate, pre-highlighted HTML using the same TextMate grammars and themes that power VS Code.",
+    funFact:
+      "Shiki was built in 2018 by Pine Wu, then an engineer on the VS Code team, as an experiment in bringing VS Code's own Oniguruma-based grammar engine to statically render code outside the editor.",
+    icon: "/logos/shiki.svg",
+    aspect: 1,
+    gitLink: "https://github.com/shikijs/shiki",
+  },
+  {
+    name: "Sinatra",
+    industry: "Ruby web framework",
+    founded: 2007,
+    description:
+      "Sinatra is a lightweight Ruby DSL for quickly building web applications without the full structure of a framework like Rails.",
+    funFact:
+      "Sinatra's own AUTHORS file jokingly credits Frank Sinatra himself as 'chairman of the board' for having so much class the framework deserved his name.",
+    icon: "/logos/sinatra.svg",
+    aspect: 1.471,
+    gitLink: "https://github.com/sinatra/sinatra",
+  },
+  {
+    name: "Snyk",
+    industry: "Developer security platform",
+    founded: 2015,
+    description:
+      "Snyk is a developer security platform that finds and fixes vulnerabilities in open-source dependencies, containers, and infrastructure as code.",
+    funFact:
+      "Snyk's name was chosen after founder Guy Podjarny searched the spelling and found on Urban Dictionary that it doubled as an acronym for 'so now you know.'",
+    icon: "/logos/snyk.svg",
+    aspect: 0.611,
+    gitLink: "https://github.com/snyk",
+  },
+  {
+    name: "Strapi",
+    industry: "Headless CMS",
+    founded: 2015,
+    description:
+      "Strapi is an open-source, JavaScript-based headless CMS that lets developers build customizable APIs for managing and delivering content.",
+    funFact:
+      "Strapi's name comes from 'bootstrap your API,' reflecting its origins as a mix of an API framework and CMS built by three freelance developers frustrated with traditional CMS tools.",
+    icon: "/logos/strapi.svg",
+    aspect: 1,
+    gitLink: "https://github.com/strapi/strapi",
+  },
+  {
+    name: "Stripe",
+    industry: "Payments platform",
+    founded: 2010,
+    description:
+      "Stripe is a payments platform that provides APIs for businesses to accept payments, manage billing, and handle financial infrastructure online.",
+    funFact:
+      "Stripe was originally built under the working name '/dev/payments' by brothers Patrick and John Collison, who reportedly kept riding their bikes to the office even after becoming millionaires.",
+    icon: "/logos/stripe.svg",
+    aspect: 1,
+    gitLink: "https://github.com/stripe",
+  },
+  {
+    name: "Stylelint",
+    industry: "CSS linter",
+    founded: 2015,
+    description:
+      "Stylelint is a CSS linter, built on PostCSS, that catches errors and enforces consistent conventions across CSS, SCSS, Less, and other stylesheet dialects.",
+    funFact:
+      "Stylelint was created in 2015 by David Clark and Maxime Thirouin, who modeled its plugin system on ESLint's after finding the existing scss-lint tool too limited.",
+    icon: "/logos/stylelint.svg",
+    aspect: 1.045,
+    gitLink: "https://github.com/stylelint/stylelint",
+  },
+  {
+    name: "SurrealDB",
+    industry: "Multi-model database",
+    founded: 2021,
+    description:
+      "SurrealDB is a multi-model database that combines document, graph, relational, and key-value data with real-time queries in a single engine.",
+    funFact:
+      "SurrealDB's first working version in 2017 was written entirely in Go, years before the team rewrote it from scratch in Rust for its 2021 public release.",
+    icon: "/logos/surrealdb.svg",
+    aspect: 0.856,
+    gitLink: "https://github.com/surrealdb/surrealdb",
+  },
+  {
+    name: "Tauri",
+    industry: "Desktop app framework",
+    founded: 2019,
+    description:
+      "Tauri is a framework for building small, secure desktop and mobile applications using a web frontend paired with a Rust backend.",
+    funFact:
+      "Before settling on Rust, Tauri's creators Daniel Thompson-Yvetot and Lucas Nogueira experimented with building the framework in C++, Go, and Objective-C.",
+    icon: "/logos/tauri.svg",
+    aspect: 0.886,
+    gitLink: "https://github.com/tauri-apps/tauri",
+  },
+  {
+    name: "TypeORM",
+    industry: "TypeScript ORM",
+    founded: 2016,
+    description:
+      "TypeORM is an ORM for TypeScript and JavaScript that supports Active Record and Data Mapper patterns across many SQL and NoSQL databases.",
+    funFact:
+      "TypeORM was created by Umed Khudoiberdiev and stayed in pre-1.0 releases for nearly a decade until finally reaching 1.0 in May 2026.",
+    icon: "/logos/typeorm.svg",
+    aspect: 1.099,
+    gitLink: "https://github.com/typeorm/typeorm",
+  },
+  {
+    name: "UnJS",
+    industry: "JavaScript tooling ecosystem",
+    founded: 2022,
+    description:
+      "UnJS is a collective of unified, framework-agnostic JavaScript tools and libraries designed to work identically across Node.js, Deno, Bun, browsers, and edge runtimes.",
+    funFact:
+      "UnJS grew out of Pooya Parsa's work as Nuxt's framework architect, as pieces of Nuxt 3's internals were extracted into standalone packages to give the wider JS ecosystem unified, runtime-agnostic foundations.",
+    icon: "/logos/unjs.svg",
+    aspect: 1,
+    gitLink: "https://github.com/unjs",
+  },
+  {
+    name: "V8",
+    industry: "JavaScript engine",
+    founded: 2008,
+    description:
+      "V8 is Google's open-source, high-performance JavaScript and WebAssembly engine that compiles code to native machine instructions, used in Chrome and Node.js.",
+    funFact:
+      "V8 is named after the V8 car engine, a nod to raw power chosen by lead developer Lars Bak, who Google recruited in 2006 specifically to build a fast runtime for the then-secret Chrome project.",
+    icon: "/logos/v8.svg",
+    aspect: 1.128,
+    gitLink: "https://github.com/v8/v8",
+  },
+  {
+    name: "WebAssembly",
+    industry: "Binary instruction format",
+    founded: 2015,
+    description:
+      "WebAssembly (Wasm) is a binary instruction format for a stack-based virtual machine, designed as a fast, portable compilation target for languages like C, C++, and Rust.",
+    funFact:
+      "WebAssembly's announcement in June 2015 was coordinated across all four major browser vendors simultaneously, each publishing a blog post linking to the others the same day.",
+    icon: "/logos/webassembly.svg",
+    aspect: 1,
+    gitLink: "https://github.com/WebAssembly/spec",
+  },
 ]

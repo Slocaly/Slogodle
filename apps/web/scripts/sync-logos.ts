@@ -15,6 +15,7 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { LOGOS, type Logo } from "@slogodle/logos";
+import { optimize } from "svgo";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const logosDir = join(__dirname, "../public/logos");
@@ -98,16 +99,42 @@ async function objectExistsInR2(key: string): Promise<boolean> {
   }
 }
 
-async function uploadToR2(key: string, filePath: string): Promise<void> {
-  const body = readFileSync(filePath);
+function optimizeSvg(svg: string): string {
+  const result = optimize(svg, {
+    multipass: true,
+    plugins: [
+      {
+        name: "preset-default",
+        params: {
+          overrides: {
+            // Logos are rendered at arbitrary sizes; keep viewBox so scaling still works.
+            removeViewBox: false,
+          },
+        },
+      },
+    ],
+  });
+  return result.data;
+}
+
+async function uploadToR2(
+  key: string,
+  filePath: string,
+): Promise<{ originalBytes: number; optimizedBytes: number }> {
+  const original = readFileSync(filePath, "utf-8");
+  const optimized = optimizeSvg(original);
   await r2Client.send(
     new PutObjectCommand({
       Bucket: r2Bucket,
       Key: key,
-      Body: body,
+      Body: optimized,
       ContentType: "image/svg+xml",
     }),
   );
+  return {
+    originalBytes: Buffer.byteLength(original, "utf-8"),
+    optimizedBytes: Buffer.byteLength(optimized, "utf-8"),
+  };
 }
 
 function metadataMatches(existing: LogoMetadataRow, logo: Logo): boolean {
@@ -161,6 +188,8 @@ async function main() {
   let inserted = 0;
   let updated = 0;
   let unchanged = 0;
+  let originalBytesTotal = 0;
+  let optimizedBytesTotal = 0;
 
   for (const logo of LOGOS) {
     const r2Key = basename(logo.icon);
@@ -168,9 +197,19 @@ async function main() {
     if (await objectExistsInR2(r2Key)) {
       uploadSkipped++;
     } else {
-      await uploadToR2(r2Key, join(logosDir, r2Key));
+      const { originalBytes, optimizedBytes } = await uploadToR2(
+        r2Key,
+        join(logosDir, r2Key),
+      );
       uploaded++;
-      console.log(`  uploaded ${r2Key}`);
+      originalBytesTotal += originalBytes;
+      optimizedBytesTotal += optimizedBytes;
+      const savedPct = (100 * (1 - optimizedBytes / originalBytes)).toFixed(
+        0,
+      );
+      console.log(
+        `  uploaded ${r2Key} (${originalBytes}B → ${optimizedBytes}B, -${savedPct}%)`,
+      );
     }
 
     const existing = existingByKey.get(r2Key);
@@ -191,6 +230,15 @@ async function main() {
   console.log(
     `R2: ${uploaded} uploaded, ${uploadSkipped} already present.`,
   );
+  if (uploaded > 0) {
+    const savedPct = (
+      100 *
+      (1 - optimizedBytesTotal / originalBytesTotal)
+    ).toFixed(1);
+    console.log(
+      `SVGO: ${originalBytesTotal}B → ${optimizedBytesTotal}B (-${savedPct}%)`,
+    );
+  }
   console.log(
     `D1: ${inserted} inserted, ${updated} updated, ${unchanged} unchanged.`,
   );

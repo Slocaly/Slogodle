@@ -9,6 +9,9 @@ node_modules/
 # turborepo cache
 .turbo/
 
+# Claude Code worktrees
+.claude/worktrees/
+
 # logs
 npm-debug.log*
 yarn-debug.log*

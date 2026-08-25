@@ -1,3 +1,5 @@
+import { env } from "cloudflare:workers";
+
 export interface LogoMetadata {
   id: number;
   r2Key: string;
@@ -37,40 +39,6 @@ interface LogoMetadataRow {
   updated_at: string;
 }
 
-interface D1ApiResponse<T> {
-  success: boolean;
-  errors: { code: number; message: string }[];
-  result: { results: T[] }[];
-}
-
-async function d1Query<T>(sql: string, params: unknown[] = []): Promise<T[]> {
-  const accountId = process.env.CF_ACCOUNT_ID;
-  const databaseId = process.env.D1_DATABASE_ID;
-  const token = process.env.CF_API_TOKEN;
-
-  const res = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ sql, params }),
-    },
-  );
-
-  const body = (await res.json()) as D1ApiResponse<T>;
-  if (!res.ok || !body.success) {
-    const message =
-      body.errors?.map((error) => error.message).join(", ") ||
-      res.statusText;
-    throw new Error(`D1 query failed: ${message}`);
-  }
-
-  return body.result[0]?.results ?? [];
-}
-
 function toLogoMetadata(row: LogoMetadataRow): LogoMetadata {
   return {
     id: row.id,
@@ -88,16 +56,16 @@ function toLogoMetadata(row: LogoMetadataRow): LogoMetadata {
 }
 
 export async function listLogoMetadata(): Promise<LogoMetadata[]> {
-  const rows = await d1Query<LogoMetadataRow>(
+  const { results } = await env.DB.prepare(
     "SELECT * FROM logo_metadata ORDER BY r2_key",
-  );
-  return rows.map(toLogoMetadata);
+  ).all<LogoMetadataRow>();
+  return results.map(toLogoMetadata);
 }
 
 export async function upsertLogoMetadata(
   input: UpsertLogoMetadataInput,
 ): Promise<LogoMetadata> {
-  const rows = await d1Query<LogoMetadataRow>(
+  const row = await env.DB.prepare(
     `INSERT INTO logo_metadata (r2_key, name, industry, founded, description, fun_fact, git_link, aspect, day_order)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(day_order), 0) + 1 FROM logo_metadata))
      ON CONFLICT(r2_key) DO UPDATE SET
@@ -110,7 +78,8 @@ export async function upsertLogoMetadata(
        aspect = excluded.aspect,
        updated_at = CURRENT_TIMESTAMP
      RETURNING *`,
-    [
+  )
+    .bind(
       input.r2Key,
       input.name,
       input.industry,
@@ -119,7 +88,9 @@ export async function upsertLogoMetadata(
       input.funFact,
       input.gitLink,
       input.aspect,
-    ],
-  );
-  return toLogoMetadata(rows[0]);
+    )
+    .first<LogoMetadataRow>();
+
+  if (!row) throw new Error("Upsert of logo metadata returned no row");
+  return toLogoMetadata(row);
 }

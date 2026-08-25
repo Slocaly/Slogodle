@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@remotion/cli": "4.0.513",
+    "@remotion/fonts": "4.0.513",
     "@remotion/google-fonts": "4.0.513",
     "@slogodle/logos": "workspace:*",
     "react": "19.2.3",

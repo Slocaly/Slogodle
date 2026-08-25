@@ -26,14 +26,21 @@ function LoginPage() {
     });
     setSubmitting(false);
     if (signInError) {
-      setError(signInError.message ?? "Sign in failed");
+      setError(signInError.message ?? m.login_generic_error());
       return;
     }
     navigate({ to: "/admin" });
   };
 
-  const handleGithub = () => {
-    authClient.signIn.social({ provider: "github", callbackURL: "/admin" });
+  const handleGithub = async () => {
+    setError(null);
+    const { error: signInError } = await authClient.signIn.social({
+      provider: "github",
+      callbackURL: "/admin",
+    });
+    if (signInError) {
+      setError(signInError.message ?? m.login_generic_error());
+    }
   };
 
   return (
@@ -80,7 +87,11 @@ function LoginPage() {
 
         <div className={styles.divider}>{m.login_or()}</div>
 
-        <button type="button" className={styles.githubBtn} onClick={handleGithub}>
+        <button
+          type="button"
+          className={styles.githubBtn}
+          onClick={() => void handleGithub()}
+        >
           <GithubIcon className={styles.githubIcon} />
           {m.login_github()}
         </button>

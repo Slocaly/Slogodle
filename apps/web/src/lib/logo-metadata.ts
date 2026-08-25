@@ -4,7 +4,7 @@ import {
   upsertLogoMetadata,
   type UpsertLogoMetadataInput,
 } from "./logo-metadata.server";
-import { requireAdmin } from "./session";
+import { requireAdmin } from "./session.server";
 
 export type {
   LogoMetadata,

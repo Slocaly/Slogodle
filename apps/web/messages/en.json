@@ -40,5 +40,6 @@
   "login_or": "or",
   "login_github": "Sign in with GitHub",
   "login_error": "Sign in failed: {error}",
+  "login_generic_error": "Sign in failed",
   "login_back_to_game": "Back to game"
 }

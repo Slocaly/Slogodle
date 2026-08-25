@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Combobox } from '@base-ui/react/combobox'
-import { LOGOS, type Logo } from '@slogodle/logos'
+import type { Logo } from '@slogodle/logos'
 import { suggestionsFor } from '../lib/game-logic'
 import { m } from '../paraglide/messages.js'
 import { GuessHints } from './GuessHints'
@@ -11,15 +11,16 @@ interface GuessFormProps {
   onSubmit: (text: string) => void
   logo: Logo
   attemptCount: number
+  bank: Logo[]
 }
 
-export function GuessForm({ onSubmit, logo, attemptCount }: GuessFormProps) {
+export function GuessForm({ onSubmit, logo, attemptCount, bank }: GuessFormProps) {
   const [value, setValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   // base-ui fires onInputValueChange with the picked label right after onValueChange;
   // this ref swallows that one call so the input doesn't flash the label before clearing.
   const suppressNextInputValueRef = useRef<string | null>(null)
-  const suggestions = suggestionsFor(value, LOGOS, null)
+  const suggestions = suggestionsFor(value, bank, null)
 
   function handleInputValueChange(next: string) {
     if (suppressNextInputValueRef.current === next) {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { LOGOS, type Logo } from '@slogodle/logos'
+import type { Logo } from '@slogodle/logos'
+import { fetchGameLogos } from '../lib/game-logos'
 import { loadJSON, saveJSON } from '../lib/storage'
 import { now, subscribe as subscribeClock } from '../lib/clock'
 import { dayIndexFor, pickLogo, isCorrectGuess, computeStreak, type Guess, type GameStatus } from '../lib/game-logic'
@@ -75,8 +76,20 @@ export function useGameState() {
   const { dark, toggleDark } = useDarkMode()
   const { soundEnabled, toggleSound } = useSoundSettings()
   const [archiveOpen, setArchiveOpen] = useState(false)
+  const [bank, setBank] = useState<Logo[] | null>(null)
+  const [bankError, setBankError] = useState<string | null>(null)
 
-  const logo = pickLogo(LOGOS, activeDayIndex)
+  // Fetch the logo bank from D1 once; the local LOGOS array no longer backs
+  // the live game.
+  useEffect(() => {
+    if (bank !== null || bankError !== null) return
+    fetchGameLogos()
+      .then(setBank)
+      .catch((error: unknown) =>
+        setBankError(error instanceof Error ? error.message : String(error)),
+      )
+  }, [bank, bankError])
+
   const dayRecord = days[String(activeDayIndex)] ?? EMPTY_DAY
   const isToday = activeDayIndex === todayIndex
 
@@ -114,21 +127,23 @@ export function useGameState() {
     [pinnedToToday],
   )
 
+  const logo = bank && bank.length > 0 ? pickLogo(bank, activeDayIndex) : null
+
   const history: Record<string, GameStatus> = {}
   const foundLogos: { dayIndex: number; logo: Logo; count: number }[] = []
   for (const [key, record] of Object.entries(days)) {
     if (record.status !== 'playing') {
       history[key] = record.status
     }
-    if (record.status === 'won') {
+    if (record.status === 'won' && bank) {
       const dayIndex = Number(key)
-      foundLogos.push({ dayIndex, logo: pickLogo(LOGOS, dayIndex), count: MAX_TRIES + 1 - record.guesses.length })
+      foundLogos.push({ dayIndex, logo: pickLogo(bank, dayIndex), count: MAX_TRIES + 1 - record.guesses.length })
     }
   }
   const streak = computeStreak(history, todayIndex)
 
   function submitGuess(text: string) {
-    if (dayRecord.status !== 'playing' || !text.trim()) return
+    if (!logo || dayRecord.status !== 'playing' || !text.trim()) return
     const correct = isCorrectGuess(text, logo)
     const guesses = [...dayRecord.guesses, { text: text.trim(), correct }]
     const status: GameStatus = correct ? 'won' : guesses.length >= MAX_TRIES ? 'lost' : 'playing'
@@ -159,6 +174,9 @@ export function useGameState() {
     dayIndex: activeDayIndex,
     todayIndex,
     isToday,
+    bank: bank ?? [],
+    bankError,
+    bankLoading: bank === null && bankError === null,
     logo,
     guesses: dayRecord.guesses,
     status: dayRecord.status,

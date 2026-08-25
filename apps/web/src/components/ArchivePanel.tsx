@@ -1,4 +1,4 @@
-import { LOGOS } from '@slogodle/logos'
+import type { Logo } from '@slogodle/logos'
 import { pickLogo, type GameStatus } from '../lib/game-logic'
 import { m } from '../paraglide/messages.js'
 import styles from './ArchivePanel.module.css'
@@ -11,9 +11,10 @@ interface ArchivePanelProps {
   activeDayIndex: number
   history: Record<string, GameStatus>
   onSelectDay: (dayIndex: number) => void
+  bank: Logo[]
 }
 
-export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelectDay }: ArchivePanelProps) {
+export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelectDay, bank }: ArchivePanelProps) {
   const rows = []
   for (let offset = 1; offset <= ARCHIVE_DAYS; offset++) {
     const idx = dayIndex - offset
@@ -22,7 +23,7 @@ export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelect
     const statusClass = result === 'won' ? styles.archiveWon : result === 'lost' ? styles.archiveLost : styles.archiveUnplayed
     const statusLabel =
       result === 'won' ? m.archive_status_solved() : result === 'lost' ? m.archive_status_missed() : m.archive_status_unplayed()
-    const name = result === 'won' || result === 'lost' ? pickLogo(LOGOS, idx).name : null
+    const name = result === 'won' || result === 'lost' ? pickLogo(bank, idx).name : null
     rows.push(
       <button
         type="button"

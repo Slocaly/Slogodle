@@ -26,7 +26,6 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const g = useGameState();
-  const isPlaying = g.status === "playing";
   const pileRef = useRef<PhysicsLogoPileHandle>(null);
   const { playClick, playWrongGuess, playWin, playLose } = useSoundEffects(
     g.soundEnabled,
@@ -56,6 +55,23 @@ function Home() {
     pileRef.current?.resetToFound();
   }
 
+  if (!g.logo) {
+    const message = g.bankError
+      ? `Failed to load logos: ${g.bankError}`
+      : g.bankLoading
+        ? "Loading…"
+        : "No playable logos available yet.";
+    return (
+      <div className={shared.page}>
+        <main className={shared.gameArea} id="main">
+          <p>{message}</p>
+        </main>
+      </div>
+    );
+  }
+
+  const isPlaying = g.status === "playing";
+
   return (
     <>
       <PhysicsLogoPile
@@ -63,6 +79,7 @@ function Home() {
         dayIndex={g.dayIndex}
         logo={g.logo}
         foundLogos={g.foundLogos}
+        bank={g.bank}
       />
       <div className={shared.page}>
         <div className={styles.headerWrap}>
@@ -80,6 +97,7 @@ function Home() {
             activeDayIndex={g.dayIndex}
             history={g.history}
             onSelectDay={g.viewDay}
+            bank={g.bank}
           />
         </div>
         <main className={shared.gameArea} id="main">
@@ -101,6 +119,7 @@ function Home() {
                   onSubmit={handleGuess}
                   logo={g.logo}
                   attemptCount={g.guesses.length}
+                  bank={g.bank}
                 />
               )}
               {!isPlaying && (

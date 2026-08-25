@@ -9,6 +9,9 @@
     "dev": "vite dev",
     "build": "vite build",
     "start": "vite preview",
+    "deploy": "vite build && wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "postinstall": "wrangler types",
     "sync-logos": "node --env-file=.env scripts/sync-logos.ts"
   },
   "dependencies": {
@@ -24,6 +27,7 @@
     "use-sound": "^5.0.0"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.53.1",
     "@inlang/paraglide-js": "^2.24.1",
     "@rolldown/plugin-babel": "0.2.3",
     "@types/matter-js": "^0.20.2",
@@ -35,6 +39,6 @@
     "typescript": "^5.9.3",
     "vite": "^8.2.1",
     "vite-tsconfig-paths": "^6.1.1",
-    "wrangler": "^4.124.0"
+    "wrangler": "^4.125.0"
   }
 }

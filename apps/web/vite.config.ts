@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { cloudflare } from '@cloudflare/vite-plugin'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
@@ -7,6 +8,7 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js'
 
 export default defineConfig({
   plugins: [
+    cloudflare({ viteEnvironment: { name: 'ssr' } }),
     tsConfigPaths({ projects: ['./tsconfig.json'] }),
     paraglideVitePlugin({
       project: './project.inlang',

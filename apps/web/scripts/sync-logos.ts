@@ -151,8 +151,8 @@ function metadataMatches(existing: LogoMetadataRow, logo: Logo): boolean {
 
 async function upsertMetadata(r2Key: string, logo: Logo): Promise<void> {
   await d1Query(
-    `INSERT INTO logo_metadata (r2_key, name, industry, founded, description, fun_fact, git_link, aspect)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO logo_metadata (r2_key, name, industry, founded, description, fun_fact, git_link, aspect, day_order)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(day_order), 0) + 1 FROM logo_metadata))
      ON CONFLICT(r2_key) DO UPDATE SET
        name = excluded.name,
        industry = excluded.industry,

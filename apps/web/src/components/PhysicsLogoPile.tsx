@@ -7,7 +7,7 @@ import {
   type Ref,
 } from "react";
 import { flushSync } from "react-dom";
-import { LOGOS, type Logo } from "@slogodle/logos";
+import type { Logo } from "@slogodle/logos";
 import {
   createLogoPileSimulation,
   type LogoPileSimulation,
@@ -30,6 +30,7 @@ interface PhysicsLogoPileProps {
   dayIndex: number;
   logo: Logo;
   foundLogos: { dayIndex: number; logo: Logo; count: number }[];
+  bank: Logo[];
   ref?: Ref<PhysicsLogoPileHandle>;
 }
 
@@ -44,6 +45,7 @@ export function PhysicsLogoPile({
   dayIndex,
   logo,
   foundLogos,
+  bank,
   ref,
 }: PhysicsLogoPileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -118,11 +120,11 @@ export function PhysicsLogoPile({
       },
       addRandomLogos(count) {
         const sim = simRef.current;
-        if (!sim) return;
+        if (!sim || bank.length === 0) return;
         const side: "left" | "right" = Math.random() < 0.5 ? "left" : "right";
         const batchId = launchBatchRef.current++;
         const newSlots: PileSlot[] = Array.from({ length: count }, (_, i) => {
-          const random = LOGOS[Math.floor(Math.random() * LOGOS.length)];
+          const random = bank[Math.floor(Math.random() * bank.length)];
           return {
             slotKey: `random-${batchId}-${i}`,
             name: random.name,
@@ -143,7 +145,7 @@ export function PhysicsLogoPile({
         setLaunchSlots([]);
       },
     }),
-    [logo, initialSlots],
+    [logo, initialSlots, bank],
   );
 
   return (

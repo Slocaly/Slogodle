@@ -1,0 +1,5 @@
+# local wrangler/miniflare dev state
+.wrangler/
+
+# generated types
+worker-configuration.d.ts

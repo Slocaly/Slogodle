@@ -6,7 +6,7 @@
   "observability": {
     "enabled": true
   },
-  "main": "dist/server/server.js",
+  "main": "src/server.ts",
   "assets": {
     "directory": "dist/client"
   },
@@ -15,7 +15,15 @@
       "binding": "DB",
       "database_name": "slogodle",
       "database_id": "d993c41e-9dc1-4065-aa03-7988fca0ff06",
-      "migrations_dir": "migrations"
+      "migrations_dir": "migrations",
+      "remote": true
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "LOGO_BUCKET",
+      "bucket_name": "logos",
+      "remote": true
     }
   ]
 }

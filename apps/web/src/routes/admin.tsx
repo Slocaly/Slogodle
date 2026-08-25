@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { now } from "../lib/clock";
 import { dayIndexFor } from "../lib/game-logic";
 import { useDarkMode } from "../hooks/useDarkMode";
@@ -10,6 +11,7 @@ import { fetchIsAdmin } from "../lib/session";
 import {
   fetchLogoMetadata,
   saveLogoMetadata,
+  reorderLogoMetadata,
   type LogoMetadata,
   type UpsertLogoMetadataInput,
 } from "../lib/logo-metadata";
@@ -26,8 +28,12 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type SortMode = "alpha" | "day";
-type ViewMode = "table" | "grid" | "form";
+const sortModeParser = parseAsStringLiteral(["alpha", "day"] as const).withDefault(
+  "alpha",
+);
+const viewModeParser = parseAsStringLiteral(["table", "grid", "form"] as const).withDefault(
+  "table",
+);
 
 interface AdminLogo {
   logo: R2Logo;
@@ -38,11 +44,13 @@ function displayName({ logo, metadata }: AdminLogo): string {
   return metadata?.name || logo.key;
 }
 
-function dayOffsetLabel(offset: number): string {
+function dayOffsetLabel(offset: number | null): string {
+  if (offset === null) return "No day order";
   return offset === 0 ? "Today" : `+${offset}d`;
 }
 
-function dateForOffset(offset: number): string {
+function dateForOffset(offset: number | null): string {
+  if (offset === null) return "—";
   const d = now();
   d.setDate(d.getDate() + offset);
   return d.toLocaleDateString("fr-FR", {
@@ -54,8 +62,8 @@ function dateForOffset(offset: number): string {
 
 function AdminPage() {
   const { dark, toggleDark } = useDarkMode();
-  const [sortMode, setSortMode] = useState<SortMode>("alpha");
-  const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [sortMode, setSortMode] = useQueryState("sort", sortModeParser);
+  const [viewMode, setViewMode] = useQueryState("view", viewModeParser);
   const [search, setSearch] = useState("");
 
   const [r2Logos, setR2Logos] = useState<R2Logo[] | null>(null);
@@ -110,16 +118,50 @@ function AdminPage() {
   const alphaBank = [...filteredEntries].sort((a, b) =>
     displayName(a).localeCompare(displayName(b)),
   );
-  const todayIndex =
+  const alphaTodayIndex =
     ((dayIndexFor(now()) % alphaBank.length) + alphaBank.length) %
     alphaBank.length;
-  const rows = alphaBank.map((entry, index) => ({
+  const alphaRows = alphaBank.map((entry, index) => ({
     entry,
-    offset: (index - todayIndex + alphaBank.length) % alphaBank.length,
+    offset: (index - alphaTodayIndex + alphaBank.length) % alphaBank.length,
   }));
 
-  const sortedRows =
-    sortMode === "alpha" ? rows : [...rows].sort((a, b) => a.offset - b.offset);
+  const dayBank = filteredEntries
+    .filter((entry) => entry.metadata?.dayOrder != null)
+    .sort((a, b) => a.metadata!.dayOrder! - b.metadata!.dayOrder!);
+  const unorderedEntries = filteredEntries.filter(
+    (entry) => entry.metadata?.dayOrder == null,
+  );
+  const dayTodayIndex = dayBank.length
+    ? ((dayIndexFor(now()) % dayBank.length) + dayBank.length) %
+      dayBank.length
+    : 0;
+  const dayRows = [
+    ...dayBank.map((entry, index) => ({
+      entry,
+      offset: (index - dayTodayIndex + dayBank.length) % dayBank.length,
+    })),
+    ...unorderedEntries.map((entry) => ({ entry, offset: null })),
+  ];
+
+  const sortedRows = sortMode === "alpha" ? alphaRows : dayRows;
+  const canReorder = sortMode === "day" && query === "";
+
+  const handleReorder = (orderedR2Keys: string[]) => {
+    const updates = orderedR2Keys.map((r2Key, index) => ({
+      r2Key,
+      dayOrder: index + 1,
+    }));
+    setMetadataList((prev) =>
+      (prev ?? []).map((metadata) => {
+        const update = updates.find((u) => u.r2Key === metadata.r2Key);
+        return update ? { ...metadata, dayOrder: update.dayOrder } : metadata;
+      }),
+    );
+    reorderLogoMetadata({ data: updates }).catch((error: unknown) =>
+      setMetadataError(error instanceof Error ? error.message : String(error)),
+    );
+  };
 
   const loading =
     r2Error === null && (r2Logos === null || (metadataList === null && metadataError === null));
@@ -255,16 +297,41 @@ function AdminPage() {
               ))}
             </div>
           ) : (
-            <div className={styles.r2List}>
-              {sortedRows.map(({ entry }) => (
-                <R2LogoCard
-                  key={entry.logo.key}
-                  logo={entry.logo}
-                  metadata={entry.metadata}
-                  onSaved={handleMetadataSaved}
-                />
-              ))}
-            </div>
+            <>
+              {sortMode === "day" && query !== "" && (
+                <p className={styles.empty}>
+                  Clear the search to drag &amp; drop cards and reorder days.
+                </p>
+              )}
+              {sortMode === "alpha" && (
+                <p className={styles.empty}>
+                  Switch to "Day" sort to drag &amp; drop cards and reorder
+                  days.
+                </p>
+              )}
+              <div className={styles.r2List}>
+                {sortedRows.map(({ entry }, index) => (
+                  <R2LogoCard
+                    key={entry.logo.key}
+                    logo={entry.logo}
+                    metadata={entry.metadata}
+                    onSaved={handleMetadataSaved}
+                    draggable={canReorder && entry.metadata?.dayOrder != null}
+                    onDropReorder={(fromR2Key) => {
+                      const from = dayBank.findIndex(
+                        (e) => e.logo.key === fromR2Key,
+                      );
+                      const to = index;
+                      if (from === -1 || from === to) return;
+                      const reordered = [...dayBank];
+                      const [moved] = reordered.splice(from, 1);
+                      reordered.splice(to, 0, moved);
+                      handleReorder(reordered.map((e) => e.logo.key));
+                    }}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </>
       )}
@@ -296,12 +363,17 @@ function R2LogoCard({
   logo,
   metadata,
   onSaved,
+  draggable = false,
+  onDropReorder,
 }: {
   logo: R2Logo;
   metadata: LogoMetadata | undefined;
   onSaved: (metadata: LogoMetadata) => void;
+  draggable?: boolean;
+  onDropReorder?: (fromR2Key: string) => void;
 }) {
   const [editing, setEditing] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const [form, setForm] = useState<R2LogoCardForm>(() =>
     metadataToForm(metadata),
   );
@@ -353,10 +425,33 @@ function R2LogoCard({
   };
 
   return (
-    <div className={styles.r2Card}>
+    <div
+      className={`${styles.r2Card} ${dragOver ? styles.r2CardDragOver : ""}`}
+      draggable={draggable}
+      onDragStart={(e) => {
+        e.dataTransfer.setData("text/plain", logo.key);
+        e.dataTransfer.effectAllowed = "move";
+      }}
+      onDragOver={(e) => {
+        if (!onDropReorder) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        setDragOver(true);
+      }}
+      onDragLeave={() => setDragOver(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setDragOver(false);
+        const fromR2Key = e.dataTransfer.getData("text/plain");
+        if (fromR2Key) onDropReorder?.(fromR2Key);
+      }}
+    >
       <div className={styles.r2CardHeader}>
         <img src={logo.url} alt="" width={64} height={64} />
         <span className={styles.gridName}>{logo.key}</span>
+        <span className={styles.r2DayOrderBadge}>
+          {metadata?.dayOrder != null ? `Day #${metadata.dayOrder}` : "No day order"}
+        </span>
       </div>
       <div className={styles.r2Body}>
         {editing ? (

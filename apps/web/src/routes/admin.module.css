@@ -186,6 +186,16 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--card-bg);
+  transition: border-color 0.1s ease, background 0.1s ease;
+}
+
+.r2Card[draggable="true"] {
+  cursor: grab;
+}
+
+.r2CardDragOver {
+  border-color: var(--accent-pink);
+  background: var(--panel-bg);
 }
 
 .r2CardHeader {
@@ -196,6 +206,16 @@
   width: 100px;
   flex-shrink: 0;
   text-align: center;
+}
+
+.r2DayOrderBadge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 10px;
+  white-space: nowrap;
 }
 
 .r2CardHeader img {

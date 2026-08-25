@@ -1,4 +1,5 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
 import globalCss from '../styles/global.css?url'
 import { getLocale } from '../paraglide/runtime.js'
 import { m } from '../paraglide/messages.js'
@@ -54,7 +55,9 @@ function RootComponent() {
         <a href="#main" className="skip-link">
           {m.skip_to_content()}
         </a>
-        <Outlet />
+        <NuqsAdapter>
+          <Outlet />
+        </NuqsAdapter>
         <Scripts />
       </body>
     </html>

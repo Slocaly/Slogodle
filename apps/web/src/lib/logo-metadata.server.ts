@@ -10,6 +10,7 @@ export interface LogoMetadata {
   funFact: string | null;
   gitLink: string | null;
   aspect: number | null;
+  dayOrder: number | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -35,6 +36,7 @@ interface LogoMetadataRow {
   fun_fact: string | null;
   git_link: string | null;
   aspect: number | null;
+  day_order: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -50,6 +52,7 @@ function toLogoMetadata(row: LogoMetadataRow): LogoMetadata {
     funFact: row.fun_fact,
     gitLink: row.git_link,
     aspect: row.aspect,
+    dayOrder: row.day_order,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -93,4 +96,26 @@ export async function upsertLogoMetadata(
 
   if (!row) throw new Error("Upsert of logo metadata returned no row");
   return toLogoMetadata(row);
+}
+
+export async function reorderLogoMetadata(
+  updates: { r2Key: string; dayOrder: number }[],
+): Promise<void> {
+  if (updates.length === 0) return;
+  // day_order has a UNIQUE index, so writing final values directly can
+  // collide mid-batch with a row that hasn't moved out of the way yet.
+  // Stage through negative temp values first to dodge that.
+  const statements = [
+    ...updates.map(({ r2Key }, index) =>
+      env.DB.prepare(
+        "UPDATE logo_metadata SET day_order = ? WHERE r2_key = ?",
+      ).bind(-(index + 1), r2Key),
+    ),
+    ...updates.map(({ r2Key, dayOrder }) =>
+      env.DB.prepare(
+        "UPDATE logo_metadata SET day_order = ?, updated_at = CURRENT_TIMESTAMP WHERE r2_key = ?",
+      ).bind(dayOrder, r2Key),
+    ),
+  ];
+  await env.DB.batch(statements);
 }

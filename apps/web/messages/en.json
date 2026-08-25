@@ -31,5 +31,14 @@
   "not_found_title": "Wrong guess.",
   "not_found_message": "That page doesn't exist. Even three hints won't help with this one.",
   "not_found_cta": "Back to today's logo",
-  "skip_to_content": "Skip to content"
+  "skip_to_content": "Skip to content",
+  "login_title": "Admin sign in",
+  "login_email_label": "Email",
+  "login_password_label": "Password",
+  "login_submit": "Sign in",
+  "login_submitting": "Signing in…",
+  "login_or": "or",
+  "login_github": "Sign in with GitHub",
+  "login_error": "Sign in failed: {error}",
+  "login_back_to_game": "Back to game"
 }

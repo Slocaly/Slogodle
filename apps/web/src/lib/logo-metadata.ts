@@ -4,6 +4,7 @@ import {
   upsertLogoMetadata,
   type UpsertLogoMetadataInput,
 } from "./logo-metadata.server";
+import { requireAdmin } from "./session";
 
 export type {
   LogoMetadata,
@@ -16,4 +17,7 @@ export const fetchLogoMetadata = createServerFn({ method: "GET" }).handler(
 
 export const saveLogoMetadata = createServerFn({ method: "POST" })
   .validator((input: UpsertLogoMetadataInput) => input)
-  .handler(({ data }) => upsertLogoMetadata(data));
+  .handler(async ({ data }) => {
+    await requireAdmin();
+    return upsertLogoMetadata(data);
+  });

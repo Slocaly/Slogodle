@@ -1,6 +1,7 @@
 import handler from '@tanstack/react-start/server-entry'
 import { env } from 'cloudflare:workers'
 import { paraglideMiddleware } from './paraglide/server.js'
+import { getAuth } from './lib/auth.server'
 
 const LOGO_KEY_PATTERN = /^\/api\/logos\/([^/]+)$/
 
@@ -23,6 +24,9 @@ export default {
     const match = url.pathname.match(LOGO_KEY_PATTERN)
     if (match) {
       return serveLogoIcon(match[1])
+    }
+    if (url.pathname.startsWith('/api/auth/')) {
+      return getAuth().handler(request)
     }
     // TanStack Router handles URL rewriting itself, so we pass the original
     // `request` through untouched — paraglideMiddleware only needs it to

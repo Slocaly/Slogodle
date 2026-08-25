@@ -28,16 +28,16 @@ function requireEnv(name: string): string {
 
 const r2Client = new S3Client({
   region: "auto",
-  endpoint: `https://${requireEnv("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
+  endpoint: `https://${requireEnv("CLOUDFLARE_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
   credentials: {
     accessKeyId: requireEnv("R2_ACCESS_KEY_ID"),
     secretAccessKey: requireEnv("R2_SECRET_ACCESS_KEY"),
   },
 });
-const r2Bucket = requireEnv("R2_BUCKET");
+const r2Bucket = "logos";
 
-const cfAccountId = requireEnv("CF_ACCOUNT_ID");
-const cfApiToken = requireEnv("CF_API_TOKEN");
+const cfAccountId = requireEnv("CLOUDFLARE_ACCOUNT_ID");
+const cfApiToken = requireEnv("CLOUDFLARE_API_TOKEN");
 const d1DatabaseId = requireEnv("D1_DATABASE_ID");
 
 interface D1ApiResponse<T> {

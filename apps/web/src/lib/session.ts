@@ -5,6 +5,7 @@ import { getAuth } from "./auth.server";
 
 export const fetchIsAdmin = createServerFn({ method: "GET" }).handler(
   async () => {
+    if (!env.ADMIN_EMAIL) return false;
     const session = await getAuth().api.getSession({
       headers: getRequestHeaders(),
     });

@@ -1,9 +1,10 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { now } from "../lib/clock";
 import { dayIndexFor } from "../lib/game-logic";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { DarkModeToggle } from "../components/DarkModeToggle";
+import { AccountMenu } from "../components/AccountMenu";
 import { fetchR2Logos, type R2Logo } from "../lib/r2-logos";
 import { fetchIsAdmin } from "../lib/session";
 import {
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
     const isAdmin = await fetchIsAdmin();
     if (!isAdmin) {
-      throw redirect({ to: "/login" });
+      throw notFound();
     }
   },
   component: AdminPage,
@@ -129,7 +130,10 @@ function AdminPage() {
         <Link to="/" className={styles.backLink}>
           ← Back to game
         </Link>
-        <DarkModeToggle dark={dark} onDarkModeToggle={toggleDark} />
+        <div className={styles.topBarActions}>
+          <DarkModeToggle dark={dark} onDarkModeToggle={toggleDark} />
+          <AccountMenu />
+        </div>
       </div>
 
       <h1 className={styles.title}>Admin — Logos ({entries.length})</h1>

@@ -19,6 +19,7 @@
     "@base-ui/react": "^1.7.0",
     "@better-auth/drizzle-adapter": "^1.7.1",
     "@slogodle/logos": "workspace:*",
+    "@tanstack/react-form": "^1.33.5",
     "@tanstack/react-router": "^1.170.25",
     "@tanstack/react-start": "^1.168.42",
     "better-auth": "^1.7.1",
@@ -26,7 +27,8 @@
     "matter-js": "^0.20.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "use-sound": "^5.0.0"
+    "use-sound": "^5.0.0",
+    "valibot": "^1.4.2"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.53.1",

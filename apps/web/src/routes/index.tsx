@@ -3,7 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useRef } from "react";
 import { useGameState } from "../hooks/useGameState";
 import { useSoundEffects } from "../hooks/useSoundEffects";
+import { m } from "../paraglide/messages.js";
 import { GameHeader } from "../components/GameHeader";
+import { LoadingCard } from "../components/LoadingCard";
 import { ArchivePanel } from "../components/ArchivePanel";
 import {
   PhysicsLogoPile,
@@ -56,15 +58,17 @@ function Home() {
   }
 
   if (!g.logo) {
-    const message = g.bankError
-      ? `Failed to load logos: ${g.bankError}`
-      : g.bankLoading
-        ? "Loading…"
-        : "No playable logos available yet.";
     return (
       <div className={shared.page}>
         <main className={shared.gameArea} id="main">
-          <p>{message}</p>
+          {g.bankError ? (
+            <LoadingCard
+              variant="error"
+              errorMessage={m.loading_error({ error: g.bankError })}
+            />
+          ) : (
+            <LoadingCard variant={g.bankLoading ? "loading" : "empty"} />
+          )}
         </main>
       </div>
     );

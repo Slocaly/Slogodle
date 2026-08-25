@@ -12,6 +12,12 @@
   margin-bottom: 16px;
 }
 
+.topBarActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .backLink {
   font-size: 13px;
   font-weight: 600;

@@ -1,4 +1,5 @@
 import { m } from "../paraglide/messages.js";
+import { AccountMenu } from "./AccountMenu";
 import { ArchiveToggle } from "./ArchiveToggle";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { SoundToggle } from "./SoundToggle";
@@ -46,6 +47,7 @@ export function GameHeader({
           onSoundToggle={handleSoundToggle}
         />
         <DarkModeToggle dark={dark} onDarkModeToggle={handleDarkToggle} />
+        <AccountMenu />
       </div>
     </header>
   );

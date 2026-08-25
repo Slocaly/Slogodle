@@ -27,6 +27,7 @@ CREATE INDEX session_userId_idx ON session (user_id);
 
 CREATE TABLE account (
   id TEXT PRIMARY KEY NOT NULL,
+  issuer TEXT NOT NULL,
   account_id TEXT NOT NULL,
   provider_id TEXT NOT NULL,
   user_id TEXT NOT NULL,
@@ -42,6 +43,7 @@ CREATE TABLE account (
   FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
 CREATE INDEX account_userId_idx ON account (user_id);
+CREATE UNIQUE INDEX account_issuer_accountId_unique ON account (issuer, account_id);
 
 CREATE TABLE verification (
   id TEXT PRIMARY KEY NOT NULL,

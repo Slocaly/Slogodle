@@ -1,10 +1,11 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { now } from "../lib/clock";
 import { dayIndexFor } from "../lib/game-logic";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { DarkModeToggle } from "../components/DarkModeToggle";
 import { fetchR2Logos, type R2Logo } from "../lib/r2-logos";
+import { fetchIsAdmin } from "../lib/session";
 import {
   fetchLogoMetadata,
   saveLogoMetadata,
@@ -15,9 +16,10 @@ import styles from "./admin.module.css";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
-  beforeLoad: () => {
-    if (!import.meta.env.DEV) {
-      throw notFound();
+  beforeLoad: async () => {
+    const isAdmin = await fetchIsAdmin();
+    if (!isAdmin) {
+      throw redirect({ to: "/login" });
     }
   },
   component: AdminPage,

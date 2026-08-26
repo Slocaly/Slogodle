@@ -1,8 +1,9 @@
-import { AbsoluteFill, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Html5Audio, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { loadFont } from "@remotion/fonts";
 import { theme } from "../../lib/theme";
+import { FallingLogos } from "./FallingLogos";
 
-export const OUTRO_FRAMES = 90;
+export const OUTRO_FRAMES = 120;
 
 const TITLE_FONT_FAMILY = "Yang Bagus";
 
@@ -18,6 +19,7 @@ const titleGroupEnds = TITLE_GROUP_SIZES.reduce<number[]>((ends, size) => {
   return ends;
 }, []);
 const LETTER_STAGGER = 3;
+const BUBBLE_PITCH_STEP = 0.1;
 const SUBTITLE_DELAY = TITLE_TEXT.length * LETTER_STAGGER + 6;
 
 loadFont({
@@ -39,12 +41,14 @@ export const Outro: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
+      <FallingLogos />
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           gap: 24,
+          zIndex: 1,
         }}
       >
         <div
@@ -66,19 +70,28 @@ export const Outro: React.FC = () => {
               extrapolateRight: "clamp",
             });
             return (
-              <span
-                key={i}
-                style={{
-                  display: "inline-block",
-                  scale: letterScale,
-                  opacity: letterOpacity,
-                  color:
-                    TITLE_LETTER_COLORS[
+              <span key={i}>
+                <Sequence from={i * LETTER_STAGGER} layout="none">
+                  <Html5Audio
+                    src={staticFile("sounds/bubble.wav")}
+                    volume={0.4}
+                    playbackRate={1 + i * BUBBLE_PITCH_STEP}
+                    preservePitch={false}
+                  />
+                </Sequence>
+                <span
+                  style={{
+                    display: "inline-block",
+                    scale: letterScale,
+                    opacity: letterOpacity,
+                    color:
+                      TITLE_LETTER_COLORS[
                       titleGroupEnds.findIndex((end) => i < end) % TITLE_LETTER_COLORS.length
-                    ],
-                }}
-              >
-                {letter}
+                      ],
+                  }}
+                >
+                  {letter}
+                </span>
               </span>
             );
           })}

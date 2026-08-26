@@ -6,7 +6,7 @@ import {
   LogoMultipleChoice,
 } from "./compositions/LogoMultipleChoice/LogoMultipleChoice";
 import { LogoMultipleChoiceSchema } from "./compositions/LogoMultipleChoice/schema";
-import { OUTRO_FRAMES } from "./compositions/Outro";
+import { Outro, OUTRO_FRAMES } from "./compositions/Outro";
 import { QUESTION_FRAMES, REVEAL_HOLD_FRAMES } from "./compositions/LogoMultipleChoice/constants";
 import { getChoicesFrames } from "./compositions/LogoMultipleChoice/utils/get-choices-frames";
 
@@ -56,6 +56,14 @@ export const RemotionRoot: React.FC = () => {
             REVEAL_HOLD_FRAMES +
             OUTRO_FRAMES,
         })}
+      />
+      <Composition
+        id="Outro"
+        component={Outro}
+        fps={30}
+        width={1080}
+        height={1920}
+        durationInFrames={OUTRO_FRAMES}
       />
     </>
   );

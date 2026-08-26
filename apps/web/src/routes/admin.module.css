@@ -421,3 +421,67 @@
   color: var(--muted);
   font-size: 12px;
 }
+
+.r2DeleteBtn {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-pink);
+  background: transparent;
+  border: 1px solid var(--accent-pink);
+  border-radius: 999px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.r2DeleteConfirmBtn {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--accent-pink);
+  border: none;
+  border-radius: 999px;
+  padding: 6px 16px;
+  cursor: pointer;
+}
+
+.r2DeleteConfirmBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in oklch, black 55%, transparent);
+  z-index: 100;
+  padding: 16px;
+}
+
+.modalBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+}
+
+.modalTitle {
+  margin: 0;
+  color: var(--text);
+}
+
+.modalText {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}

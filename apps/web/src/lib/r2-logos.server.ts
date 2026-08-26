@@ -16,3 +16,7 @@ export async function listR2Logos(): Promise<R2Logo[]> {
 
   return keys.map((key) => ({ key, url: `/api/logos/${key}` }));
 }
+
+export async function deleteR2Logo(key: string): Promise<void> {
+  await env.LOGO_BUCKET.delete(key);
+}

@@ -11,6 +11,7 @@ import { fetchIsAdmin } from "../lib/session";
 import {
   fetchLogoMetadata,
   saveLogoMetadata,
+  deleteLogo,
   reorderLogoMetadata,
   type LogoMetadata,
   type UpsertLogoMetadataInput,
@@ -101,6 +102,13 @@ function AdminPage() {
       ...(prev ?? []).filter((metadata) => metadata.r2Key !== saved.r2Key),
       saved,
     ]);
+  };
+
+  const handleLogoDeleted = (r2Key: string) => {
+    setR2Logos((prev) => (prev ?? []).filter((logo) => logo.key !== r2Key));
+    setMetadataList((prev) =>
+      (prev ?? []).filter((metadata) => metadata.r2Key !== r2Key),
+    );
   };
 
   const entries: AdminLogo[] = (r2Logos ?? []).map((logo) => ({
@@ -316,6 +324,7 @@ function AdminPage() {
                     logo={entry.logo}
                     metadata={entry.metadata}
                     onSaved={handleMetadataSaved}
+                    onDeleted={handleLogoDeleted}
                     draggable={canReorder && entry.metadata?.dayOrder != null}
                     onDropReorder={(fromR2Key) => {
                       const from = dayBank.findIndex(
@@ -363,12 +372,14 @@ function R2LogoCard({
   logo,
   metadata,
   onSaved,
+  onDeleted,
   draggable = false,
   onDropReorder,
 }: {
   logo: R2Logo;
   metadata: LogoMetadata | undefined;
   onSaved: (metadata: LogoMetadata) => void;
+  onDeleted: (r2Key: string) => void;
   draggable?: boolean;
   onDropReorder?: (fromR2Key: string) => void;
 }) {
@@ -380,6 +391,22 @@ function R2LogoCard({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDelete = () => {
+    setDeleting(true);
+    setDeleteError(null);
+    deleteLogo({ data: { r2Key: logo.key } })
+      .then(() => {
+        onDeleted(logo.key);
+      })
+      .catch((err: unknown) => {
+        setDeleteError(err instanceof Error ? err.message : String(err));
+        setDeleting(false);
+      });
+  };
 
   const setField = (field: keyof R2LogoCardForm) => (value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -453,6 +480,16 @@ function R2LogoCard({
           {metadata?.dayOrder != null ? `Day #${metadata.dayOrder}` : "No day order"}
         </span>
       </div>
+
+      {deleteOpen && (
+        <DeleteLogoModal
+          fileName={logo.key}
+          deleting={deleting}
+          error={deleteError}
+          onCancel={() => setDeleteOpen(false)}
+          onConfirm={handleDelete}
+        />
+      )}
       <div className={styles.r2Body}>
         {editing ? (
           <>
@@ -543,8 +580,84 @@ function R2LogoCard({
             </div>
           </>
         ) : (
-          <ReadOnlyView metadata={metadata} saved={saved} onEdit={handleEdit} />
+          <ReadOnlyView
+            metadata={metadata}
+            saved={saved}
+            onEdit={handleEdit}
+            onDelete={() => {
+              setDeleteError(null);
+              setDeleteOpen(true);
+            }}
+          />
         )}
+      </div>
+    </div>
+  );
+}
+
+function DeleteLogoModal({
+  fileName,
+  deleting,
+  error,
+  onCancel,
+  onConfirm,
+}: {
+  fileName: string;
+  deleting: boolean;
+  error: string | null;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  const [confirmText, setConfirmText] = useState("");
+  const canConfirm = confirmText === fileName && !deleting;
+
+  return (
+    <div className={styles.modalOverlay} onClick={onCancel}>
+      <div
+        className={styles.modalBox}
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className={styles.modalTitle}>Delete logo</h3>
+        <p className={styles.modalText}>
+          This permanently deletes <strong>{fileName}</strong> from the
+          bucket and its metadata. This can’t be undone.
+        </p>
+        <p className={styles.modalText}>
+          Remember to also remove it from the <strong>logos</strong> package
+          (packages/logos) — this doesn't touch that repo.
+        </p>
+        <p className={styles.modalText}>
+          Type <strong>{fileName}</strong> to confirm.
+        </p>
+        <input
+          type="text"
+          className={styles.r2Input}
+          value={confirmText}
+          onChange={(e) => setConfirmText(e.target.value)}
+          placeholder={fileName}
+          autoFocus
+        />
+        <div className={styles.r2CardFooter}>
+          <button
+            type="button"
+            className={styles.r2DeleteConfirmBtn}
+            onClick={onConfirm}
+            disabled={!canConfirm}
+          >
+            {deleting ? "Deleting…" : "Delete"}
+          </button>
+          <button
+            type="button"
+            className={styles.r2CancelBtn}
+            onClick={onCancel}
+            disabled={deleting}
+          >
+            Cancel
+          </button>
+          {error && <span className={styles.r2Error}>{error}</span>}
+        </div>
       </div>
     </div>
   );
@@ -554,10 +667,12 @@ function ReadOnlyView({
   metadata,
   saved,
   onEdit,
+  onDelete,
 }: {
   metadata: LogoMetadata | undefined;
   saved: boolean;
   onEdit: () => void;
+  onDelete: () => void;
 }) {
   const incomplete =
     !metadata?.name ||
@@ -625,6 +740,13 @@ function ReadOnlyView({
       <div className={styles.r2CardFooter}>
         <button type="button" className={styles.r2SaveBtn} onClick={onEdit}>
           Edit
+        </button>
+        <button
+          type="button"
+          className={styles.r2DeleteBtn}
+          onClick={onDelete}
+        >
+          Delete
         </button>
         {saved && <span className={styles.r2Saved}>Saved</span>}
       </div>

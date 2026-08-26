@@ -98,6 +98,12 @@ export async function upsertLogoMetadata(
   return toLogoMetadata(row);
 }
 
+export async function deleteLogoMetadata(r2Key: string): Promise<void> {
+  await env.DB.prepare("DELETE FROM logo_metadata WHERE r2_key = ?")
+    .bind(r2Key)
+    .run();
+}
+
 export async function reorderLogoMetadata(
   updates: { r2Key: string; dayOrder: number }[],
 ): Promise<void> {

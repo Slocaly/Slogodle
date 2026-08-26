@@ -54,7 +54,7 @@ export const Outro: React.FC = () => {
         <div
           style={{
             fontFamily: TITLE_FONT_FAMILY,
-            fontSize: 130,
+            fontSize: 170,
             fontWeight: 700,
           }}
         >
@@ -98,7 +98,7 @@ export const Outro: React.FC = () => {
         </div>
         <div
           style={{
-            fontSize: 44,
+            fontSize: 58,
             fontWeight: 500,
             color: theme.colors.muted,
             opacity: subtitleOpacity,

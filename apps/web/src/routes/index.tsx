@@ -29,7 +29,7 @@ export const Route = createFileRoute("/")({
 function Home() {
   const g = useGameState();
   const pileRef = useRef<PhysicsLogoPileHandle>(null);
-  const { playClick, playWrongGuess, playWin, playLose } = useSoundEffects(
+  const { playClick, playWrongGuess, playWin, playLose, playBubble } = useSoundEffects(
     g.soundEnabled,
   );
 
@@ -94,6 +94,7 @@ function Home() {
             soundEnabled={g.soundEnabled}
             onToggleSound={g.toggleSound}
             playClick={playClick}
+            playBubble={playBubble}
           />
           <ArchivePanel
             open={g.archiveOpen}

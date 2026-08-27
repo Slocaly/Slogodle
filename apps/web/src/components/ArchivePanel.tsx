@@ -1,9 +1,7 @@
 import type { Logo } from '@slogodle/logos'
-import { pickLogo, type GameStatus } from '../lib/game-logic'
+import { ARCHIVE_DAYS, pickLogo, type GameStatus } from '../lib/game-logic'
 import { m } from '../paraglide/messages.js'
 import styles from './ArchivePanel.module.css'
-
-const ARCHIVE_DAYS = 5
 
 interface ArchivePanelProps {
   open: boolean

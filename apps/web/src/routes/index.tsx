@@ -37,7 +37,7 @@ function Home() {
     const result = g.submitGuess(text);
     if (result?.status === "won") {
       playWin();
-      pileRef.current?.launchWin(g.maxTries + 1 - result.attempts);
+      pileRef.current?.launchWin(result.reward);
     } else if (result?.status === "lost") {
       playLose();
     } else if (result?.status === "playing") {

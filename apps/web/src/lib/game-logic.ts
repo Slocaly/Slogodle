@@ -9,6 +9,9 @@ export interface Guess {
   correct: boolean
 }
 
+export const MAX_TRIES = 3
+export const ARCHIVE_DAYS = 5
+
 function localMidnight(date: Date): Date {
   const d = new Date(date)
   d.setHours(0, 0, 0, 0)
@@ -28,6 +31,23 @@ export function pickLogo(bank: Logo[], dayIndex: number): Logo {
 export function isCorrectGuess(text: string, logo: Logo): boolean {
   const q = text.trim().toLowerCase()
   return logo.name.toLowerCase() === q
+}
+
+export function resolveGuesses(texts: string[], logo: Logo): { guesses: Guess[]; status: GameStatus } {
+  const guesses: Guess[] = []
+  for (const text of texts.slice(0, MAX_TRIES)) {
+    const correct = isCorrectGuess(text, logo)
+    guesses.push({ text, correct })
+    if (correct) break
+  }
+  const last = guesses[guesses.length - 1]
+  const status: GameStatus = last?.correct ? 'won' : guesses.length >= MAX_TRIES ? 'lost' : 'playing'
+  return { guesses, status }
+}
+
+export function rewardFor(status: GameStatus, guesses: Guess[], isFreshToday: boolean): number {
+  if (status !== 'won') return 0
+  return isFreshToday ? MAX_TRIES + 1 - guesses.length : 1
 }
 
 export function suggestionsFor(value: string, bank: Logo[], excludeName: string | null): { label: string; value: string }[] {

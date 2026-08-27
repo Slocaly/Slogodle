@@ -15,7 +15,8 @@
 }
 
 .githubLinkBtn,
-.shareBtn {
+.shareBtn,
+.loginCtaBtn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -33,19 +34,22 @@
 }
 
 .githubLinkBtn:hover,
-.shareBtn:hover {
+.shareBtn:hover,
+.loginCtaBtn:hover {
   color: var(--text);
   background: var(--accent-yellow);
   transform: translateY(-1px);
 }
 
 .githubLinkBtn:active,
-.shareBtn:active {
+.shareBtn:active,
+.loginCtaBtn:active {
   transform: translateY(0) scale(0.96);
 }
 
 .githubLinkBtn svg,
-.shareBtn svg {
+.shareBtn svg,
+.loginCtaBtn svg {
   width: 18px;
   height: 18px;
   flex-shrink: 0;

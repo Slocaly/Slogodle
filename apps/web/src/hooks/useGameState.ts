@@ -3,18 +3,29 @@ import type { Logo } from '@slogodle/logos'
 import { fetchGameLogos } from '../lib/game-logos'
 import { loadJSON, saveJSON } from '../lib/storage'
 import { now, subscribe as subscribeClock } from '../lib/clock'
-import { dayIndexFor, pickLogo, isCorrectGuess, computeStreak, type Guess, type GameStatus } from '../lib/game-logic'
+import {
+  dayIndexFor,
+  pickLogo,
+  computeStreak,
+  resolveGuesses,
+  rewardFor,
+  MAX_TRIES,
+  type Guess,
+  type GameStatus,
+} from '../lib/game-logic'
+import { authClient } from '../lib/auth-client'
+import { claimProgress, enqueueSync, fetchMyProgress, flushOutbox } from '../lib/progress'
 import { useDarkMode } from './useDarkMode'
 import { useSoundSettings } from './useSoundSettings'
 
-const MAX_TRIES = 3
 const OLD_TODAY_KEY = 'logodle_today_v1'
 const OLD_HISTORY_KEY = 'logodle_history_v1'
-const DAYS_KEY = 'logodle_days_v1'
+const DAYS_KEY = 'logodle_days_v2'
 
 interface DayRecord {
   guesses: Guess[]
   status: GameStatus
+  reward: number
 }
 
 type DaysRecord = Record<string, DayRecord>
@@ -25,7 +36,7 @@ interface OldSavedToday {
   status: GameStatus
 }
 
-const EMPTY_DAY: DayRecord = { guesses: [], status: 'playing' }
+const EMPTY_DAY: DayRecord = { guesses: [], status: 'playing', reward: 0 }
 // A since-fixed devtools bug briefly wrote fake "won" records at day indices in this
 // range to simulate pile logos. Purge any that made it into a real browser's storage.
 const BOGUS_DAY_INDEX_THRESHOLD = -1_000_000
@@ -58,11 +69,11 @@ function loadDays(): DaysRecord {
   const migrated: DaysRecord = {}
   const oldHistory = loadJSON<Record<string, GameStatus>>(OLD_HISTORY_KEY, {})
   for (const [key, status] of Object.entries(oldHistory)) {
-    migrated[key] = { guesses: [], status }
+    migrated[key] = { guesses: [], status, reward: 0 }
   }
   const oldToday = loadJSON<OldSavedToday | null>(OLD_TODAY_KEY, null)
   if (oldToday) {
-    migrated[String(oldToday.dayIndex)] = { guesses: oldToday.guesses, status: oldToday.status }
+    migrated[String(oldToday.dayIndex)] = { guesses: oldToday.guesses, status: oldToday.status, reward: 0 }
   }
   saveJSON(DAYS_KEY, migrated)
   return migrated
@@ -97,6 +108,52 @@ export function useGameState() {
   useEffect(() => {
     saveJSON(DAYS_KEY, days)
   }, [days])
+
+  // Flush any queued day-completions that couldn't sync earlier (offline, a
+  // dropped request, etc.) once on mount and whenever connectivity returns.
+  useEffect(() => {
+    void flushOutbox()
+    window.addEventListener('online', flushOutbox)
+    return () => window.removeEventListener('online', flushOutbox)
+  }, [])
+
+  // The moment a session exists (email/password sign-in, sign-up, or the
+  // GitHub OAuth redirect landing back on this page), claim any anonymous
+  // rows into the account, then overwrite local state with D1's answer.
+  // This overwrite is the actual anti-tamper enforcement point: anything in
+  // localStorage that D1 doesn't independently corroborate is discarded.
+  const session = authClient.useSession()
+  const userId = session.data?.user.id
+  useEffect(() => {
+    if (!userId) return
+    let cancelled = false
+    claimProgress()
+      .then(() => fetchMyProgress())
+      .then((remote) => {
+        if (cancelled || !remote) return
+        setDays((prev) => {
+          const next: DaysRecord = {}
+          for (const [key, value] of Object.entries(remote)) {
+            next[key] = { guesses: value.guesses, status: value.status, reward: value.reward }
+          }
+          // D1 is authoritative for every day it has a row for. A day this
+          // browser is still mid-guess on (status 'playing') has no D1 row
+          // yet — enqueueSync only fires once a day resolves — so without
+          // this, every mount with an active session would silently wipe
+          // whatever guesses were made since the last successful sync,
+          // and repeatedly reloading would hand the player fresh tries on
+          // an already-started day. Preserve exactly those local-only
+          // in-progress records; everything else comes from D1.
+          for (const [key, record] of Object.entries(prev)) {
+            if (record.status === 'playing' && !(key in next)) next[key] = record
+          }
+          return next
+        })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [userId])
 
   // Check once a second whether the real day has rolled over; if it has and
   // we're pinned to today, follow it. If the user has navigated to a past
@@ -137,18 +194,21 @@ export function useGameState() {
     }
     if (record.status === 'won' && bank) {
       const dayIndex = Number(key)
-      foundLogos.push({ dayIndex, logo: pickLogo(bank, dayIndex), count: MAX_TRIES + 1 - record.guesses.length })
+      foundLogos.push({ dayIndex, logo: pickLogo(bank, dayIndex), count: record.reward })
     }
   }
   const streak = computeStreak(history, todayIndex)
 
   function submitGuess(text: string) {
     if (!logo || dayRecord.status !== 'playing' || !text.trim()) return
-    const correct = isCorrectGuess(text, logo)
-    const guesses = [...dayRecord.guesses, { text: text.trim(), correct }]
-    const status: GameStatus = correct ? 'won' : guesses.length >= MAX_TRIES ? 'lost' : 'playing'
-    setDays((prev) => ({ ...prev, [String(activeDayIndex)]: { guesses, status } }))
-    return { status, attempts: guesses.length }
+    const priorTexts = dayRecord.guesses.map((g) => g.text)
+    const { guesses, status } = resolveGuesses([...priorTexts, text.trim()], logo)
+    const reward = rewardFor(status, guesses, isToday)
+    setDays((prev) => ({ ...prev, [String(activeDayIndex)]: { guesses, status, reward } }))
+    if (status !== 'playing') {
+      enqueueSync(activeDayIndex, guesses.map((g) => g.text))
+    }
+    return { status, attempts: guesses.length, reward }
   }
 
   function viewDay(dayIndex: number) {

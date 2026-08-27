@@ -26,7 +26,7 @@ function LoginPage() {
         setError(signInError.message ?? m.login_generic_error());
         return;
       }
-      navigate({ to: "/admin" });
+      navigate({ to: "/" });
     },
   });
 
@@ -34,7 +34,7 @@ function LoginPage() {
     setError(null);
     const { error: signInError } = await authClient.signIn.social({
       provider: "github",
-      callbackURL: "/admin",
+      callbackURL: "/",
     });
     if (signInError) {
       setError(signInError.message ?? m.login_generic_error());

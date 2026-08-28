@@ -1,6 +1,6 @@
 import type { Logo } from '@slogodle/logos'
-import { ARCHIVE_DAYS, pickLogo, type GameStatus } from '../lib/game-logic'
-import { m } from '../paraglide/messages.js'
+import { ARCHIVE_DAYS, type GameStatus } from '../lib/game-logic'
+import { ArchiveDayButton } from './ArchiveDayButton'
 import styles from './ArchivePanel.module.css'
 
 interface ArchivePanelProps {
@@ -13,33 +13,23 @@ interface ArchivePanelProps {
 }
 
 export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelectDay, bank }: ArchivePanelProps) {
-  const rows = []
-  for (let offset = 1; offset <= ARCHIVE_DAYS; offset++) {
-    const idx = dayIndex - offset
-    if (idx < 0) continue
-    const result = history[String(idx)]
-    const statusClass = result === 'won' ? styles.archiveWon : result === 'lost' ? styles.archiveLost : styles.archiveUnplayed
-    const statusLabel =
-      result === 'won' ? m.archive_status_solved() : result === 'lost' ? m.archive_status_missed() : m.archive_status_unplayed()
-    const name = result === 'won' || result === 'lost' ? pickLogo(bank, idx).name : null
-    rows.push(
-      <button
-        type="button"
-        className={`${styles.archiveDay} ${idx === activeDayIndex ? styles.archiveDayActive : ''}`}
-        key={idx}
-        onClick={() => onSelectDay(idx)}
-        aria-current={idx === activeDayIndex ? 'true' : undefined}
-      >
-        <span className={`${styles.archiveDot} ${statusClass}`} role="img" aria-label={statusLabel} />
-        <span>#{idx + 1}</span>
-        {name && <span className={styles.archiveDayLabel}>{name}</span>}
-      </button>,
-    )
-  }
+  const dayIndices = Array.from({ length: ARCHIVE_DAYS }, (_, i) => dayIndex - 1 - i).filter((idx) => idx >= 0)
 
   return (
     <div className={`${styles.archivePanel} ${open ? styles.archivePanelOpen : ''}`}>
-      <div className={styles.archiveDays}>{open ? rows : null}</div>
+      <div className={styles.archiveDays}>
+        {open &&
+          dayIndices.map((idx) => (
+            <ArchiveDayButton
+              key={idx}
+              dayIdx={idx}
+              active={idx === activeDayIndex}
+              result={history[String(idx)]}
+              bank={bank}
+              onSelectDay={onSelectDay}
+            />
+          ))}
+      </div>
     </div>
   )
 }

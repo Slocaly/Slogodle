@@ -1,6 +1,6 @@
 // src/components/StatusBadge.tsx
 import { m } from "../paraglide/messages.js";
-import { CheckIcon, CrossIcon } from "./StatusIcons";
+import { CheckIcon, CrossIcon } from "./icons/StatusIcons.js";
 import styles from "./StatusBadge.module.css";
 
 interface StatusBadgeProps {

@@ -29,59 +29,6 @@
   flex-wrap: wrap;
 }
 
-.archiveDay {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font: inherit;
-  background: none;
-  border: none;
-  padding: 4px 6px;
-  border-radius: 10px;
-  font-size: 13px;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.archiveDay:hover {
-  background: var(--toggle-bg);
-  color: var(--text);
-}
-
-.archiveDayActive {
-  background: var(--accent-lavender);
-  color: var(--text);
-}
-
-.archiveDay:hover .archiveDayLabel,
-.archiveDayActive .archiveDayLabel {
-  color: inherit;
-}
-
-.archiveDayLabel {
-  color: var(--faint);
-}
-
-.archiveDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.archiveWon {
-  background: var(--success);
-}
-
-.archiveLost {
-  background: var(--danger);
-}
-
-.archiveUnplayed {
-  background: var(--border);
-}
-
 @media (max-width: 640px) {
   .archiveDays {
     padding: 14px 20px;

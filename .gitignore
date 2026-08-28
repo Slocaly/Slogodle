@@ -1,5 +1,6 @@
 # build output
 dist/
+apps/video/build/
 # generated types
 .tanstack/
 

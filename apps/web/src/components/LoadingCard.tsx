@@ -1,7 +1,6 @@
-// src/components/LoadingCard.tsx
 import { m } from "../paraglide/messages.js";
 import shared from "../styles/shared.module.css";
-import { CrossIcon } from "./StatusIcons";
+import { CrossIcon } from "./icons/StatusIcons.js";
 import styles from "./LoadingCard.module.css";
 
 interface LoadingCardProps {

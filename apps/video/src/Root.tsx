@@ -1,20 +1,16 @@
 import { Composition } from "remotion";
-import { pickRandomLogo, pickLogoQuiz } from "./lib/pickLogos";
-import { GuessTheLogo, REVEAL_SCENE_FRAMES } from "./compositions/GuessTheLogo";
-import { GuessTheLogoSchema } from "./compositions/GuessTheLogo/schema";
+import { pickRandomLogo } from "./lib/pickLogos";
+import { GuessTheLogo } from "./compositions/GuessTheLogo";
+import { REVEAL_SCENE_FRAMES } from "./compositions/GuessTheLogo/constants";
+import { GuessTheLogoSchema, type LogoName } from "./compositions/GuessTheLogo/schema";
 import {
   LogoMultipleChoice,
 } from "./compositions/LogoMultipleChoice/LogoMultipleChoice";
 import { LogoMultipleChoiceSchema } from "./compositions/LogoMultipleChoice/schema";
 import { Outro, OUTRO_FRAMES } from "./compositions/Outro";
-import { QUESTION_FRAMES, REVEAL_HOLD_FRAMES } from "./compositions/LogoMultipleChoice/constants";
-import { getChoicesFrames } from "./compositions/LogoMultipleChoice/utils/get-choices-frames";
+import { TOTAL_FRAMES } from "./compositions/LogoMultipleChoice/constants";
 
 const defaultGuess = pickRandomLogo();
-const defaultQuiz = pickLogoQuiz();
-const defaultDecoyNames = defaultQuiz.choices
-  .filter((logo) => logo.name !== defaultQuiz.target.name)
-  .map((logo) => logo.name);
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -27,7 +23,12 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         durationInFrames={150 + REVEAL_SCENE_FRAMES + OUTRO_FRAMES}
-        defaultProps={{ logoName: defaultGuess.name, revealDelayInFrames: 150 }}
+        defaultProps={{
+          logoName: defaultGuess.name as LogoName,
+          revealDelayInFrames: 150,
+          musicSrc: "music/HoliznaCC0 - Tetrapod.mp3",
+          debugSafeZones: false,
+        }}
         calculateMetadata={({ props }) => ({
           durationInFrames: props.revealDelayInFrames + REVEAL_SCENE_FRAMES + OUTRO_FRAMES,
         })}
@@ -39,23 +40,17 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
-        durationInFrames={
-          QUESTION_FRAMES +
-          getChoicesFrames(defaultDecoyNames.length + 1) +
-          REVEAL_HOLD_FRAMES +
-          OUTRO_FRAMES
-        }
+        durationInFrames={TOTAL_FRAMES}
         defaultProps={{
-          targetLogoName: defaultQuiz.target.name,
-          decoyLogoNames: defaultDecoyNames,
+          targetLogoName: "Brain.js" as const,
+          decoyLogoNames: [
+            "Spring" as const,
+            "Solidity" as const,
+            "Waku" as const,
+          ],
+          musicSrc: "music/HoliznaCC0 - Break from Reality.mp3",
+          debugSafeZones: false,
         }}
-        calculateMetadata={({ props }) => ({
-          durationInFrames:
-            QUESTION_FRAMES +
-            getChoicesFrames(props.decoyLogoNames.length + 1) +
-            REVEAL_HOLD_FRAMES +
-            OUTRO_FRAMES,
-        })}
       />
       <Composition
         id="Outro"

@@ -1,19 +1,14 @@
-import {
-  AbsoluteFill,
-  interpolate,
-  random,
-  Sequence,
-  useCurrentFrame,
-} from "remotion";
+import { AbsoluteFill, interpolate, random, Sequence, useCurrentFrame } from "remotion";
 import { LOGOS, type Logo } from "@slogodle/logos";
 import { theme } from "../../lib/theme";
 import { useAnimatedGradientBackground } from "../../lib/animatedGradientBackground";
-import { Outro, OUTRO_FRAMES } from "../Outro";
 import type { LogoMultipleChoiceProps } from "./schema";
 import { QuestionTitle } from "./components/QuestionTitle";
-import { getChoicesFrames } from "./utils/get-choices-frames";
-import { OUTRO_TRANSITION_FRAMES, QUESTION_FRAMES, REVEAL_HOLD_FRAMES } from "./constants";
 import { ChoiceGrid } from "./components/ChoiceGrid";
+import { MusicBed } from "./components/MusicBed";
+import { Outro } from "../Outro";
+import { OUTRO_BEAT_FRAMES, OUTRO_START_FRAME, OUTRO_TRANSITION_FRAMES } from "./constants";
+import { SafeZoneOverlay } from "./components/SafeZoneOverlay";
 
 function resolveLogo(name: string): Logo {
   const logo = LOGOS.find((candidate) => candidate.name === name);
@@ -26,6 +21,8 @@ function resolveLogo(name: string): Logo {
 export const LogoMultipleChoice: React.FC<LogoMultipleChoiceProps> = ({
   targetLogoName,
   decoyLogoNames,
+  musicSrc,
+  debugSafeZones,
 }) => {
   const frame = useCurrentFrame();
   const target = resolveLogo(targetLogoName);
@@ -33,15 +30,13 @@ export const LogoMultipleChoice: React.FC<LogoMultipleChoiceProps> = ({
   // Deterministic (not Math.random) so the layout stays identical across frame renders.
   const targetIndex = Math.floor(random(targetLogoName) * (decoys.length + 1));
   const choices = [...decoys.slice(0, targetIndex), target, ...decoys.slice(targetIndex)];
-  const choicesFrames = getChoicesFrames(choices.length);
-  const outroStart = QUESTION_FRAMES + choicesFrames + REVEAL_HOLD_FRAMES;
+  const background = useAnimatedGradientBackground();
   const contentOpacity = interpolate(
     frame,
-    [outroStart - OUTRO_TRANSITION_FRAMES, outroStart],
+    [OUTRO_START_FRAME - OUTRO_TRANSITION_FRAMES, OUTRO_START_FRAME],
     [1, 0],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
-  const background = useAnimatedGradientBackground();
 
   return (
     <AbsoluteFill
@@ -50,27 +45,15 @@ export const LogoMultipleChoice: React.FC<LogoMultipleChoiceProps> = ({
         fontFamily: theme.fontFamily,
       }}
     >
+      <MusicBed src={musicSrc} />
       <AbsoluteFill style={{ opacity: contentOpacity }}>
-        <Sequence
-          name="Question"
-          durationInFrames={QUESTION_FRAMES + choicesFrames + REVEAL_HOLD_FRAMES}
-          premountFor={30}
-        >
-          <QuestionTitle targetName={target.name} />
-        </Sequence>
-        <Sequence
-          name="Choices"
-          from={QUESTION_FRAMES}
-          durationInFrames={choicesFrames + REVEAL_HOLD_FRAMES}
-          premountFor={30}
-        >
-          <ChoiceGrid choices={choices} target={target} revealAt={choicesFrames} />
-        </Sequence>
+        <QuestionTitle targetName={target.name} />
+        <ChoiceGrid choices={choices} target={target} />
       </AbsoluteFill>
-      <Sequence name="Outro" from={outroStart} durationInFrames={OUTRO_FRAMES}>
+      <Sequence name="Outro" from={OUTRO_START_FRAME} durationInFrames={OUTRO_BEAT_FRAMES}>
         <Outro />
       </Sequence>
+      {debugSafeZones && <SafeZoneOverlay />}
     </AbsoluteFill>
   );
 };
-

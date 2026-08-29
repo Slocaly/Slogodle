@@ -29,6 +29,8 @@
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
+    "render": "remotion render LogoMultipleChoice out/LogoMultipleChoice.mp4 --video-bitrate=9M",
+    "render:guess": "remotion render GuessTheLogo out/GuessTheLogo.mp4 --video-bitrate=9M",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   }

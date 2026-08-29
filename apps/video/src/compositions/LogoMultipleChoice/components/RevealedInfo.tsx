@@ -1,11 +1,11 @@
 import { Logo } from "@slogodle/logos"
 import { theme } from "../../../lib/theme"
-import { CARD_SIZE, DESCRIPTION_DELAY_FRAMES, DESCRIPTION_FADE_FRAMES, NAME_DELAY_FRAMES, NAME_FADE_FRAMES, WINNER_CENTER_Y_OFFSET, WINNER_SCALE } from "../constants"
+import { CARD_SIZE, DESCRIPTION_DELAY_FRAMES, DESCRIPTION_FADE_FRAMES, NAME_DELAY_FRAMES, NAME_FADE_FRAMES, REVEAL_AT_FRAME, WINNER_CENTER_Y_OFFSET, WINNER_SCALE } from "../constants"
 import { interpolate, useCurrentFrame } from "remotion";
 
-export const RevealedInfo = ({ target, revealAt }: { target: Logo; revealAt: number }) => {
+export const RevealedInfo = ({ target }: { target: Logo }) => {
     const frame = useCurrentFrame();
-    const revealed = frame >= revealAt;
+    const revealed = frame >= REVEAL_AT_FRAME;
 
     if (!revealed) {
         return null;
@@ -14,15 +14,15 @@ export const RevealedInfo = ({ target, revealAt }: { target: Logo; revealAt: num
     const descriptionOpacity = interpolate(
         frame,
         [
-            revealAt + DESCRIPTION_DELAY_FRAMES,
-            revealAt + DESCRIPTION_DELAY_FRAMES + DESCRIPTION_FADE_FRAMES,
+            REVEAL_AT_FRAME + DESCRIPTION_DELAY_FRAMES,
+            REVEAL_AT_FRAME + DESCRIPTION_DELAY_FRAMES + DESCRIPTION_FADE_FRAMES,
         ],
         [0, 1],
         { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
     );
     const nameOpacity = interpolate(
         frame,
-        [revealAt + NAME_DELAY_FRAMES, revealAt + NAME_DELAY_FRAMES + NAME_FADE_FRAMES],
+        [REVEAL_AT_FRAME + NAME_DELAY_FRAMES, REVEAL_AT_FRAME + NAME_DELAY_FRAMES + NAME_FADE_FRAMES],
         [0, 1],
         { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
     );

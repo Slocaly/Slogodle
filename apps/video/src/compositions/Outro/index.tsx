@@ -74,9 +74,10 @@ export const Outro: React.FC = () => {
                 <Sequence from={i * LETTER_STAGGER} layout="none">
                   <Html5Audio
                     src={staticFile("sounds/bubble.wav")}
-                    volume={0.4}
+                    volume={0.8}
                     playbackRate={1 + i * BUBBLE_PITCH_STEP}
                     preservePitch={false}
+                    toneFrequency={1 + i * BUBBLE_PITCH_STEP}
                   />
                 </Sequence>
                 <span

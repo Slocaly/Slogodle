@@ -28,8 +28,11 @@ npm run dev
 **Render video**
 
 ```console
-npx remotion render
+npm run render        # LogoMultipleChoice
+npm run render:guess  # GuessTheLogo
 ```
+
+Both render at an explicit `--video-bitrate=9M` (mid-point of the 8-10 Mbps target for 1080x1920 — Remotion's default bitrate is too low for the pastel gradient backgrounds and bands visibly). An alternative worth trying if a render still looks compressed: swap the flag for `--crf=16` — content-adaptive, often better quality-per-bit than a fixed bitrate, at the cost of a less predictable file size.
 
 **Upgrade Remotion**
 

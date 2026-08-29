@@ -15,20 +15,31 @@ import { theme } from "../../lib/theme";
 import { useAnimatedGradientBackground } from "../../lib/animatedGradientBackground";
 import { resolveLogoIcon } from "../../lib/pickLogos";
 import { Outro, OUTRO_FRAMES } from "../Outro";
+import { MusicBed } from "./components/MusicBed";
+import { SafeZoneOverlay } from "./components/SafeZoneOverlay";
+import {
+  COUNTDOWN_BADGE_SIZE,
+  COUNTDOWN_BAR_WIDTH_RATIO,
+  COUNTDOWN_BOTTOM_OFFSET,
+  COUNTDOWN_FONT_SIZE,
+  DESCRIPTION_DELAY_FRAMES,
+  DESCRIPTION_FADE_FRAMES,
+  NAME_DELAY_FRAMES,
+  NAME_FADE_FRAMES,
+  OUTRO_TRANSITION_FRAMES,
+  REVEAL_SCENE_FRAMES,
+  REVEAL_TRANSITION_FRAMES,
+  SETTLE_FRAMES,
+} from "./constants";
 import type { GuessTheLogoProps } from "./schema";
 
-export const REVEAL_SCENE_FRAMES = 90;
-const REVEAL_POP_FRAMES = 12;
-const OUTRO_TRANSITION_FRAMES = 20;
-const NAME_DELAY_FRAMES = 20;
-const NAME_FADE_FRAMES = 15;
-const DESCRIPTION_DELAY_FRAMES = 35;
-const DESCRIPTION_FADE_FRAMES = 15;
+export { REVEAL_SCENE_FRAMES } from "./constants";
 
 export const GuessTheLogo: React.FC<GuessTheLogoProps> = ({
   logoName,
   revealDelayInFrames,
   musicSrc,
+  debugSafeZones,
 }) => {
   const logo = LOGOS.find((candidate) => candidate.name === logoName);
 
@@ -45,7 +56,11 @@ export const GuessTheLogo: React.FC<GuessTheLogoProps> = ({
         fontFamily: theme.fontFamily,
       }}
     >
-      {musicSrc && <Audio src={staticFile(musicSrc)} volume={0.25} loop />}
+      <MusicBed
+        src={musicSrc}
+        revealAtFrame={revealDelayInFrames}
+        revealTransitionFrames={REVEAL_TRANSITION_FRAMES}
+      />
       <Sequence name="Guess" durationInFrames={revealDelayInFrames + REVEAL_SCENE_FRAMES}>
         <GuessSceneWithFade logo={logo} revealDelayInFrames={revealDelayInFrames} />
       </Sequence>
@@ -56,13 +71,14 @@ export const GuessTheLogo: React.FC<GuessTheLogoProps> = ({
       >
         <Outro />
       </Sequence>
+      {debugSafeZones && <SafeZoneOverlay />}
     </AbsoluteFill>
   );
 };
 
 function getTickFrames(revealDelayInFrames: number, fps: number): number[] {
   const frames: number[] = [];
-  for (let k = 1; revealDelayInFrames - k * fps > 0; k++) {
+  for (let k = 1; revealDelayInFrames - k * fps > SETTLE_FRAMES; k++) {
     frames.push(revealDelayInFrames - k * fps);
   }
   return frames;
@@ -97,22 +113,53 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
   const revealed = frame >= revealDelayInFrames;
   const secondsLeft = Math.max(1, Math.ceil((revealDelayInFrames - frame) / fps));
 
-  const titleScale = spring({ frame, fps, config: { damping: 12 } });
-  const titleOpacity = interpolate(frame, [0, 15], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // Settle only — title and logo are already fully visible at frame 0, this
+  // just eases them in from a slightly smaller/lower resting position.
+  const titleSettle = spring({ frame, fps, config: { damping: 14 }, durationInFrames: SETTLE_FRAMES });
+  const titleScale = 0.94 + titleSettle * 0.06;
 
-  const logoScale = spring({ frame, fps, config: { damping: 12 } });
+  const logoSettle = spring({ frame, fps, config: { damping: 14 }, durationInFrames: SETTLE_FRAMES });
+  const logoEntranceScale = 0.9 + logoSettle * 0.1;
+
+  // Quick overshoot pop on the logo once the answer is revealed.
+  const logoRevealPop = revealed
+    ? spring({
+        frame: frame - revealDelayInFrames,
+        fps,
+        config: { damping: 7, stiffness: 160 },
+        durationInFrames: REVEAL_TRANSITION_FRAMES,
+      })
+    : 0;
+  const logoScale = logoEntranceScale * (1 + logoRevealPop * 0.1);
+
+  // The prompt shrinks/fades away once revealed, handing focus to the answer.
+  const titleRevealShrink = interpolate(
+    frame,
+    [revealDelayInFrames, revealDelayInFrames + REVEAL_TRANSITION_FRAMES],
+    [1, 0.55],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
+  const titleRevealOpacity = interpolate(
+    frame,
+    [revealDelayInFrames, revealDelayInFrames + REVEAL_TRANSITION_FRAMES],
+    [1, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
+  const titleTop = interpolate(
+    frame,
+    [revealDelayInFrames, revealDelayInFrames + REVEAL_TRANSITION_FRAMES],
+    [90, 32],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
 
   const countdownOpacity = interpolate(
     frame,
-    [revealDelayInFrames, revealDelayInFrames + REVEAL_POP_FRAMES],
+    [revealDelayInFrames, revealDelayInFrames + REVEAL_TRANSITION_FRAMES],
     [1, 0],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
-  const drainProgress = interpolate(frame, [0, revealDelayInFrames], [0, 1], {
+  const drainProgress = interpolate(frame, [SETTLE_FRAMES, revealDelayInFrames], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -158,15 +205,15 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
       <div
         style={{
           position: "absolute",
-          top: 90,
+          top: titleTop,
           left: 0,
           right: 0,
           textAlign: "center",
           fontSize: 120,
           fontWeight: 700,
           color: theme.colors.text,
-          opacity: titleOpacity,
-          transform: `scale(${titleScale})`,
+          opacity: titleRevealOpacity,
+          transform: `scale(${titleScale * titleRevealShrink})`,
         }}
       >
         Guess the logo!
@@ -184,30 +231,42 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
         <div
           style={{
             position: "absolute",
-            bottom: 80,
-            width: "80%",
+            bottom: COUNTDOWN_BOTTOM_OFFSET,
+            left: 0,
+            right: 0,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: 20,
-            opacity: countdownOpacity,
+            gap: 40,
           }}
         >
           <div
             style={{
-              fontSize: 96,
-              fontWeight: 700,
+              width: COUNTDOWN_BADGE_SIZE,
+              height: COUNTDOWN_BADGE_SIZE,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: COUNTDOWN_FONT_SIZE,
+              lineHeight: 1,
+              fontWeight: 800,
               color: urgentColor,
+              opacity: countdownOpacity,
+              backgroundColor: theme.colors.cardBg,
+              border: `6px solid ${urgentColor}`,
+              borderRadius: "50%",
+              boxShadow: `0 8px 32px ${urgentColor}55`,
             }}
           >
             {secondsLeft}
           </div>
           <div
             style={{
-              width: "100%",
+              width: `${COUNTDOWN_BAR_WIDTH_RATIO * 100}%`,
               height: 28,
               borderRadius: 999,
               backgroundColor: theme.colors.border,
+              opacity: countdownOpacity,
               overflow: "hidden",
             }}
           >

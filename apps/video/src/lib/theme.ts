@@ -17,7 +17,7 @@ export const theme = {
     border: "oklch(0.86 0.035 300)",
     success: "oklch(0.56 0.15 155)",
     danger: "oklch(0.6 0.19 15)",
-    accentPink: "oklch(0.78 0.14 350)",
+    accentPink: "oklch(0.6 0.19 350)",
     accentYellow: "oklch(0.87 0.13 95)",
     accentLavender: "oklch(0.8 0.1 300)",
   },

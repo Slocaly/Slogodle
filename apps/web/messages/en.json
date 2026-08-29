@@ -13,6 +13,8 @@
   "hint_industry": "Industry: {industry}",
   "hint_founded": "Founded: {founded}",
   "back_to_today": "← Back to today",
+  "day_nav_previous": "Previous day",
+  "day_nav_next": "Next day",
   "countdown_eyebrow": "Next logo in",
   "reveal_github_cta": "Learn more",
   "reveal_login_cta": "Save your streak — sign up",
@@ -23,6 +25,7 @@
   "archive_status_solved": "Solved",
   "archive_status_missed": "Missed",
   "archive_status_unplayed": "Not played",
+  "archive_see_more": "See more",
   "logo_label_playing": "#{day}",
   "logo_label_solved": "#{day}",
   "logo_label_missed": "#{day}",
@@ -64,5 +67,10 @@
   "account_menu_label": "Account",
   "account_login_label": "Log in",
   "account_signup_label": "Sign up",
-  "account_logout": "Log out"
+  "account_logout": "Log out",
+  "history_title": "Game history",
+  "history_back_to_game": "Back to game",
+  "history_login_cta": "Sign in to see your full game history.",
+  "history_login_link": "Sign in",
+  "history_empty": "No past games yet."
 }

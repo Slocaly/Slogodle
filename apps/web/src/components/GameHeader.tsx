@@ -12,7 +12,7 @@ const LETTER_STAGGER_MS = 100;
 const BUBBLE_PITCH_STEP = 0.1;
 
 interface GameHeaderProps {
-  onToggleArchive: () => void;
+  onToggleArchive?: () => void;
   dark: boolean;
   onToggleDark: () => void;
   soundEnabled: boolean;
@@ -39,7 +39,7 @@ export function GameHeader({
 
   const handleArchiveToggle = () => {
     playClick();
-    onToggleArchive();
+    onToggleArchive?.();
   };
 
   const handleDarkToggle = () => {
@@ -100,7 +100,7 @@ export function GameHeader({
         })()}
       </h1>
       <div className={styles.headerActions}>
-        <ArchiveToggle onToggleArchive={handleArchiveToggle} />
+        {onToggleArchive && <ArchiveToggle onToggleArchive={handleArchiveToggle} />}
         <SoundToggle
           soundEnabled={soundEnabled}
           onSoundToggle={handleSoundToggle}

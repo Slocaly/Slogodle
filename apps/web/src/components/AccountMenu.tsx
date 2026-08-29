@@ -32,7 +32,13 @@ export function AccountMenu() {
           session ? m.account_menu_label() : m.account_login_label()
         }
       >
-        <UserIcon />
+        {session?.user.name ? (
+          <span className={styles.initial}>
+            {session.user.name.charAt(0).toUpperCase()}
+          </span>
+        ) : (
+          <UserIcon />
+        )}
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner

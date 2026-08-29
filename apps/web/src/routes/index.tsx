@@ -1,6 +1,7 @@
 // src/routes/index.tsx
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { useGameState } from "../hooks/useGameState";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import { m } from "../paraglide/messages.js";
@@ -33,6 +34,15 @@ function Home() {
     g.soundEnabled,
   );
 
+  // Deep link from the history page: /?day=N jumps straight to that day,
+  // then the param is cleared so it doesn't stick around in the URL.
+  const [dayParam, setDayParam] = useQueryState("day", parseAsInteger);
+  useEffect(() => {
+    if (dayParam == null) return;
+    g.viewDay(dayParam);
+    void setDayParam(null);
+  }, [dayParam]);
+
   function handleGuess(text: string) {
     const result = g.submitGuess(text);
     if (result?.status === "won") {
@@ -47,6 +57,18 @@ function Home() {
 
   function handleFakeLaunch() {
     pileRef.current?.launchWin(g.maxTries);
+  }
+
+  function handlePrevDay() {
+    g.viewDay(g.dayIndex - 1);
+  }
+
+  function handleNextDay() {
+    if (g.dayIndex + 1 >= g.todayIndex) {
+      g.returnToToday();
+    } else {
+      g.viewDay(g.dayIndex + 1);
+    }
   }
 
   function handleAddRandomLogos() {
@@ -103,12 +125,21 @@ function Home() {
             history={g.history}
             onSelectDay={g.viewDay}
             bank={g.bank}
+            unlimited={g.isConnected}
           />
         </div>
         <main className={shared.gameArea} id="main">
           <div className={styles.cardStack}>
             {!isPlaying && g.isToday && <CountdownTimer />}
-            {!g.isToday && <BackToTodayButton onBackToday={g.returnToToday} />}
+            {!g.isToday && (
+              <BackToTodayButton
+                dayIndex={g.dayIndex}
+                todayIndex={g.todayIndex}
+                onBackToday={g.returnToToday}
+                onPrevDay={handlePrevDay}
+                onNextDay={handleNextDay}
+              />
+            )}
             <div className={shared.card}>
               <LogoCard
                 dayIndex={g.dayIndex}

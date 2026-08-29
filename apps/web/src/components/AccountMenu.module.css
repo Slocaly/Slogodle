@@ -18,6 +18,12 @@
   height: 18px;
 }
 
+.initial {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+}
+
 .trigger:hover,
 .trigger[data-pressed] {
   color: var(--accent-pink);

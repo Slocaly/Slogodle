@@ -63,103 +63,126 @@ function SignupPage() {
 
         <form
           className={styles.form}
+          noValidate
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
             void form.handleSubmit();
           }}
         >
-          <form.Field name="username">
-            {(field) => {
-              const errorText = fieldErrorText(field.state.meta.errors);
-              return (
-                <label className={styles.field}>
-                  <span className={styles.label}>
-                    {m.signup_username_label()}
-                  </span>
-                  <input
-                    type="text"
-                    className={styles.input}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                  {errorText && (
-                    <span className={styles.fieldError}>{errorText}</span>
-                  )}
-                </label>
-              );
-            }}
-          </form.Field>
+          <form.Subscribe selector={(state) => state.submissionAttempts > 0}>
+            {(hasSubmitted) => (
+              <>
+                <form.Field name="username">
+                  {(field) => {
+                    const errorText = hasSubmitted
+                      ? fieldErrorText(field.state.meta.errors)
+                      : null;
+                    return (
+                      <label className={styles.field}>
+                        <span className={styles.label}>
+                          {m.signup_username_label()}
+                        </span>
+                        <input
+                          type="text"
+                          className={styles.input}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {errorText && (
+                          <span className={styles.fieldError}>
+                            {errorText}
+                          </span>
+                        )}
+                      </label>
+                    );
+                  }}
+                </form.Field>
 
-          <form.Field name="email">
-            {(field) => {
-              const errorText = fieldErrorText(field.state.meta.errors);
-              return (
-                <label className={styles.field}>
-                  <span className={styles.label}>
-                    {m.signup_email_label()}
-                  </span>
-                  <input
-                    type="email"
-                    className={styles.input}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                  {errorText && (
-                    <span className={styles.fieldError}>{errorText}</span>
-                  )}
-                </label>
-              );
-            }}
-          </form.Field>
+                <form.Field name="email">
+                  {(field) => {
+                    const errorText = hasSubmitted
+                      ? fieldErrorText(field.state.meta.errors)
+                      : null;
+                    return (
+                      <label className={styles.field}>
+                        <span className={styles.label}>
+                          {m.signup_email_label()}
+                        </span>
+                        <input
+                          type="email"
+                          className={styles.input}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {errorText && (
+                          <span className={styles.fieldError}>
+                            {errorText}
+                          </span>
+                        )}
+                      </label>
+                    );
+                  }}
+                </form.Field>
 
-          <form.Field name="password">
-            {(field) => {
-              const errorText = fieldErrorText(field.state.meta.errors);
-              return (
-                <label className={styles.field}>
-                  <span className={styles.label}>
-                    {m.signup_password_label()}
-                  </span>
-                  <input
-                    type="password"
-                    className={styles.input}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                  {errorText && (
-                    <span className={styles.fieldError}>{errorText}</span>
-                  )}
-                </label>
-              );
-            }}
-          </form.Field>
+                <form.Field name="password">
+                  {(field) => {
+                    const errorText = hasSubmitted
+                      ? fieldErrorText(field.state.meta.errors)
+                      : null;
+                    return (
+                      <label className={styles.field}>
+                        <span className={styles.label}>
+                          {m.signup_password_label()}
+                        </span>
+                        <input
+                          type="password"
+                          className={styles.input}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {errorText && (
+                          <span className={styles.fieldError}>
+                            {errorText}
+                          </span>
+                        )}
+                      </label>
+                    );
+                  }}
+                </form.Field>
 
-          <form.Field name="confirmPassword">
-            {(field) => {
-              const errorText = fieldErrorText(field.state.meta.errors);
-              return (
-                <label className={styles.field}>
-                  <span className={styles.label}>
-                    {m.signup_confirm_password_label()}
-                  </span>
-                  <input
-                    type="password"
-                    className={styles.input}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                  {errorText && (
-                    <span className={styles.fieldError}>{errorText}</span>
-                  )}
-                </label>
-              );
-            }}
-          </form.Field>
+                <form.Field name="confirmPassword">
+                  {(field) => {
+                    const errorText = hasSubmitted
+                      ? fieldErrorText(field.state.meta.errors)
+                      : null;
+                    return (
+                      <label className={styles.field}>
+                        <span className={styles.label}>
+                          {m.signup_confirm_password_label()}
+                        </span>
+                        <input
+                          type="password"
+                          className={styles.input}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {errorText && (
+                          <span className={styles.fieldError}>
+                            {errorText}
+                          </span>
+                        )}
+                      </label>
+                    );
+                  }}
+                </form.Field>
+              </>
+            )}
+          </form.Subscribe>
 
           <form.Subscribe selector={(state) => state.isSubmitting}>
             {(isSubmitting) => (

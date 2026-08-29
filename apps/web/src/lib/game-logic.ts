@@ -11,6 +11,7 @@ export interface Guess {
 
 export const MAX_TRIES = 3
 export const ARCHIVE_DAYS = 5
+export const CONNECTED_ARCHIVE_DAYS = 10
 
 function localMidnight(date: Date): Date {
   const d = new Date(date)

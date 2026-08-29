@@ -25,8 +25,24 @@
 .archiveDays {
   padding: 18px 40px;
   display: flex;
+  align-items: center;
   gap: 28px;
   flex-wrap: wrap;
+}
+
+.archiveSeeMore {
+  font: inherit;
+  padding: 4px 6px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.archiveSeeMore:hover {
+  background: var(--toggle-bg);
+  color: var(--text);
 }
 
 @media (max-width: 640px) {

@@ -1,13 +1,18 @@
 .position {
   position: absolute;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 100%;
   margin-bottom: 20px;
-  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .button {
   display: block;
+  flex-shrink: 0;
+  white-space: nowrap;
   padding: 10px 24px;
   border-radius: 999px;
   background: var(--card-bg);
@@ -33,6 +38,53 @@
   transform: translateY(1px);
 }
 
+.dayNumber {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.arrowButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+  min-width: 36px;
+  height: 36px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--card-bg);
+  border: none;
+  color: var(--muted);
+  pointer-events: auto;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    0 3px 0 var(--shadow-color);
+  animation: barPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.arrowButton svg {
+  width: 14px;
+  height: 14px;
+}
+
+.arrowButton:hover:not(:disabled) {
+  color: var(--accent-pink);
+}
+
+.arrowButton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.arrowButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 @keyframes barPopIn {
   0% {
     opacity: 0;
@@ -47,10 +99,25 @@
 @media (max-width: 640px) {
   .position {
     margin-bottom: 14px;
+    gap: 6px;
   }
 
   .button {
     padding: 8px 18px;
     font-size: 12px;
+  }
+
+  .arrowButton {
+    min-width: 30px;
+    height: 30px;
+  }
+
+  .arrowButton svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .dayNumber {
+    font-size: 9px;
   }
 }

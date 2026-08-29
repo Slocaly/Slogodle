@@ -187,10 +187,12 @@ export function useGameState() {
   const logo = bank && bank.length > 0 ? pickLogo(bank, activeDayIndex) : null
 
   const history: Record<string, GameStatus> = {}
+  const dayGuesses: Record<string, Guess[]> = {}
   const foundLogos: { dayIndex: number; logo: Logo; count: number }[] = []
   for (const [key, record] of Object.entries(days)) {
     if (record.status !== 'playing') {
       history[key] = record.status
+      dayGuesses[key] = record.guesses
     }
     if (record.status === 'won' && bank) {
       const dayIndex = Number(key)
@@ -251,8 +253,10 @@ export function useGameState() {
     soundEnabled,
     toggleSound,
     history,
+    dayGuesses,
     foundLogos,
     streak,
     maxTries: MAX_TRIES,
+    isConnected: !!userId,
   }
 }

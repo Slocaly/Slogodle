@@ -1,0 +1,174 @@
+.body {
+  padding: 32px 40px;
+  color: var(--text);
+  font-family: "Fredoka", sans-serif;
+  pointer-events: auto;
+}
+
+@media (max-width: 640px) {
+  .body {
+    padding: 20px;
+  }
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--accent-pink);
+}
+
+.title {
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.loginLink {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px 12px;
+  border-radius: 16px;
+  background: var(--card-bg);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    0 8px 20px -12px var(--shadow-color);
+  transition: transform 0.15s ease;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.cardDot {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.cardGithub {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: var(--muted);
+}
+
+.cardGithub:hover {
+  color: var(--text);
+  background: var(--toggle-bg);
+}
+
+.cardGithub svg {
+  width: 13px;
+  height: 13px;
+}
+
+.cardLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cardArt {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.cardImg {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.cardBlur {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  filter: blur(9px);
+  opacity: 0.8;
+}
+
+.cardBlur[data-hue="0"] {
+  background: var(--accent-pink);
+}
+
+.cardBlur[data-hue="1"] {
+  background: var(--accent-yellow);
+}
+
+.cardBlur[data-hue="2"] {
+  background: var(--accent-lavender);
+}
+
+.cardDay {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.cardName {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.cardMeta {
+  width: 100%;
+  margin: 2px 0;
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardMetaHidden {
+  visibility: hidden;
+}
+
+.cardDots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}

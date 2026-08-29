@@ -1,6 +1,8 @@
 import type { Logo } from '@slogodle/logos'
-import { ARCHIVE_DAYS, type GameStatus } from '../lib/game-logic'
+import { Link } from '@tanstack/react-router'
+import { ARCHIVE_DAYS, CONNECTED_ARCHIVE_DAYS, type GameStatus } from '../lib/game-logic'
 import { ArchiveDayButton } from './ArchiveDayButton'
+import { m } from '../paraglide/messages.js'
 import styles from './ArchivePanel.module.css'
 
 interface ArchivePanelProps {
@@ -10,10 +12,12 @@ interface ArchivePanelProps {
   history: Record<string, GameStatus>
   onSelectDay: (dayIndex: number) => void
   bank: Logo[]
+  unlimited?: boolean
 }
 
-export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelectDay, bank }: ArchivePanelProps) {
-  const dayIndices = Array.from({ length: ARCHIVE_DAYS }, (_, i) => dayIndex - 1 - i).filter((idx) => idx >= 0)
+export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelectDay, bank, unlimited }: ArchivePanelProps) {
+  const pastDaysCount = unlimited ? CONNECTED_ARCHIVE_DAYS : ARCHIVE_DAYS
+  const dayIndices = Array.from({ length: pastDaysCount }, (_, i) => dayIndex - 1 - i).filter((idx) => idx >= 0)
 
   return (
     <div className={`${styles.archivePanel} ${open ? styles.archivePanelOpen : ''}`}>
@@ -29,6 +33,11 @@ export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelect
               onSelectDay={onSelectDay}
             />
           ))}
+        {open && unlimited && (
+          <Link to="/history" className={styles.archiveSeeMore}>
+            {m.archive_see_more()}
+          </Link>
+        )}
       </div>
     </div>
   )

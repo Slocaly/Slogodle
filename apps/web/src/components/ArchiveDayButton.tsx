@@ -3,7 +3,7 @@ import { pickLogo, type GameStatus } from '../lib/game-logic'
 import { m } from '../paraglide/messages.js'
 import styles from './ArchiveDayButton.module.css'
 
-const STATUS_META: Record<'won' | 'lost' | 'unplayed', { dotClass: keyof typeof styles; label: () => string }> = {
+export const STATUS_META: Record<'won' | 'lost' | 'unplayed', { dotClass: keyof typeof styles; label: () => string }> = {
   won: { dotClass: 'archiveWon', label: m.archive_status_solved },
   lost: { dotClass: 'archiveLost', label: m.archive_status_missed },
   unplayed: { dotClass: 'archiveUnplayed', label: m.archive_status_unplayed },

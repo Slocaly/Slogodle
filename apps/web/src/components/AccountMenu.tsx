@@ -1,13 +1,30 @@
 import { Menu } from "@base-ui/react/menu";
 import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { m } from "../paraglide/messages.js";
 import { authClient } from "../lib/auth-client";
+import { fetchIsAdmin } from "../lib/session";
 import { UserIcon } from "./icons/UserIcon";
 import styles from "./AccountMenu.module.css";
 
 export function AccountMenu() {
   const navigate = useNavigate();
   const { data: session, isPending } = authClient.useSession();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!session) {
+      setIsAdmin(false);
+      return;
+    }
+    let cancelled = false;
+    fetchIsAdmin().then((result) => {
+      if (!cancelled) setIsAdmin(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
 
   if (isPending) return null;
 
@@ -22,6 +39,10 @@ export function AccountMenu() {
 
   const handleSignup = () => {
     navigate({ to: "/signup" });
+  };
+
+  const handleAdmin = () => {
+    navigate({ to: "/admin" });
   };
 
   return (
@@ -50,6 +71,14 @@ export function AccountMenu() {
             {session ? (
               <>
                 <div className={styles.name}>{session.user.name}</div>
+                {isAdmin && (
+                  <Menu.Item
+                    className={styles.menuItem}
+                    onClick={handleAdmin}
+                  >
+                    {m.account_admin_label()}
+                  </Menu.Item>
+                )}
                 <Menu.Item
                   className={styles.menuItem}
                   onClick={handleLogout}

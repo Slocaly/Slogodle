@@ -4,8 +4,9 @@ import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { now } from "../lib/clock";
 import { dayIndexFor } from "../lib/game-logic";
 import { useDarkMode } from "../hooks/useDarkMode";
-import { DarkModeToggle } from "../components/DarkModeToggle";
-import { AccountMenu } from "../components/AccountMenu";
+import { useSoundSettings } from "../hooks/useSoundSettings";
+import { useSoundEffects } from "../hooks/useSoundEffects";
+import { GameHeader } from "../components/GameHeader";
 import { fetchR2Logos, type R2Logo } from "../lib/r2-logos";
 import { fetchIsAdmin } from "../lib/session";
 import {
@@ -63,6 +64,8 @@ function dateForOffset(offset: number | null): string {
 
 function AdminPage() {
   const { dark, toggleDark } = useDarkMode();
+  const { soundEnabled, toggleSound } = useSoundSettings();
+  const { playClick, playBubble } = useSoundEffects(soundEnabled);
   const [sortMode, setSortMode] = useQueryState("sort", sortModeParser);
   const [viewMode, setViewMode] = useQueryState("view", viewModeParser);
   const [search, setSearch] = useState("");
@@ -145,10 +148,12 @@ function AdminPage() {
       dayBank.length
     : 0;
   const dayRows = [
-    ...dayBank.map((entry, index) => ({
-      entry,
-      offset: (index - dayTodayIndex + dayBank.length) % dayBank.length,
-    })),
+    ...dayBank
+      .map((entry, index) => ({
+        entry,
+        offset: (index - dayTodayIndex + dayBank.length) % dayBank.length,
+      }))
+      .sort((a, b) => a.offset - b.offset),
     ...unorderedEntries.map((entry) => ({ entry, offset: null })),
   ];
 
@@ -176,19 +181,24 @@ function AdminPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.topBar}>
+      <GameHeader
+        dark={dark}
+        onToggleDark={toggleDark}
+        soundEnabled={soundEnabled}
+        onToggleSound={toggleSound}
+        playClick={playClick}
+        playBubble={playBubble}
+        statsLinkTo="/admin/stats"
+      />
+
+      <div className={styles.content}>
         <Link to="/" className={styles.backLink}>
           ← Back to game
         </Link>
-        <div className={styles.topBarActions}>
-          <DarkModeToggle dark={dark} onDarkModeToggle={toggleDark} />
-          <AccountMenu />
-        </div>
-      </div>
 
-      <h1 className={styles.title}>Admin — Logos ({entries.length})</h1>
+        <h1 className={styles.title}>Admin — Logos ({entries.length})</h1>
 
-      <div className={styles.sortRow}>
+        <div className={styles.sortRow}>
         <span className={styles.sortLabel}>Sort by</span>
         <button
           type="button"
@@ -344,6 +354,7 @@ function AdminPage() {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }

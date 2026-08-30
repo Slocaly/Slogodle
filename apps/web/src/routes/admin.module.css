@@ -1,24 +1,16 @@
 .page {
   min-height: 100vh;
-  padding: 32px;
   color: var(--text);
   font-family: "Fredoka", sans-serif;
 }
 
-.topBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.topBarActions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.content {
+  padding: 32px;
 }
 
 .backLink {
+  display: inline-block;
+  margin: 16px 0;
   font-size: 13px;
   font-weight: 600;
   color: var(--text);
@@ -86,6 +78,60 @@
 .empty {
   color: var(--muted);
   font-size: 14px;
+}
+
+.statsCard {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card-bg);
+  padding: 20px;
+}
+
+.statsCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.statsCardTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.monthSelector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.monthLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 120px;
+  text-align: center;
+}
+
+.monthBtn {
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.monthBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .tableWrap {

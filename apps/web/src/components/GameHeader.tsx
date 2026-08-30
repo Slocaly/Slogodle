@@ -4,6 +4,7 @@ import { AccountMenu } from "./AccountMenu";
 import { ArchiveToggle } from "./ArchiveToggle";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { SoundToggle } from "./SoundToggle";
+import { StatsLink } from "./StatsLink";
 import styles from "./GameHeader.module.css";
 
 const TITLE_LETTER_COLORS = ["var(--title-1)", "var(--title-2)", "var(--title-3)"];
@@ -13,6 +14,7 @@ const BUBBLE_PITCH_STEP = 0.1;
 
 interface GameHeaderProps {
   onToggleArchive?: () => void;
+  statsLinkTo?: "/admin/stats" | "/admin";
   dark: boolean;
   onToggleDark: () => void;
   soundEnabled: boolean;
@@ -23,6 +25,7 @@ interface GameHeaderProps {
 
 export function GameHeader({
   onToggleArchive,
+  statsLinkTo,
   dark,
   onToggleDark,
   soundEnabled,
@@ -101,6 +104,7 @@ export function GameHeader({
       </h1>
       <div className={styles.headerActions}>
         {onToggleArchive && <ArchiveToggle onToggleArchive={handleArchiveToggle} />}
+        {statsLinkTo && <StatsLink to={statsLinkTo} />}
         <SoundToggle
           soundEnabled={soundEnabled}
           onSoundToggle={handleSoundToggle}

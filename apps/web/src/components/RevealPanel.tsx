@@ -17,6 +17,8 @@ interface RevealPanelProps {
   status: GameStatus;
   maxTries: number;
   playClick: () => void;
+  /** Show the description/fun-fact blurb. Defaults to true. */
+  showDetails?: boolean;
 }
 
 export function RevealPanel({
@@ -26,6 +28,7 @@ export function RevealPanel({
   status,
   maxTries,
   playClick,
+  showDetails = true,
 }: RevealPanelProps) {
   const [copied, setCopied] = useState(false);
   const { data: session, isPending } = authClient.useSession();
@@ -52,8 +55,12 @@ export function RevealPanel({
 
   return (
     <div className={styles.reveal}>
-      <div className={styles.revealDescription}>{logo.description}</div>
-      <div className={shared.revealFact}>{logo.funFact}</div>
+      {showDetails && (
+        <>
+          <div className={styles.revealDescription}>{logo.description}</div>
+          <div className={shared.revealFact}>{logo.funFact}</div>
+        </>
+      )}
       <div className={styles.actionsRow}>
         <a
           className={styles.githubLinkBtn}

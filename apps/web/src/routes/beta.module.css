@@ -1,0 +1,53 @@
+.backLink {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  pointer-events: auto;
+  margin: 8px 0 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: var(--accent-pink);
+}
+
+.pileWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nextBtn {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--accent-yellow);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 24px;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+.completeTitle {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.restartBtn {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 24px;
+  cursor: pointer;
+}

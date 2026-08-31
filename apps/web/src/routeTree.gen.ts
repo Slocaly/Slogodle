@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as StatsRouteImport } from './routes/stats'
 import { Route as AdminStatsRouteImport } from './routes/admin_.stats'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminStatsRoute = AdminStatsRouteImport.update({
   id: '/admin_/stats',
   path: '/admin/stats',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/stats': typeof StatsRoute
   '/admin/stats': typeof AdminStatsRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/stats': typeof StatsRoute
   '/admin/stats': typeof AdminStatsRoute
 }
 export interface FileRoutesById {
@@ -70,13 +78,28 @@ export interface FileRoutesById {
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/stats': typeof StatsRoute
   '/admin_/stats': typeof AdminStatsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/history' | '/login' | '/signup' | '/admin/stats'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/history'
+    | '/login'
+    | '/signup'
+    | '/stats'
+    | '/admin/stats'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/history' | '/login' | '/signup' | '/admin/stats'
+  to:
+    | '/'
+    | '/admin'
+    | '/history'
+    | '/login'
+    | '/signup'
+    | '/stats'
+    | '/admin/stats'
   id:
     | '__root__'
     | '/'
@@ -84,6 +107,7 @@ export interface FileRouteTypes {
     | '/history'
     | '/login'
     | '/signup'
+    | '/stats'
     | '/admin_/stats'
   fileRoutesById: FileRoutesById
 }
@@ -93,6 +117,7 @@ export interface RootRouteChildren {
   HistoryRoute: typeof HistoryRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  StatsRoute: typeof StatsRoute
   AdminStatsRoute: typeof AdminStatsRoute
 }
 
@@ -133,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/stats': {
       id: '/admin_/stats'
       path: '/admin/stats'
@@ -149,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   HistoryRoute: HistoryRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  StatsRoute: StatsRoute,
   AdminStatsRoute: AdminStatsRoute,
 }
 export const routeTree = rootRouteImport

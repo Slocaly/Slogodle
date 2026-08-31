@@ -5,26 +5,7 @@ import { scaleBand } from "@tanstack/charts/scales/band";
 import { scaleLinear } from "@tanstack/charts/scales/linear";
 import { tooltip } from "@tanstack/charts/tooltip";
 import type { DailyFinishStat } from "../lib/stats";
-
-const BUCKET_ORDER = ["1 try", "2 tries", "3 tries", "Failed"] as const;
-type Bucket = (typeof BUCKET_ORDER)[number];
-
-// Mirrors --success, --accent-yellow, --accent-lavender, --danger from
-// global.css: SVG fill attributes don't reliably resolve CSS custom
-// properties, so the light/dark values are duplicated here instead.
-const COLORS_LIGHT: Record<Bucket, string> = {
-  "1 try": "oklch(0.56 0.15 155)",
-  "2 tries": "oklch(0.87 0.13 95)",
-  "3 tries": "oklch(0.8 0.1 300)",
-  Failed: "oklch(0.6 0.19 15)",
-};
-
-const COLORS_DARK: Record<Bucket, string> = {
-  "1 try": "oklch(0.65 0.14 155)",
-  "2 tries": "oklch(0.78 0.13 95)",
-  "3 tries": "oklch(0.68 0.1 300)",
-  Failed: "oklch(0.65 0.18 20)",
-};
+import { BUCKET_ORDER, BUCKET_COLORS_DARK, BUCKET_COLORS_LIGHT, type Bucket } from "./chartBuckets";
 
 interface FinishRow {
   label: string;
@@ -56,7 +37,7 @@ export function DailyFinishChart({
   dark: boolean;
 }) {
   const definition = useMemo(() => {
-    const colors = dark ? COLORS_DARK : COLORS_LIGHT;
+    const colors = dark ? BUCKET_COLORS_DARK : BUCKET_COLORS_LIGHT;
     const rows = toRows(stats);
     // Fixed (not inferred) domain: days with zero finishes have no rows, but
     // must still occupy a labeled slot on the axis instead of being skipped.

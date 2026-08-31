@@ -85,6 +85,20 @@ export function computeStreak(history: Record<string, GameStatus>, todayIndex: n
   return streak
 }
 
+export function computeBestStreak(history: Record<string, GameStatus>, todayIndex: number): number {
+  let best = 0
+  let current = 0
+  for (let i = 0; i <= todayIndex; i++) {
+    if (history[String(i)] === 'won') {
+      current += 1
+      best = Math.max(best, current)
+    } else {
+      current = 0
+    }
+  }
+  return best
+}
+
 export function buildShareText(params: {
   intro: string
   title: string

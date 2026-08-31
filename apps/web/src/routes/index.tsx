@@ -111,6 +111,8 @@ function Home() {
         <div className={styles.headerWrap}>
           <GameHeader
             onToggleArchive={g.toggleArchive}
+            statsLinkTo="/stats"
+            streak={g.streak}
             dark={g.dark}
             onToggleDark={g.toggleDark}
             soundEnabled={g.soundEnabled}

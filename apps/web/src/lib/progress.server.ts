@@ -18,6 +18,7 @@ interface ProgressRow {
   status: GameStatus
   guesses_json: string
   reward: number
+  played_fresh: number
 }
 
 async function currentUserId(headers: Headers): Promise<string | null> {
@@ -67,8 +68,8 @@ export async function syncDay(
   const reward = rewardFor(status, guesses, isFreshToday)
 
   await env.DB.prepare(
-    `INSERT OR IGNORE INTO progress (anon_id, user_id, day_index, status, guess_count, guesses_json, reward, logo_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT OR IGNORE INTO progress (anon_id, user_id, day_index, status, guess_count, guesses_json, reward, logo_id, played_fresh)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   )
     .bind(
       userId ? null : input.anonId,
@@ -79,6 +80,7 @@ export async function syncDay(
       JSON.stringify(guesses),
       reward,
       logo.id,
+      isFreshToday ? 1 : 0,
     )
     .run()
 
@@ -106,20 +108,21 @@ export async function claimAnon(headers: Headers, anonId: string): Promise<{ ok:
 
 export async function myProgress(
   headers: Headers,
-): Promise<Record<string, { status: GameStatus; guesses: Guess[]; reward: number }> | null> {
+): Promise<Record<string, { status: GameStatus; guesses: Guess[]; reward: number; playedFresh: boolean }> | null> {
   const userId = await currentUserId(headers)
   if (!userId) return null
   const { results } = await env.DB.prepare(
-    `SELECT day_index, status, guesses_json, reward FROM progress WHERE user_id = ?`,
+    `SELECT day_index, status, guesses_json, reward, played_fresh FROM progress WHERE user_id = ?`,
   )
     .bind(userId)
     .all<ProgressRow>()
-  const out: Record<string, { status: GameStatus; guesses: Guess[]; reward: number }> = {}
+  const out: Record<string, { status: GameStatus; guesses: Guess[]; reward: number; playedFresh: boolean }> = {}
   for (const row of results) {
     out[String(row.day_index)] = {
       status: row.status,
       guesses: JSON.parse(row.guesses_json) as Guess[],
       reward: row.reward,
+      playedFresh: !!row.played_fresh,
     }
   }
   return out

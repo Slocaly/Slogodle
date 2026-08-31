@@ -1,0 +1,3 @@
+-- Migration number: 0006 	 2026-08-31T00:00:00.000Z
+
+ALTER TABLE progress ADD COLUMN played_fresh INTEGER NOT NULL DEFAULT 1;

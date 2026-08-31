@@ -14,7 +14,8 @@ const BUBBLE_PITCH_STEP = 0.1;
 
 interface GameHeaderProps {
   onToggleArchive?: () => void;
-  statsLinkTo?: "/admin/stats" | "/admin";
+  statsLinkTo?: "/admin/stats" | "/admin" | "/stats" | "/";
+  streak?: number;
   dark: boolean;
   onToggleDark: () => void;
   soundEnabled: boolean;
@@ -26,6 +27,7 @@ interface GameHeaderProps {
 export function GameHeader({
   onToggleArchive,
   statsLinkTo,
+  streak,
   dark,
   onToggleDark,
   soundEnabled,
@@ -104,7 +106,7 @@ export function GameHeader({
       </h1>
       <div className={styles.headerActions}>
         {onToggleArchive && <ArchiveToggle onToggleArchive={handleArchiveToggle} />}
-        {statsLinkTo && <StatsLink to={statsLinkTo} />}
+        {statsLinkTo && <StatsLink to={statsLinkTo} streak={streak} />}
         <SoundToggle
           soundEnabled={soundEnabled}
           onSoundToggle={handleSoundToggle}

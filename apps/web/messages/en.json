@@ -4,6 +4,7 @@
   "archive_toggle": "Past days",
   "stats_link_label": "View stats",
   "admin_link_label": "Back to admin",
+  "game_link_label": "Back to game",
   "theme_toggle_to_light": "Switch to light mode",
   "theme_toggle_to_dark": "Switch to dark mode",
   "sound_toggle_to_on": "Turn sound on",
@@ -75,5 +76,13 @@
   "history_back_to_game": "Back to game",
   "history_login_cta": "Sign in to see your full game history.",
   "history_login_link": "Sign in",
-  "history_empty": "No past games yet."
+  "history_empty": "No past games yet.",
+  "stats_title": "My stats",
+  "stats_back_to_game": "Back to game",
+  "stats_login_cta": "Sign in to see your personal stats.",
+  "stats_login_link": "Sign in",
+  "stats_best_streak_label": "Biggest streak",
+  "stats_best_streak_unit": "days",
+  "stats_chart_title": "Wins by number of tries",
+  "stats_empty": "Play a few days to see your stats here."
 }

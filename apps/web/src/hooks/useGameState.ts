@@ -7,6 +7,7 @@ import {
   dayIndexFor,
   pickLogo,
   computeStreak,
+  computeBestStreak,
   resolveGuesses,
   rewardFor,
   MAX_TRIES,
@@ -26,6 +27,12 @@ interface DayRecord {
   guesses: Guess[]
   status: GameStatus
   reward: number
+  // Whether this day was resolved on the day the puzzle was actually for, as
+  // opposed to played later via the archive. Only fresh wins count toward a
+  // streak. Legacy/migrated records predate this field and default to true
+  // so existing streaks aren't retroactively punished — see the DB column's
+  // matching default in migrations/0006_add_played_fresh_to_progress.sql.
+  playedFresh: boolean
 }
 
 type DaysRecord = Record<string, DayRecord>
@@ -36,7 +43,7 @@ interface OldSavedToday {
   status: GameStatus
 }
 
-const EMPTY_DAY: DayRecord = { guesses: [], status: 'playing', reward: 0 }
+const EMPTY_DAY: DayRecord = { guesses: [], status: 'playing', reward: 0, playedFresh: true }
 // A since-fixed devtools bug briefly wrote fake "won" records at day indices in this
 // range to simulate pile logos. Purge any that made it into a real browser's storage.
 const BOGUS_DAY_INDEX_THRESHOLD = -1_000_000
@@ -69,11 +76,16 @@ function loadDays(): DaysRecord {
   const migrated: DaysRecord = {}
   const oldHistory = loadJSON<Record<string, GameStatus>>(OLD_HISTORY_KEY, {})
   for (const [key, status] of Object.entries(oldHistory)) {
-    migrated[key] = { guesses: [], status, reward: 0 }
+    migrated[key] = { guesses: [], status, reward: 0, playedFresh: true }
   }
   const oldToday = loadJSON<OldSavedToday | null>(OLD_TODAY_KEY, null)
   if (oldToday) {
-    migrated[String(oldToday.dayIndex)] = { guesses: oldToday.guesses, status: oldToday.status, reward: 0 }
+    migrated[String(oldToday.dayIndex)] = {
+      guesses: oldToday.guesses,
+      status: oldToday.status,
+      reward: 0,
+      playedFresh: true,
+    }
   }
   saveJSON(DAYS_KEY, migrated)
   return migrated
@@ -134,7 +146,12 @@ export function useGameState() {
         setDays((prev) => {
           const next: DaysRecord = {}
           for (const [key, value] of Object.entries(remote)) {
-            next[key] = { guesses: value.guesses, status: value.status, reward: value.reward }
+            next[key] = {
+              guesses: value.guesses,
+              status: value.status,
+              reward: value.reward,
+              playedFresh: value.playedFresh,
+            }
           }
           // D1 is authoritative for every day it has a row for. A day this
           // browser is still mid-guess on (status 'playing') has no D1 row
@@ -187,26 +204,37 @@ export function useGameState() {
   const logo = bank && bank.length > 0 ? pickLogo(bank, activeDayIndex) : null
 
   const history: Record<string, GameStatus> = {}
+  // A win only counts toward a streak if it was played on the day the puzzle
+  // was for, not backfilled later via the archive — see DayRecord.playedFresh.
+  const streakHistory: Record<string, GameStatus> = {}
   const dayGuesses: Record<string, Guess[]> = {}
+  const dayPlayedFresh: Record<string, boolean> = {}
   const foundLogos: { dayIndex: number; logo: Logo; count: number }[] = []
   for (const [key, record] of Object.entries(days)) {
     if (record.status !== 'playing') {
       history[key] = record.status
       dayGuesses[key] = record.guesses
+      const playedFresh = record.playedFresh ?? true
+      dayPlayedFresh[key] = playedFresh
+      streakHistory[key] = record.status === 'won' && !playedFresh ? 'lost' : record.status
     }
     if (record.status === 'won' && bank) {
       const dayIndex = Number(key)
       foundLogos.push({ dayIndex, logo: pickLogo(bank, dayIndex), count: record.reward })
     }
   }
-  const streak = computeStreak(history, todayIndex)
+  const streak = computeStreak(streakHistory, todayIndex)
+  const bestStreak = computeBestStreak(streakHistory, todayIndex)
 
   function submitGuess(text: string) {
     if (!logo || dayRecord.status !== 'playing' || !text.trim()) return
     const priorTexts = dayRecord.guesses.map((g) => g.text)
     const { guesses, status } = resolveGuesses([...priorTexts, text.trim()], logo)
     const reward = rewardFor(status, guesses, isToday)
-    setDays((prev) => ({ ...prev, [String(activeDayIndex)]: { guesses, status, reward } }))
+    setDays((prev) => ({
+      ...prev,
+      [String(activeDayIndex)]: { guesses, status, reward, playedFresh: isToday },
+    }))
     if (status !== 'playing') {
       enqueueSync(activeDayIndex, guesses.map((g) => g.text))
     }
@@ -254,8 +282,10 @@ export function useGameState() {
     toggleSound,
     history,
     dayGuesses,
+    dayPlayedFresh,
     foundLogos,
     streak,
+    bestStreak,
     maxTries: MAX_TRIES,
     isConnected: !!userId,
   }

@@ -13,6 +13,7 @@ export interface RemoteDayRecord {
   status: GameStatus
   guesses: Guess[]
   reward: number
+  playedFresh: boolean
 }
 
 function loadOutbox(): OutboxEntry[] {

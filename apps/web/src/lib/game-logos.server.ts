@@ -2,6 +2,7 @@ import { env } from "cloudflare:workers";
 import type { Logo } from "@slogodle/logos";
 
 interface CompleteLogoRow {
+  id: number;
   r2_key: string;
   name: string;
   industry: string;
@@ -29,9 +30,9 @@ function toLogo(row: CompleteLogoRow): Logo {
  * Every field a `Logo` needs must be non-null for a row to be playable —
  * rows still being filled in via the admin page are silently excluded.
  */
-export async function listGameLogos(): Promise<Logo[]> {
+async function fetchCompleteLogoRows(): Promise<CompleteLogoRow[]> {
   const { results } = await env.DB.prepare(
-    `SELECT r2_key, name, industry, founded, description, fun_fact, git_link, aspect
+    `SELECT id, r2_key, name, industry, founded, description, fun_fact, git_link, aspect
      FROM logo_metadata
      WHERE name IS NOT NULL
        AND industry IS NOT NULL
@@ -43,5 +44,21 @@ export async function listGameLogos(): Promise<Logo[]> {
        AND day_order IS NOT NULL
      ORDER BY day_order`,
   ).all<CompleteLogoRow>();
-  return results.map(toLogo);
+  return results;
+}
+
+export async function listGameLogos(): Promise<Logo[]> {
+  const rows = await fetchCompleteLogoRows();
+  return rows.map(toLogo);
+}
+
+/**
+ * Same bank as `listGameLogos`, but keeps each logo's `logo_metadata.id` —
+ * needed server-side to record which logo a guess was actually for (see
+ * `progress.server.ts`'s `syncDay`), without leaking the internal id to the
+ * client-facing `Logo` type.
+ */
+export async function listGameLogosWithId(): Promise<(Logo & { id: number })[]> {
+  const rows = await fetchCompleteLogoRows();
+  return rows.map((row) => ({ ...toLogo(row), id: row.id }));
 }

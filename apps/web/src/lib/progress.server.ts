@@ -1,6 +1,6 @@
 import { env } from 'cloudflare:workers'
 import { getAuth } from './auth.server'
-import { listGameLogos } from './game-logos.server'
+import { listGameLogosWithId } from './game-logos.server'
 import { ARCHIVE_DAYS, dayIndexFor, pickLogo, resolveGuesses, rewardFor, type GameStatus, type Guess } from './game-logic'
 
 // game-logic.ts's EPOCH is built from local Date components, so it resolves
@@ -47,7 +47,7 @@ export async function syncDay(
     return { ok: false, error: 'day too old for anonymous sync' }
   }
 
-  const bank = await listGameLogos()
+  const bank = await listGameLogosWithId()
   if (bank.length === 0) {
     return { ok: false, error: 'no logo bank available' }
   }
@@ -67,8 +67,8 @@ export async function syncDay(
   const reward = rewardFor(status, guesses, isFreshToday)
 
   await env.DB.prepare(
-    `INSERT OR IGNORE INTO progress (anon_id, user_id, day_index, status, guess_count, guesses_json, reward)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT OR IGNORE INTO progress (anon_id, user_id, day_index, status, guess_count, guesses_json, reward, logo_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
   )
     .bind(
       userId ? null : input.anonId,
@@ -78,6 +78,7 @@ export async function syncDay(
       guesses.length,
       JSON.stringify(guesses),
       reward,
+      logo.id,
     )
     .run()
 

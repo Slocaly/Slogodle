@@ -497,6 +497,77 @@
   cursor: default;
 }
 
+.mistakesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mistakeCard {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card-bg);
+}
+
+.mistakeCardHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.mistakeCardHeader img {
+  display: block;
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.mistakeName {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mistakeGuesses {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mistakeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.mistakeRow:last-child {
+  border-bottom: none;
+}
+
+.mistakeText {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.mistakeCount {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .modalOverlay {
   position: fixed;
   inset: 0;

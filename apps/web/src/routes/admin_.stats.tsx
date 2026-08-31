@@ -4,7 +4,8 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-import { parseAsString, useQueryState } from "nuqs";
+import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
+import { useState } from "react";
 import { now } from "../lib/clock";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useSoundSettings } from "../hooks/useSoundSettings";
@@ -13,6 +14,7 @@ import { GameHeader } from "../components/GameHeader";
 import { DailyFinishChart } from "../components/DailyFinishChart";
 import { fetchIsAdmin } from "../lib/session";
 import { fetchDailyFinishStats } from "../lib/stats";
+import { fetchTopMistakes } from "../lib/mistakes";
 import styles from "./admin.module.css";
 
 const queryClient = new QueryClient();
@@ -33,6 +35,10 @@ function monthLabel(year: number, month: number): string {
   });
 }
 
+const viewModeParser = parseAsStringLiteral(["finishes", "mistakes"] as const).withDefault(
+  "finishes",
+);
+
 export const Route = createFileRoute("/admin_/stats")({
   ssr: false,
   beforeLoad: async () => {
@@ -48,6 +54,7 @@ function AdminStatsPage() {
   const { dark, toggleDark } = useDarkMode();
   const { soundEnabled, toggleSound } = useSoundSettings();
   const { playClick, playBubble } = useSoundEffects(soundEnabled);
+  const [viewMode, setViewMode] = useQueryState("view", viewModeParser);
 
   return (
     <div className={styles.page}>
@@ -68,8 +75,30 @@ function AdminStatsPage() {
 
         <h1 className={styles.title}>Admin — Stats</h1>
 
+        <div className={styles.sortRow}>
+          <span className={styles.sortLabel}>View</span>
+          <button
+            type="button"
+            className={`${styles.sortBtn} ${viewMode === "finishes" ? styles.sortBtnActive : ""}`}
+            onClick={() => setViewMode("finishes")}
+          >
+            Daily finishes
+          </button>
+          <button
+            type="button"
+            className={`${styles.sortBtn} ${viewMode === "mistakes" ? styles.sortBtnActive : ""}`}
+            onClick={() => setViewMode("mistakes")}
+          >
+            Common mistakes
+          </button>
+        </div>
+
         <QueryClientProvider client={queryClient}>
-          <DailyFinishSection dark={dark} />
+          {viewMode === "finishes" ? (
+            <DailyFinishSection dark={dark} />
+          ) : (
+            <MistakesSection />
+          )}
         </QueryClientProvider>
       </div>
     </div>
@@ -127,6 +156,74 @@ function DailyFinishSection({ dark }: { dark: boolean }) {
         <p className={styles.empty}>Loading stats…</p>
       ) : (
         <DailyFinishChart stats={data} dark={dark} />
+      )}
+    </div>
+  );
+}
+
+function MistakesSection() {
+  const [search, setSearch] = useState("");
+
+  const { data, isPending, error } = useQuery({
+    queryKey: ["admin-stats", "mistakes"],
+    queryFn: () => fetchTopMistakes(),
+  });
+
+  const query = search.trim().toLowerCase();
+  const filtered = (data ?? []).filter((logo) =>
+    logo.name.toLowerCase().includes(query),
+  );
+
+  return (
+    <div className={styles.statsCard}>
+      <div className={styles.statsCardHeader}>
+        <h2 className={styles.statsCardTitle}>Common mistakes by logo</h2>
+        <input
+          type="text"
+          className={styles.searchInput}
+          placeholder="Search by logo name…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+      {error ? (
+        <p className={styles.empty}>
+          Failed to load mistakes:{" "}
+          {error instanceof Error ? error.message : String(error)}
+        </p>
+      ) : isPending ? (
+        <p className={styles.empty}>Loading mistakes…</p>
+      ) : filtered.length === 0 ? (
+        <p className={styles.empty}>No logos match "{search}".</p>
+      ) : (
+        <div className={styles.mistakesList}>
+          {filtered.map((logo) => (
+            <div key={logo.logoId} className={styles.mistakeCard}>
+              <div className={styles.mistakeCardHeader}>
+                <img src={logo.icon} alt="" width={56} height={56} />
+                <span className={styles.mistakeName}>{logo.name}</span>
+              </div>
+              <div className={styles.mistakeGuesses}>
+                {logo.mistakes.length === 0 ? (
+                  <span className={styles.r2ReadEmpty}>
+                    No wrong guesses yet
+                  </span>
+                ) : (
+                  logo.mistakes.map((mistake) => (
+                    <div key={mistake.text} className={styles.mistakeRow}>
+                      <span className={styles.mistakeText}>
+                        {mistake.text}
+                      </span>
+                      <span className={styles.mistakeCount}>
+                        {mistake.count}×
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

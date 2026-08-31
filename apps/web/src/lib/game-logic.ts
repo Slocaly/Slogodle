@@ -24,7 +24,7 @@ export function dayIndexFor(date: Date, epoch: Date = EPOCH): number {
   return Math.floor(ms / 86400000)
 }
 
-export function pickLogo(bank: Logo[], dayIndex: number): Logo {
+export function pickLogo<T extends Logo>(bank: T[], dayIndex: number): T {
   const i = ((dayIndex % bank.length) + bank.length) % bank.length
   return bank[i]
 }

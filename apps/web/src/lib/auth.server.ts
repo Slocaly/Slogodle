@@ -14,6 +14,11 @@ export function getAuth() {
         schema,
       }),
       emailAndPassword: { enabled: true },
+      account: {
+        accountLinking: {
+          requireLocalEmailVerified: false,
+        },
+      },
       socialProviders: {
         github: {
           // Better Auth types `clientId` as a required `string` (unlike

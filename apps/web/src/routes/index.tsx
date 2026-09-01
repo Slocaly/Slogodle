@@ -6,6 +6,7 @@ import { useGameState } from "../hooks/useGameState";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import { m } from "../paraglide/messages.js";
 import { GameHeader } from "../components/GameHeader";
+import { GameFooter } from "../components/GameFooter";
 import { LoadingCard } from "../components/LoadingCard";
 import { ArchivePanel } from "../components/ArchivePanel";
 import {
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/")({
 function Home() {
   const g = useGameState();
   const pileRef = useRef<PhysicsLogoPileHandle>(null);
+  const footerBarRef = useRef<HTMLDivElement>(null);
   const { playClick, playWrongGuess, playWin, playLose, playBubble } = useSoundEffects(
     g.soundEnabled,
   );
@@ -106,6 +108,7 @@ function Home() {
         logo={g.logo}
         foundLogos={g.foundLogos}
         bank={g.bank}
+        footerRef={footerBarRef}
       />
       <div className={shared.page}>
         <div className={styles.headerWrap}>
@@ -181,6 +184,7 @@ function Home() {
             onResetPileToFound={handleResetPileToFound}
           />
         )}
+        <GameFooter ref={footerBarRef} />
       </div>
     </>
   );

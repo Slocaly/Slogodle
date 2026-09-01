@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useGameState } from "../hooks/useGameState";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import { GameHeader } from "../components/GameHeader";
+import { GameFooter } from "../components/GameFooter";
 import { WinsByTriesChart } from "../components/WinsByTriesChart";
 import type { Bucket } from "../components/chartBuckets";
 import type { GameStatus, Guess } from "../lib/game-logic";
@@ -96,6 +97,8 @@ function StatsPage() {
           </>
         )}
       </div>
+
+      <GameFooter />
     </div>
   );
 }

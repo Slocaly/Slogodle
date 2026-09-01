@@ -11,6 +11,7 @@ import { useDarkMode } from "../hooks/useDarkMode";
 import { useSoundSettings } from "../hooks/useSoundSettings";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import { GameHeader } from "../components/GameHeader";
+import { GameFooter } from "../components/GameFooter";
 import { DailyFinishChart } from "../components/DailyFinishChart";
 import { fetchIsAdmin } from "../lib/session";
 import { fetchDailyFinishStats } from "../lib/stats";
@@ -101,6 +102,8 @@ function AdminStatsPage() {
           )}
         </QueryClientProvider>
       </div>
+
+      <GameFooter />
     </div>
   );
 }

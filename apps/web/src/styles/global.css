@@ -8,6 +8,7 @@
 }
 
 :root {
+  --footer-height: 40px;
   --bg-1: oklch(0.93 0.045 320);
   --bg-2: oklch(0.94 0.05 190);
   --bg-3: oklch(0.95 0.05 80);

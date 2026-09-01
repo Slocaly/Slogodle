@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useGameState } from "../hooks/useGameState";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import { GameHeader } from "../components/GameHeader";
+import { GameFooter } from "../components/GameFooter";
 import { STATUS_META } from "../components/ArchiveDayButton";
 import { GuessDots } from "../components/GuessDots";
 import { GithubIcon } from "../components/icons/GithubIcon";
@@ -111,6 +112,8 @@ function HistoryPage() {
           </div>
         )}
       </div>
+
+      <GameFooter />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
   type Ref,
+  type RefObject,
 } from "react";
 import { flushSync } from "react-dom";
 import type { Logo } from "@slogodle/logos";
@@ -31,6 +32,8 @@ interface PhysicsLogoPileProps {
   logo: Logo;
   foundLogos: { dayIndex: number; logo: Logo; count: number }[];
   bank: Logo[];
+  /** The footer's real bar element — pieces rest on top of it, only across its actual width. */
+  footerRef?: RefObject<HTMLDivElement | null>;
   ref?: Ref<PhysicsLogoPileHandle>;
 }
 
@@ -46,6 +49,7 @@ export function PhysicsLogoPile({
   logo,
   foundLogos,
   bank,
+  footerRef,
   ref,
 }: PhysicsLogoPileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -88,6 +92,7 @@ export function PhysicsLogoPile({
       })),
       getElement: (key) => elementRefs.current.get(key) ?? null,
       reducedMotion,
+      footerEl: footerRef?.current ?? null,
     });
     simRef.current = simulation;
 

@@ -33,6 +33,14 @@ export interface CreateLogoPileSimulationOptions {
   logos: PileLogo[]
   getElement: (key: string) => HTMLElement | null
   reducedMotion: boolean
+  /** The actual footer bar element — pieces rest on top of it, only across its real width. */
+  footerEl?: HTMLElement | null
+}
+
+interface LedgeRect {
+  left: number
+  width: number
+  top: number
 }
 
 export interface LogoPileSimulation {
@@ -68,12 +76,12 @@ function createPileBody(x: number, y: number, width: number, height: number): Ma
   })
 }
 
-function createBoundaries(width: number, height: number, ceilingY: number) {
+function createBoundaries(width: number, height: number, ceilingY: number, ledge: LedgeRect | null) {
   const options: Matter.IChamferableBodyDefinition = { isStatic: true, friction: 0.8 }
   const spanTop = ceilingY
   const spanHeight = height - spanTop
-  return [
-    // floor
+  const bodies = [
+    // floor — spans the full width; the footer (if any) only raises a ledge above part of it
     Matter.Bodies.rectangle(width / 2, height + WALL_THICKNESS / 2, width + WALL_THICKNESS * 2, WALL_THICKNESS, options),
     // ceiling — positioned above every possible spawn point, see ceilingY above
     Matter.Bodies.rectangle(width / 2, spanTop - WALL_THICKNESS / 2, width + WALL_THICKNESS * 2, WALL_THICKNESS, options),
@@ -82,11 +90,37 @@ function createBoundaries(width: number, height: number, ceilingY: number) {
     // right wall
     Matter.Bodies.rectangle(width + WALL_THICKNESS / 2, spanTop + spanHeight / 2, WALL_THICKNESS, spanHeight + WALL_THICKNESS * 2, options),
   ]
+  if (ledge && ledge.width > 0) {
+    // A platform matching the footer's real on-screen rect, so pieces only rest above
+    // it where the footer actually is — everywhere else they fall through to the floor.
+    bodies.push(
+      Matter.Bodies.rectangle(
+        ledge.left + ledge.width / 2,
+        ledge.top + WALL_THICKNESS / 2,
+        ledge.width,
+        WALL_THICKNESS,
+        options,
+      ),
+    )
+  }
+  return bodies
 }
 
 export function createLogoPileSimulation(options: CreateLogoPileSimulationOptions): LogoPileSimulation {
-  const { container, logos, getElement, reducedMotion } = options
+  const { container, logos, getElement, reducedMotion, footerEl = null } = options
   const engine = Matter.Engine.create()
+
+  // The footer's real on-screen rect, converted into the container's local coordinates.
+  function computeLedge(): LedgeRect | null {
+    if (!footerEl) return null
+    const containerRect = container.getBoundingClientRect()
+    const footerRect = footerEl.getBoundingClientRect()
+    return {
+      left: footerRect.left - containerRect.left,
+      width: footerRect.width,
+      top: footerRect.top - containerRect.top,
+    }
+  }
 
   let width = 0
   let height = 0
@@ -144,7 +178,7 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
     const ceilingY = spawnTop - CEILING_MARGIN
 
     if (boundaries.length) Matter.Composite.remove(engine.world, boundaries)
-    boundaries = createBoundaries(width, height, ceilingY)
+    boundaries = createBoundaries(width, height, ceilingY, computeLedge())
     Matter.Composite.add(engine.world, boundaries)
 
     if (spawned) return
@@ -250,13 +284,27 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
   })
   resizeObserver.observe(container)
 
+  // The footer can resize (e.g. its max-width breakpoint) independently of the
+  // container's own box — recompute just the ledge, not a full respawn, when it does.
+  let footerResizeTimer: ReturnType<typeof setTimeout> | undefined
+  const footerResizeObserver = footerEl
+    ? new ResizeObserver(() => {
+        if (!spawned) return
+        clearTimeout(footerResizeTimer)
+        footerResizeTimer = setTimeout(() => applySize(width, height), RESIZE_DEBOUNCE_MS)
+      })
+    : null
+  if (footerEl && footerResizeObserver) footerResizeObserver.observe(footerEl)
+
   return {
     launchFromSide,
     removeAllExcept,
     destroy() {
       clearTimeout(resizeTimer)
+      clearTimeout(footerResizeTimer)
       for (const timer of launchTimers) clearTimeout(timer)
       resizeObserver.disconnect()
+      footerResizeObserver?.disconnect()
       container.removeEventListener('pointerdown', handlePointerDown)
       Matter.Events.off(engine, 'afterUpdate', sync)
       Matter.Runner.stop(runner)

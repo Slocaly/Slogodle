@@ -7,6 +7,7 @@ import { useDarkMode } from "../hooks/useDarkMode";
 import { useSoundSettings } from "../hooks/useSoundSettings";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import { GameHeader } from "../components/GameHeader";
+import { GameFooter } from "../components/GameFooter";
 import { fetchR2Logos, type R2Logo } from "../lib/r2-logos";
 import { fetchIsAdmin } from "../lib/session";
 import {
@@ -355,6 +356,8 @@ function AdminPage() {
         </>
       )}
       </div>
+
+      <GameFooter />
     </div>
   );
 }

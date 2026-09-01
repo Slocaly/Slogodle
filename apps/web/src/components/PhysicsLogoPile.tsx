@@ -28,7 +28,6 @@ export interface PhysicsLogoPileHandle {
 }
 
 interface PhysicsLogoPileProps {
-  dayIndex: number;
   logo: Logo;
   foundLogos: { dayIndex: number; logo: Logo; count: number }[];
   bank: Logo[];
@@ -45,7 +44,6 @@ interface PileSlot {
 }
 
 export function PhysicsLogoPile({
-  dayIndex,
   logo,
   foundLogos,
   bank,
@@ -71,11 +69,6 @@ export function PhysicsLogoPile({
       })),
     ),
   );
-
-  // A win's launched logos belong to that day only — drop them when navigating away.
-  useEffect(() => {
-    setLaunchSlots([]);
-  }, [dayIndex]);
 
   useEffect(() => {
     const container = containerRef.current;

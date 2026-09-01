@@ -103,7 +103,6 @@ function Home() {
     <>
       <PhysicsLogoPile
         ref={pileRef}
-        dayIndex={g.dayIndex}
         logo={g.logo}
         foundLogos={g.foundLogos}
         bank={g.bank}

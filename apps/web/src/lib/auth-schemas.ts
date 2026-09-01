@@ -26,3 +26,26 @@ export const signupSchema = v.pipe(
 );
 
 export type SignupFormValues = v.InferInput<typeof signupSchema>;
+
+export const forgotPasswordSchema = v.object({
+  email: v.pipe(v.string(), v.trim(), v.email()),
+});
+
+export type ForgotPasswordFormValues = v.InferInput<typeof forgotPasswordSchema>;
+
+export const resetPasswordSchema = v.pipe(
+  v.object({
+    newPassword: v.pipe(v.string(), v.minLength(8)),
+    confirmPassword: v.pipe(v.string(), v.nonEmpty()),
+  }),
+  v.forward(
+    v.partialCheck(
+      [["newPassword"], ["confirmPassword"]],
+      (input) => input.newPassword === input.confirmPassword,
+      m.signup_password_mismatch(),
+    ),
+    ["confirmPassword"],
+  ),
+);
+
+export type ResetPasswordFormValues = v.InferInput<typeof resetPasswordSchema>;

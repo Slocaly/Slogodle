@@ -117,6 +117,10 @@ function LoginPage() {
                     );
                   }}
                 </form.Field>
+
+                <Link to="/forgot-password" className={styles.forgotLink}>
+                  {m.login_forgot_password_link()}
+                </Link>
               </>
             )}
           </form.Subscribe>

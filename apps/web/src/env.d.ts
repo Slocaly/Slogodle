@@ -20,6 +20,11 @@ interface AuthEnv {
   GITHUB_CLIENT_SECRET?: string;
   BETTER_AUTH_SECRET?: string;
   BETTER_AUTH_URL?: string;
+  // Password-reset emails go out through Resend (Cloudflare Email Sending
+  // requires the paid Workers plan). RESEND_API_KEY comes from
+  // resend.com/api-keys; EMAIL_FROM must be on a domain verified in Resend.
+  RESEND_API_KEY?: string;
+  EMAIL_FROM?: string;
 }
 
 declare global {

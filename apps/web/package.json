@@ -12,12 +12,14 @@
     "deploy": "vite build && wrangler deploy",
     "cf-typegen": "wrangler types",
     "postinstall": "wrangler types",
-    "sync-logos": "node --env-file=.env scripts/sync-logos.ts"
+    "sync-logos": "node --env-file=.env scripts/sync-logos.ts",
+    "email": "email dev --dir src/emails"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1116.0",
     "@base-ui/react": "^1.7.0",
     "@better-auth/drizzle-adapter": "^1.7.1",
+    "@react-email/render": "^2.1.0",
     "@slogodle/logos": "workspace:*",
     "@tanstack/charts": "^0.16.0",
     "@tanstack/react-charts": "^0.16.0",
@@ -37,6 +39,7 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.53.1",
     "@inlang/paraglide-js": "^2.24.1",
+    "@react-email/ui": "6.9.3",
     "@rolldown/plugin-babel": "0.2.3",
     "@types/matter-js": "^0.20.2",
     "@types/react": "^19.2.18",
@@ -44,6 +47,7 @@
     "@vitejs/plugin-react": "^6.0.5",
     "babel-plugin-react-compiler": "1.0.0",
     "drizzle-kit": "^0.31.10",
+    "react-email": "^6.9.3",
     "svgo": "^4.0.2",
     "typescript": "^5.9.3",
     "vite": "^8.2.1",

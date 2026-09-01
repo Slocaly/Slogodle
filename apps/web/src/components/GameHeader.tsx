@@ -2,6 +2,7 @@ import { useState } from "react";
 import { m } from "../paraglide/messages.js";
 import { AccountMenu } from "./AccountMenu";
 import { ArchiveToggle } from "./ArchiveToggle";
+import { BurgerMenu } from "./BurgerMenu";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { SoundToggle } from "./SoundToggle";
 import { StatsLink } from "./StatsLink";
@@ -105,14 +106,21 @@ export function GameHeader({
         })()}
       </h1>
       <div className={styles.headerActions}>
-        {onToggleArchive && <ArchiveToggle onToggleArchive={handleArchiveToggle} />}
-        {statsLinkTo && <StatsLink to={statsLinkTo} streak={streak} />}
+        <div className={styles.desktopActions}>
+          {onToggleArchive && <ArchiveToggle onToggleArchive={handleArchiveToggle} />}
+          {statsLinkTo && <StatsLink to={statsLinkTo} streak={streak} />}
+        </div>
         <SoundToggle
           soundEnabled={soundEnabled}
           onSoundToggle={handleSoundToggle}
         />
         <DarkModeToggle dark={dark} onDarkModeToggle={handleDarkToggle} />
-        <AccountMenu />
+        <div className={styles.desktopActions}>
+          <AccountMenu />
+        </div>
+        <div className={styles.mobileActions}>
+          <BurgerMenu streak={streak} />
+        </div>
       </div>
     </header>
   );

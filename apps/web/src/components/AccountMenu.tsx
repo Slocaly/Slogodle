@@ -1,30 +1,14 @@
 import { Menu } from "@base-ui/react/menu";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { m } from "../paraglide/messages.js";
 import { authClient } from "../lib/auth-client";
-import { fetchIsAdmin } from "../lib/session";
+import { useAccountSession } from "../hooks/useAccountSession";
 import { UserIcon } from "./icons/UserIcon";
 import styles from "./AccountMenu.module.css";
 
 export function AccountMenu() {
   const navigate = useNavigate();
-  const { data: session, isPending } = authClient.useSession();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    if (!session) {
-      setIsAdmin(false);
-      return;
-    }
-    let cancelled = false;
-    fetchIsAdmin().then((result) => {
-      if (!cancelled) setIsAdmin(result);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [session]);
+  const { session, isPending, isAdmin } = useAccountSession();
 
   if (isPending) return null;
 

@@ -59,6 +59,14 @@
   gap: 20px;
 }
 
+.desktopActions {
+  display: contents;
+}
+
+.mobileActions {
+  display: none;
+}
+
 .localeToggle {
   width: 30px;
   height: 30px;
@@ -93,6 +101,14 @@
 
   .title {
     font-size: 24px;
+  }
+
+  .desktopActions {
+    display: none;
+  }
+
+  .mobileActions {
+    display: flex;
   }
 }
 

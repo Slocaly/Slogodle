@@ -15,7 +15,11 @@ export function GuessDots({ guesses, maxTries, className }: GuessDotsProps) {
       {Array.from({ length: maxTries }, (_, i) => {
         const g = guesses[i];
         const cls = g ? (g.correct ? styles.dotCorrect : styles.dotWrong) : "";
-        return <span key={i} className={`${styles.dot} ${cls}`} />;
+        return (
+          <span key={i} className={`${styles.dot} ${cls}`}>
+            {g && <span className={styles.dotTooltip}>{g.text}</span>}
+          </span>
+        );
       })}
     </div>
   );

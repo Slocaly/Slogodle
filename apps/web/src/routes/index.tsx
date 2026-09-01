@@ -14,7 +14,6 @@ import {
   type PhysicsLogoPileHandle,
 } from "../components/PhysicsLogoPile";
 import { LogoCard } from "../components/LogoCard";
-import { GuessTiles } from "../components/GuessTiles";
 import { GuessForm } from "../components/GuessForm";
 import { RevealPanel } from "../components/RevealPanel";
 import { CountdownTimer } from "../components/CountdownTimer";
@@ -153,7 +152,6 @@ function Home() {
                 guesses={g.guesses}
                 maxTries={g.maxTries}
               />
-              <GuessTiles guesses={g.guesses} />
               {isPlaying && (
                 <GuessForm
                   key={g.dayIndex}

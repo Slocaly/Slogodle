@@ -10,6 +10,7 @@
 }
 
 .dot {
+  position: relative;
   width: 20px;
   height: 8px;
   border-radius: 999px;
@@ -22,6 +23,32 @@
 
 .dotWrong {
   background: var(--danger);
+}
+
+.dotTooltip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 6px);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  backdrop-filter: blur(10px);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+.dot:hover .dotTooltip {
+  opacity: 1;
 }
 
 @media (max-width: 640px) {

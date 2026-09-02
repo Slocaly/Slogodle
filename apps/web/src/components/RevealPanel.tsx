@@ -54,20 +54,22 @@ export function RevealPanel({
     <div className={styles.reveal}>
       <div className={styles.revealDescription}>{logo.description}</div>
       <div className={shared.revealFact}>{logo.funFact}</div>
-      <div className={styles.actionsRow}>
-        <a
-          className={styles.githubLinkBtn}
-          href={logo.gitLink}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <GithubIcon />
-          <span>{m.reveal_github_cta()}</span>
-        </a>
-        <button type="button" className={styles.shareBtn} onClick={handleShare}>
-          <ShareIcon />
-          <span>{copied ? m.share_copied() : m.share_button()}</span>
-        </button>
+      <div className={styles.ctaGroup}>
+        <div className={styles.actionsRow}>
+          <a
+            className={styles.githubLinkBtn}
+            href={logo.gitLink}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <GithubIcon />
+            <span>{m.reveal_github_cta()}</span>
+          </a>
+          <button type="button" className={styles.shareBtn} onClick={handleShare}>
+            <ShareIcon />
+            <span>{copied ? m.share_copied() : m.share_button()}</span>
+          </button>
+        </div>
         {!isPending && !session && (
           <Link to="/signup" className={styles.loginCtaBtn}>
             <UserIcon />

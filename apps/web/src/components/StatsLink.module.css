@@ -10,6 +10,7 @@
   border: none;
   padding: 0;
   color: var(--muted);
+  text-decoration: none;
   transition: color 0.15s, background 0.15s, transform 0.2s;
 }
 
@@ -27,16 +28,23 @@
   height: 18px;
 }
 
+.statsLinkLabeled {
+  width: auto;
+  border-radius: 15px;
+  padding: 0 10px;
+}
+
 .streakBadge {
-  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .streakBadge svg {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
 }
 
 .streakLit {
@@ -48,13 +56,10 @@
 }
 
 .streakCount {
-  position: absolute;
-  bottom: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
   line-height: 1;
-  color: #fff;
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+  padding: 2px 6px;
+  border-radius: 8px;
+  background: var(--toggle-bg);
 }

@@ -4,19 +4,24 @@
   align-items: center;
 }
 
+.ctaGroup {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
 .actionsRow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-top: 16px;
   animation: revealFade 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.12s backwards;
 }
 
 .githubLinkBtn,
-.shareBtn,
-.loginCtaBtn {
+.shareBtn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -34,21 +39,53 @@
 }
 
 .githubLinkBtn:hover,
-.shareBtn:hover,
-.loginCtaBtn:hover {
+.shareBtn:hover {
   color: var(--text);
   background: var(--accent-yellow);
   transform: translateY(-1px);
 }
 
 .githubLinkBtn:active,
-.shareBtn:active,
-.loginCtaBtn:active {
+.shareBtn:active {
   transform: translateY(0) scale(0.96);
 }
 
 .githubLinkBtn svg,
-.shareBtn svg,
+.shareBtn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.loginCtaBtn {
+  display: flex;
+  justify-self: stretch;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent-yellow);
+  color: var(--text);
+  padding: 12px 18px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+
+.loginCtaBtn:hover {
+  color: var(--text);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.loginCtaBtn:active {
+  transform: translateY(0) scale(0.97);
+}
+
 .loginCtaBtn svg {
   width: 18px;
   height: 18px;

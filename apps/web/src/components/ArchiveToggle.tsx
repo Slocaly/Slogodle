@@ -8,13 +8,9 @@ interface ArchiveToggleProps {
 
 export function ArchiveToggle({ onToggleArchive }: ArchiveToggleProps) {
   return (
-    <button
-      type="button"
-      className={styles.archiveToggle}
-      aria-label={m.archive_toggle()}
-      onClick={onToggleArchive}
-    >
+    <button type="button" className={styles.archiveToggle} onClick={onToggleArchive}>
       <ArchiveIcon />
+      <span>{m.burger_history_label()}</span>
     </button>
   );
 }

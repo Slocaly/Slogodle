@@ -25,8 +25,8 @@ export function StatsLink({ to, streak }: StatsLinkProps) {
   return (
     <Link
       to={to}
-      className={styles.statsLink}
-      aria-label={isBack ? BACK_LABELS[to]!() : m.stats_link_label()}
+      className={`${styles.statsLink} ${isPersonalStats ? styles.statsLinkLabeled : ""}`}
+      aria-label={isBack ? BACK_LABELS[to]!() : isPersonalStats ? undefined : m.stats_link_label()}
     >
       {isBack ? (
         <ChevronIcon direction="left" />
@@ -35,6 +35,7 @@ export function StatsLink({ to, streak }: StatsLinkProps) {
           className={`${styles.streakBadge} ${streak > 0 ? styles.streakLit : styles.streakDim}`}
         >
           <FireIcon filled={streak > 0} />
+          <span>{m.burger_streak_label()}</span>
           <span className={styles.streakCount}>{streak}</span>
         </span>
       ) : (

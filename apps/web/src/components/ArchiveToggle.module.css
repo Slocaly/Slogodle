@@ -1,14 +1,17 @@
 .archiveToggle {
-  width: 30px;
   height: 30px;
-  border-radius: 50%;
+  border-radius: 15px;
   background: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   cursor: pointer;
   border: none;
-  padding: 0;
+  padding: 0 12px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--muted);
   transition: color 0.15s, background 0.15s, transform 0.2s;
 }

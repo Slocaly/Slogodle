@@ -38,6 +38,11 @@ export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelect
             {m.archive_see_more()}
           </Link>
         )}
+        {open && !unlimited && (
+          <Link to="/login" className={styles.archiveSeeMore}>
+            {m.archive_login_cta()}
+          </Link>
+        )}
       </div>
     </div>
   )

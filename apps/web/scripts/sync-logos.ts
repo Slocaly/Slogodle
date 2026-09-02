@@ -6,6 +6,7 @@
 //
 // Usage: pnpm --filter web run sync-logos (loads apps/web/.env)
 
+import { randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -99,6 +100,12 @@ async function objectExistsInR2(key: string): Promise<boolean> {
   }
 }
 
+// Public-facing R2 keys are random so the SVG's filename never gives away
+// the logo's name (the game would otherwise be visible in the network tab).
+function generateR2Key(): string {
+  return `${randomBytes(8).toString("hex")}.svg`;
+}
+
 function optimizeSvg(svg: string): string {
   const result = optimize(svg, {
     multipass: true,
@@ -181,7 +188,7 @@ async function main() {
   const existingRows = await d1Query<LogoMetadataRow>(
     "SELECT r2_key, name, industry, founded, description, fun_fact, git_link, aspect FROM logo_metadata",
   );
-  const existingByKey = new Map(existingRows.map((row) => [row.r2_key, row]));
+  const existingByName = new Map(existingRows.map((row) => [row.name, row]));
 
   let uploaded = 0;
   let uploadSkipped = 0;
@@ -192,14 +199,16 @@ async function main() {
   let optimizedBytesTotal = 0;
 
   for (const logo of LOGOS) {
-    const r2Key = basename(logo.icon);
+    const existing = existingByName.get(logo.name);
+    const r2Key = existing?.r2_key ?? generateR2Key();
+    const localFile = join(logosDir, basename(logo.icon));
 
     if (await objectExistsInR2(r2Key)) {
       uploadSkipped++;
     } else {
       const { originalBytes, optimizedBytes } = await uploadToR2(
         r2Key,
-        join(logosDir, r2Key),
+        localFile,
       );
       uploaded++;
       originalBytesTotal += originalBytes;
@@ -208,19 +217,18 @@ async function main() {
         0,
       );
       console.log(
-        `  uploaded ${r2Key} (${originalBytes}B → ${optimizedBytes}B, -${savedPct}%)`,
+        `  uploaded ${basename(logo.icon)} → ${r2Key} (${originalBytes}B → ${optimizedBytes}B, -${savedPct}%)`,
       );
     }
 
-    const existing = existingByKey.get(r2Key);
     if (!existing) {
       await upsertMetadata(r2Key, logo);
       inserted++;
-      console.log(`  inserted metadata for ${r2Key}`);
+      console.log(`  inserted metadata for ${logo.name} (${r2Key})`);
     } else if (!metadataMatches(existing, logo)) {
       await upsertMetadata(r2Key, logo);
       updated++;
-      console.log(`  updated metadata for ${r2Key}`);
+      console.log(`  updated metadata for ${logo.name}`);
     } else {
       unchanged++;
     }

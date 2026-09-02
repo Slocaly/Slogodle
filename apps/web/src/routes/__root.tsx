@@ -1,9 +1,12 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
 import globalCss from '../styles/global.css?url'
 import { getLocale } from '../paraglide/runtime.js'
 import { m } from '../paraglide/messages.js'
 import { NotFoundPage } from '../components/NotFoundPage'
+
+const queryClient = new QueryClient()
 
 export const Route = createRootRoute({
   head: () => ({
@@ -55,9 +58,11 @@ function RootComponent() {
         <a href="#main" className="skip-link">
           {m.skip_to_content()}
         </a>
-        <NuqsAdapter>
-          <Outlet />
-        </NuqsAdapter>
+        <QueryClientProvider client={queryClient}>
+          <NuqsAdapter>
+            <Outlet />
+          </NuqsAdapter>
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>

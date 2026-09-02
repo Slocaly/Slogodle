@@ -28,7 +28,6 @@ export function enqueueSync(dayIndex: number, guesses: string[]): void {
   const outbox = loadOutbox()
   if (outbox.some((entry) => entry.dayIndex === dayIndex)) return
   saveOutbox([...outbox, { dayIndex, guesses }])
-  void flushOutbox()
 }
 
 export async function flushOutbox(): Promise<void> {

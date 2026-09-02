@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import type { Logo } from '@slogodle/logos'
-import { fetchGameLogos } from '../lib/game-logos'
 import { loadJSON, saveJSON } from '../lib/storage'
 import { now, subscribe as subscribeClock } from '../lib/clock'
 import {
@@ -15,9 +14,11 @@ import {
   type GameStatus,
 } from '../lib/game-logic'
 import { authClient } from '../lib/auth-client'
-import { claimProgress, enqueueSync, fetchMyProgress, flushOutbox } from '../lib/progress'
+import { enqueueSync } from '../lib/progress'
 import { useDarkMode } from './useDarkMode'
 import { useSoundSettings } from './useSoundSettings'
+import { useGameLogosQuery } from './useGameLogosQuery'
+import { useRemoteProgress } from './useRemoteProgress'
 
 const OLD_TODAY_KEY = 'logodle_today_v1'
 const OLD_HISTORY_KEY = 'logodle_history_v1'
@@ -99,19 +100,16 @@ export function useGameState() {
   const { dark, toggleDark } = useDarkMode()
   const { soundEnabled, toggleSound } = useSoundSettings()
   const [archiveOpen, setArchiveOpen] = useState(false)
-  const [bank, setBank] = useState<Logo[] | null>(null)
-  const [bankError, setBankError] = useState<string | null>(null)
 
-  // Fetch the logo bank from D1 once; the local LOGOS array no longer backs
-  // the live game.
-  useEffect(() => {
-    if (bank !== null || bankError !== null) return
-    fetchGameLogos()
-      .then(setBank)
-      .catch((error: unknown) =>
-        setBankError(error instanceof Error ? error.message : String(error)),
-      )
-  }, [bank, bankError])
+  // Fetch the logo bank from D1; the local LOGOS array no longer backs the
+  // live game.
+  const bankQuery = useGameLogosQuery()
+  const bank = bankQuery.data ?? null
+  const bankError = bankQuery.error
+    ? bankQuery.error instanceof Error
+      ? bankQuery.error.message
+      : String(bankQuery.error)
+    : null
 
   const dayRecord = days[String(activeDayIndex)] ?? EMPTY_DAY
   const isToday = activeDayIndex === todayIndex
@@ -121,56 +119,42 @@ export function useGameState() {
     saveJSON(DAYS_KEY, days)
   }, [days])
 
-  // Flush any queued day-completions that couldn't sync earlier (offline, a
-  // dropped request, etc.) once on mount and whenever connectivity returns.
-  useEffect(() => {
-    void flushOutbox()
-    window.addEventListener('online', flushOutbox)
-    return () => window.removeEventListener('online', flushOutbox)
-  }, [])
-
-  // The moment a session exists (email/password sign-in, sign-up, or the
-  // GitHub OAuth redirect landing back on this page), claim any anonymous
-  // rows into the account, then overwrite local state with D1's answer.
-  // This overwrite is the actual anti-tamper enforcement point: anything in
-  // localStorage that D1 doesn't independently corroborate is discarded.
   const session = authClient.useSession()
   const userId = session.data?.user.id
+  const { data: remoteProgress, syncProgress } = useRemoteProgress(userId)
+
+  // The moment a session exists (email/password sign-in, sign-up, or the
+  // GitHub OAuth redirect landing back on this page), useRemoteProgress
+  // claims any anonymous rows into the account and fetches D1's answer for
+  // this user. This overwrite is the actual anti-tamper enforcement point:
+  // anything in localStorage that D1 doesn't independently corroborate is
+  // discarded.
   useEffect(() => {
-    if (!userId) return
-    let cancelled = false
-    claimProgress()
-      .then(() => fetchMyProgress())
-      .then((remote) => {
-        if (cancelled || !remote) return
-        setDays((prev) => {
-          const next: DaysRecord = {}
-          for (const [key, value] of Object.entries(remote)) {
-            next[key] = {
-              guesses: value.guesses,
-              status: value.status,
-              reward: value.reward,
-              playedFresh: value.playedFresh,
-            }
-          }
-          // D1 is authoritative for every day it has a row for. A day this
-          // browser is still mid-guess on (status 'playing') has no D1 row
-          // yet — enqueueSync only fires once a day resolves — so without
-          // this, every mount with an active session would silently wipe
-          // whatever guesses were made since the last successful sync,
-          // and repeatedly reloading would hand the player fresh tries on
-          // an already-started day. Preserve exactly those local-only
-          // in-progress records; everything else comes from D1.
-          for (const [key, record] of Object.entries(prev)) {
-            if (record.status === 'playing' && !(key in next)) next[key] = record
-          }
-          return next
-        })
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [userId])
+    if (!remoteProgress) return
+    setDays((prev) => {
+      const next: DaysRecord = {}
+      for (const [key, value] of Object.entries(remoteProgress)) {
+        next[key] = {
+          guesses: value.guesses,
+          status: value.status,
+          reward: value.reward,
+          playedFresh: value.playedFresh,
+        }
+      }
+      // D1 is authoritative for every day it has a row for. A day this
+      // browser is still mid-guess on (status 'playing') has no D1 row
+      // yet — enqueueSync only fires once a day resolves — so without
+      // this, every mount with an active session would silently wipe
+      // whatever guesses were made since the last successful sync,
+      // and repeatedly reloading would hand the player fresh tries on
+      // an already-started day. Preserve exactly those local-only
+      // in-progress records; everything else comes from D1.
+      for (const [key, record] of Object.entries(prev)) {
+        if (record.status === 'playing' && !(key in next)) next[key] = record
+      }
+      return next
+    })
+  }, [remoteProgress])
 
   // Check once a second whether the real day has rolled over; if it has and
   // we're pinned to today, follow it. If the user has navigated to a past
@@ -237,6 +221,7 @@ export function useGameState() {
     }))
     if (status !== 'playing') {
       enqueueSync(activeDayIndex, guesses.map((g) => g.text))
+      syncProgress()
     }
     return { status, attempts: guesses.length, reward }
   }
@@ -266,7 +251,7 @@ export function useGameState() {
     isToday,
     bank: bank ?? [],
     bankError,
-    bankLoading: bank === null && bankError === null,
+    bankLoading: bankQuery.isPending,
     logo,
     guesses: dayRecord.guesses,
     status: dayRecord.status,

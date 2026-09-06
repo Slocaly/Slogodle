@@ -35,14 +35,7 @@ export const Route = createRootRoute({
       },
       { rel: 'stylesheet', href: globalCss },
     ],
-    scripts: [
-      {
-        children: `try {
-  var v = localStorage.getItem('logodle_dark_v1');
-  document.documentElement.dataset.theme = v === '1' ? 'dark' : 'light';
-} catch (e) {}`,
-      },
-    ],
+    scripts: [{ src: '/theme-init.js' }],
   }),
   component: RootComponent,
   notFoundComponent: NotFoundPage,

@@ -1,0 +1,55 @@
+---
+import Close from "../components/Close.astro";
+import Faq from "../components/Faq.astro";
+import Footer from "../components/Footer.astro";
+import Hero from "../components/Hero.astro";
+import HowToPlay from "../components/HowToPlay.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <Hero />
+  <HowToPlay />
+  <Faq />
+  <Close />
+  <Footer />
+</Layout>
+
+<script>
+  import { buildFrames, countdownToMidnight, renderCard } from "../scripts/demo";
+  import { startPile, type Pile } from "../scripts/pile";
+
+  const hero = document.querySelector<HTMLElement>("[data-hero]")!;
+  const pileEl = document.querySelector<HTMLElement>("[data-pile]")!;
+  const card = document.querySelector<HTMLElement>("[data-game-card]")!;
+  const countdown = card.querySelector<HTMLElement>("[data-countdown]")!;
+  const steps = document.querySelectorAll<HTMLElement>("[data-step]");
+
+  const pile: Pile = startPile(pileEl, hero);
+  const frames = buildFrames();
+  let i = 0;
+
+  const show = () => {
+    const f = frames[i];
+    renderCard(card, f);
+    steps.forEach((el) => el.toggleAttribute("data-active", Number(el.dataset.step) === f.step));
+  };
+
+  // Play the scripted round in a loop, throwing a Slogodle logo on the pile on each win
+  const tick = () => {
+    setTimeout(() => {
+      i = (i + 1) % frames.length;
+      if (i === 0) pile.clearLaunched();
+      if (frames[i].win) pile.launch(1);
+      show();
+      tick();
+    }, frames[i].hold);
+  };
+
+  const updateCountdown = () => (countdown.textContent = countdownToMidnight());
+
+  show();
+  tick();
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>

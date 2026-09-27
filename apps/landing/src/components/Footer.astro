@@ -1,0 +1,72 @@
+---
+import { gameUrl } from "../config";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="bar">
+    <p>
+      <span data-year>{year}</span> - <a href="https://slocaly.dev" target="_blank" rel="noopener noreferrer">Lucas Audart</a>
+    </p>
+    <nav aria-label="Legal">
+      <a href={gameUrl("/mentions-legales")}>Legal notice</a>
+      <a href={gameUrl("/cgu")}>Terms</a>
+      <a href={gameUrl("/confidentialite")}>Privacy</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+    height: 40px;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    height: 100%;
+    max-width: 640px;
+    width: 100%;
+    padding: 0 28px;
+    border-radius: 14px 14px 0 0;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-bottom: 0;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow-x: auto;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+</style>
+
+<script>
+  // The page is static: refresh the year in case the build is older than today
+  const el = document.querySelector("[data-year]");
+  if (el) el.textContent = String(new Date().getFullYear());
+</script>

@@ -1,0 +1,43 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Slogodle - Guess the tech logo of the day",
+  description = "Guess the tech logo of the day in three tries. A new puzzle every day.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // Set the theme before first paint. Same storage key as the game app;
+      // falls back to the system preference when nothing is stored.
+      try {
+        var v = localStorage.getItem("logodle_dark_v1");
+        var dark = v === null ? matchMedia("(prefers-color-scheme: dark)").matches : v === "1";
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      } catch (e) {}
+    </script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/slogodle-mark.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap"
+    />
+    <link rel="preload" href="/font/YangBagus.ttf" as="font" type="font/ttf" crossorigin />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

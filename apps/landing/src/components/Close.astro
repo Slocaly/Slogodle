@@ -1,0 +1,64 @@
+---
+import { gameUrl } from "../config";
+---
+
+<section class="close">
+  <div class="panel">
+    <div class="mark">
+      <div class="glow"></div>
+      <img src="/slogodle-mark.svg" width="72" height="72" alt="" />
+    </div>
+    <h2>Today's logo is waiting.</h2>
+    <a href={gameUrl()} class="btn btn-primary">Play today's logo</a>
+  </div>
+</section>
+
+<style>
+  .close {
+    padding: 0 20px 96px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .panel {
+    width: 100%;
+    max-width: 560px;
+    border-radius: 32px;
+    background: var(--surface);
+    padding: 40px 40px 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    box-shadow: var(--elevation);
+  }
+
+  .mark {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+  }
+
+  .glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--lilac) 0%, transparent 72%);
+    opacity: 0.55;
+  }
+
+  img {
+    position: relative;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: clamp(26px, 3vw, 34px);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+</style>

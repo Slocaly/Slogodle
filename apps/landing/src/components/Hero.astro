@@ -1,0 +1,205 @@
+---
+import { gameUrl } from "../config";
+import GameCard from "./GameCard.astro";
+import ThemeToggle from "./ThemeToggle.astro";
+import Title from "./Title.astro";
+---
+
+<section class="hero" data-hero>
+  <div class="pile" data-pile aria-hidden="true"></div>
+
+  <header class="header">
+    <Title class="header-title" />
+    <nav class="nav">
+      <a href="#how" class="nav-link">How to play</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+      <ThemeToggle />
+      <a href={gameUrl()} class="nav-play">Play</a>
+    </nav>
+  </header>
+
+  <div class="content">
+    <div class="intro">
+      <Title as="h1" class="hero-title" />
+      <p class="tagline">Guess the tech logo of the day in three tries. A new puzzle every day.</p>
+      <div class="actions">
+        <a href={gameUrl()} class="btn btn-primary">Play today's logo</a>
+        <a href="#how" class="btn btn-secondary">How to play</a>
+      </div>
+    </div>
+    <div class="demo">
+      <GameCard />
+    </div>
+  </div>
+
+  <a href="#how" class="scroll-cue">
+    <span>Scroll</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .pile {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px clamp(20px, 4vw, 40px);
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header :global(.header-title) {
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .nav-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .nav-link:hover {
+    color: var(--accent);
+  }
+
+  .nav-play {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: var(--yellow);
+    color: var(--ink);
+    padding: 9px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      filter 0.15s,
+      transform 0.1s;
+  }
+
+  .nav-play:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+    color: var(--ink);
+  }
+
+  .nav-play:active {
+    transform: scale(0.97);
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    width: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: clamp(32px, 6vh, 72px) clamp(20px, 5vw, 56px) 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+    gap: 40px 56px;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .intro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .intro :global(.hero-title) {
+    font-size: clamp(56px, 8vw, 128px);
+  }
+
+  .tagline {
+    margin: 20px 0 0;
+    font-size: clamp(18px, 1.7vw, 22px);
+    font-weight: 500;
+    line-height: 1.5;
+    max-width: 30ch;
+    color: var(--muted);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+    pointer-events: auto;
+  }
+
+  .demo {
+    display: flex;
+    justify-content: center;
+    pointer-events: auto;
+  }
+
+  .scroll-cue {
+    position: relative;
+    z-index: 2;
+    align-self: center;
+    margin: 36px 0 calc(34vh + 12px);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px 8px 18px;
+    border-radius: 999px;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .scroll-cue:hover {
+    color: var(--accent);
+  }
+
+  .scroll-cue svg {
+    animation: cue 1.6s ease-in-out infinite;
+  }
+
+  @keyframes cue {
+    0%,
+    100% {
+      transform: rotate(90deg) translateX(0);
+    }
+    50% {
+      transform: rotate(90deg) translateX(5px);
+    }
+  }
+</style>

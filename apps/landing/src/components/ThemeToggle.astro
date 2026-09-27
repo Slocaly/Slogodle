@@ -1,0 +1,76 @@
+<button type="button" class="theme-toggle" data-theme-toggle aria-label="Switch to dark theme">
+  <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path>
+  </svg>
+  <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    color: var(--muted);
+    transition:
+      color 0.15s,
+      background 0.15s,
+      transform 0.2s;
+  }
+
+  .theme-toggle:hover {
+    color: var(--accent);
+    background: var(--violet);
+  }
+
+  .theme-toggle:active {
+    transform: scale(0.9);
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Same convention as the game: moon while dark, sun while light */
+  :global([data-theme="dark"]) .sun,
+  :global(:root:not([data-theme="dark"])) .moon {
+    display: none;
+  }
+</style>
+
+<script>
+  const KEY = "logodle_dark_v1";
+  const root = document.documentElement;
+
+  document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((btn) => {
+    const sync = () => {
+      const dark = root.dataset.theme === "dark";
+      btn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+    };
+    sync();
+
+    btn.addEventListener("click", () => {
+      const dark = root.dataset.theme !== "dark";
+      root.dataset.theme = dark ? "dark" : "light";
+      try {
+        localStorage.setItem(KEY, dark ? "1" : "0");
+      } catch {}
+      sync();
+    });
+  });
+</script>

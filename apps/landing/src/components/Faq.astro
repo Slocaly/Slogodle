@@ -1,0 +1,89 @@
+---
+const faq = [
+  {
+    q: "When does a new logo come out?",
+    a: "Every day at local midnight. Once you finish a round, a countdown shows how long until the next one.",
+  },
+  {
+    q: "What are the hints?",
+    a: "Your first wrong guess shows the year the company was founded. The second shows its industry.",
+  },
+  {
+    q: "Do I need an account?",
+    a: "No. Accounts are optional and let you save your streak and stats across devices, with email and password or GitHub sign-in.",
+  },
+  {
+    q: "Can I play past days?",
+    a: "Yes. The archive lets you replay the last 5 days, or the last 10 when you are signed in.",
+  },
+  {
+    q: "What is the pile of logos?",
+    a: "Every logo you find lands in a pile at the bottom of the screen. Solve today’s in fewer tries and more copies fly in. Click the pile to scatter it.",
+  },
+  {
+    q: "How do I share my score?",
+    a: "After each round, Share result copies your score and one square per guess, ready to paste anywhere.",
+  },
+];
+---
+
+<section id="faq" class="faq">
+  <div class="section-head">
+    <span class="pill" style="background: var(--lilac)">FAQ</span>
+    <h2>Questions</h2>
+  </div>
+  <div class="grid">
+    {
+      faq.map((f) => (
+        <div class="item">
+          <h3>{f.q}</h3>
+          <p>{f.a}</p>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .faq {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 64px clamp(20px, 5vw, 56px) 96px;
+  }
+
+  .section-head {
+    margin-bottom: 40px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: 16px;
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 28px;
+    border-radius: 24px;
+    background: var(--surface);
+    box-shadow:
+      var(--highlight),
+      0 3px 0 var(--shadow);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+</style>

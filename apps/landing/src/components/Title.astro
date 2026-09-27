@@ -1,0 +1,126 @@
+---
+interface Props {
+  as?: "h1" | "div";
+  class?: string;
+}
+
+const { as: Tag = "div", class: className } = Astro.props;
+
+// "Slo" / "go" / "dle" each get their own color
+const colors = ["var(--title-1)", "var(--title-2)", "var(--title-3)"];
+const ends = [3, 5, 8];
+const letters = "Slogodle".split("").map((ch, i) => ({
+  ch,
+  color: colors[ends.findIndex((e) => i < e)],
+  delay: `${i * 100}ms`,
+}));
+---
+
+<Tag class:list={["title", className]}>
+  <span class="bounce" role="button" tabindex="0" aria-label="Slogodle" data-title-bounce>
+    {
+      letters.map((l) => (
+        <span class="letter" style={`color: ${l.color}; animation-delay: ${l.delay}`} aria-hidden="true">
+          {l.ch}
+        </span>
+      ))
+    }
+  </span>
+</Tag>
+
+<style>
+  .title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 0.95;
+    white-space: nowrap;
+  }
+
+  .bounce {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    pointer-events: auto;
+  }
+
+  .bounce:focus-visible {
+    outline: none;
+  }
+
+  .letter {
+    display: inline-block;
+  }
+
+  .bounce.is-bouncing .letter {
+    animation: bubble 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @keyframes bubble {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.15);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  const SOUND = "/sounds/bubble.wav";
+  const LETTER_STAGGER_MS = 100;
+  const BUBBLE_PITCH_STEP = 0.1;
+
+  // Web Audio (like Howler/use-sound in the game): playbackRate shifts pitch,
+  // whereas <audio> preserves pitch and only speeds the sound up.
+  let ctx: AudioContext | undefined;
+  let buffer: Promise<AudioBuffer> | undefined;
+
+  function getBuffer(audio: AudioContext) {
+    buffer ??= fetch(SOUND)
+      .then((res) => res.arrayBuffer())
+      .then((data) => audio.decodeAudioData(data));
+    return buffer;
+  }
+
+  async function playBubble(playbackRate: number) {
+    try {
+      ctx ??= new AudioContext();
+      if (ctx.state === "suspended") await ctx.resume();
+      const source = ctx.createBufferSource();
+      source.buffer = await getBuffer(ctx);
+      source.playbackRate.value = playbackRate;
+      source.connect(ctx.destination);
+      source.start();
+    } catch {}
+  }
+
+  function bounce(el: HTMLElement) {
+    // Restart the CSS animation by forcing a reflow between class toggles
+    el.classList.remove("is-bouncing");
+    void el.offsetWidth;
+    el.classList.add("is-bouncing");
+
+    const letterCount = el.querySelectorAll(".letter").length;
+    for (let i = 0; i < letterCount; i++) {
+      setTimeout(() => playBubble(1 + i * BUBBLE_PITCH_STEP), i * LETTER_STAGGER_MS);
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-title-bounce]").forEach((el) => {
+    el.addEventListener("click", () => bounce(el));
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        bounce(el);
+      }
+    });
+  });
+</script>

@@ -7,6 +7,8 @@ import {
   LogoMultipleChoice,
 } from "./compositions/LogoMultipleChoice/LogoMultipleChoice";
 import { LogoMultipleChoiceSchema } from "./compositions/LogoMultipleChoice/schema";
+import { LogoNameChoice, REVEAL_SCENE_FRAMES as NAME_CHOICE_REVEAL_SCENE_FRAMES } from "./compositions/LogoNameChoice";
+import { LogoNameChoiceSchema } from "./compositions/LogoNameChoice/schema";
 import { Outro, OUTRO_FRAMES } from "./compositions/Outro";
 import { TOTAL_FRAMES } from "./compositions/LogoMultipleChoice/constants";
 import {
@@ -31,9 +33,9 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
         durationInFrames={150 + REVEAL_SCENE_FRAMES + OUTRO_FRAMES}
         defaultProps={{
-          logoName: defaultGuess.name as LogoName,
+          logoName: "Jasmine" as const,
           revealDelayInFrames: 150,
-          musicSrc: "music/HoliznaCC0 - Tetrapod.mp3",
+          musicSrc: "music/HoliznaCC0 - The Best Of Times.mp3" as const,
           debugSafeZones: false,
         }}
         calculateMetadata={({ props }) => ({
@@ -55,9 +57,32 @@ export const RemotionRoot: React.FC = () => {
             "Solidity" as const,
             "Waku" as const,
           ],
-          musicSrc: "music/HoliznaCC0 - Break from Reality.mp3",
+          musicSrc: "music/HoliznaCC0 - The Best Of Times.mp3" as const,
           debugSafeZones: false,
         }}
+      />
+      <Composition
+        id="LogoNameChoice"
+        component={LogoNameChoice}
+        schema={LogoNameChoiceSchema}
+        fps={30}
+        width={1080}
+        height={1920}
+        durationInFrames={150 + NAME_CHOICE_REVEAL_SCENE_FRAMES + OUTRO_FRAMES}
+        defaultProps={{
+          targetLogoName: "Brain.js" as const,
+          decoyLogoNames: [
+            "Spring" as const,
+            "Solidity" as const,
+            "Waku" as const,
+          ],
+          revealDelayInFrames: 150,
+          musicSrc: "music/HoliznaCC0 - Tetrapod.mp3" as const,
+          debugSafeZones: false,
+        }}
+        calculateMetadata={({ props }) => ({
+          durationInFrames: props.revealDelayInFrames + NAME_CHOICE_REVEAL_SCENE_FRAMES + OUTRO_FRAMES,
+        })}
       />
       <Composition
         id="Outro"

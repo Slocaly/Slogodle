@@ -4,6 +4,7 @@ import {
   Img,
   interpolate,
   interpolateColors,
+  random,
   Sequence,
   spring,
   staticFile,
@@ -15,8 +16,9 @@ import { theme } from "../../lib/theme";
 import { useAnimatedGradientBackground } from "../../lib/animatedGradientBackground";
 import { resolveLogoIcon } from "../../lib/pickLogos";
 import { Outro, OUTRO_FRAMES } from "../Outro";
-import { MusicBed } from "./components/MusicBed";
-import { SafeZoneOverlay } from "./components/SafeZoneOverlay";
+import { MusicBed } from "../GuessTheLogo/components/MusicBed";
+import { SafeZoneOverlay } from "../GuessTheLogo/components/SafeZoneOverlay";
+import { NameOption } from "./components/NameOption";
 import {
   COUNTDOWN_BADGE_SIZE,
   COUNTDOWN_BAR_WIDTH_RATIO,
@@ -24,34 +26,48 @@ import {
   COUNTDOWN_FONT_SIZE,
   DESCRIPTION_DELAY_FRAMES,
   DESCRIPTION_FADE_FRAMES,
+  DESCRIPTION_TO_FUN_FACT_GAP,
   FUN_FACT_DELAY_FRAMES,
   FUN_FACT_FADE_FRAMES,
-  NAME_DELAY_FRAMES,
-  NAME_FADE_FRAMES,
+  LOGO_CENTER_Y,
+  LOGO_SIZE,
   OUTRO_TRANSITION_FRAMES,
-  REVEAL_INFO_BOTTOM_OFFSET,
-  REVEAL_INFO_GAP,
+  OPTION_HEIGHT,
   REVEAL_LIFT,
   REVEAL_SCENE_FRAMES,
   REVEAL_TRANSITION_FRAMES,
   SETTLE_FRAMES,
+  TITLE_TOP,
+  WINNER_TO_DESCRIPTION_GAP,
+  WINNER_TOP,
 } from "./constants";
-import type { GuessTheLogoProps } from "./schema";
+import type { LogoNameChoiceProps } from "./schema";
 
 export { REVEAL_SCENE_FRAMES } from "./constants";
 
-export const GuessTheLogo: React.FC<GuessTheLogoProps> = ({
-  logoName,
+function resolveLogo(name: string): Logo {
+  const logo = LOGOS.find((candidate) => candidate.name === name);
+  if (!logo) {
+    throw new Error(`Unknown logo: ${name}`);
+  }
+  return logo;
+}
+
+export const LogoNameChoice: React.FC<LogoNameChoiceProps> = ({
+  targetLogoName,
+  decoyLogoNames,
   revealDelayInFrames,
   musicSrc,
   debugSafeZones,
 }) => {
-  const logo = LOGOS.find((candidate) => candidate.name === logoName);
-
-  if (!logo) {
-    throw new Error(`Unknown logo: ${logoName}`);
-  }
-
+  const target = resolveLogo(targetLogoName);
+  // Deterministic (not Math.random) so the option order stays identical across frame renders.
+  const targetIndex = Math.floor(random(targetLogoName) * (decoyLogoNames.length + 1));
+  const choices = [
+    ...decoyLogoNames.slice(0, targetIndex),
+    target.name,
+    ...decoyLogoNames.slice(targetIndex),
+  ];
   const background = useAnimatedGradientBackground();
 
   return (
@@ -67,7 +83,7 @@ export const GuessTheLogo: React.FC<GuessTheLogoProps> = ({
         revealTransitionFrames={REVEAL_TRANSITION_FRAMES}
       />
       <Sequence name="Guess" durationInFrames={revealDelayInFrames + REVEAL_SCENE_FRAMES}>
-        <GuessSceneWithFade logo={logo} revealDelayInFrames={revealDelayInFrames} />
+        <GuessSceneWithFade logo={target} choices={choices} revealDelayInFrames={revealDelayInFrames} />
       </Sequence>
       <Sequence
         name="Outro"
@@ -89,12 +105,11 @@ function getTickFrames(revealDelayInFrames: number, fps: number): number[] {
   return frames;
 }
 
-const GuessSceneWithFade: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
-  logo,
-  revealDelayInFrames,
-}) => {
+type SceneProps = { logo: Logo; choices: string[]; revealDelayInFrames: number };
+
+const GuessSceneWithFade: React.FC<SceneProps> = (props) => {
   const frame = useCurrentFrame();
-  const sceneEnd = revealDelayInFrames + REVEAL_SCENE_FRAMES;
+  const sceneEnd = props.revealDelayInFrames + REVEAL_SCENE_FRAMES;
   const contentOpacity = interpolate(
     frame,
     [sceneEnd - OUTRO_TRANSITION_FRAMES, sceneEnd],
@@ -104,15 +119,12 @@ const GuessSceneWithFade: React.FC<{ logo: Logo; revealDelayInFrames: number }> 
 
   return (
     <AbsoluteFill style={{ opacity: contentOpacity }}>
-      <GuessScene logo={logo} revealDelayInFrames={revealDelayInFrames} />
+      <GuessScene {...props} />
     </AbsoluteFill>
   );
 };
 
-const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
-  logo,
-  revealDelayInFrames,
-}) => {
+const GuessScene: React.FC<SceneProps> = ({ logo, choices, revealDelayInFrames }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const revealed = frame >= revealDelayInFrames;
@@ -120,11 +132,9 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
 
   // Settle only — title and logo are already fully visible at frame 0, this
   // just eases them in from a slightly smaller/lower resting position.
-  const titleSettle = spring({ frame, fps, config: { damping: 14 }, durationInFrames: SETTLE_FRAMES });
-  const titleScale = 0.94 + titleSettle * 0.06;
-
-  const logoSettle = spring({ frame, fps, config: { damping: 14 }, durationInFrames: SETTLE_FRAMES });
-  const logoEntranceScale = 0.9 + logoSettle * 0.1;
+  const settle = spring({ frame, fps, config: { damping: 14 }, durationInFrames: SETTLE_FRAMES });
+  const titleScale = 0.94 + settle * 0.06;
+  const logoEntranceScale = 0.9 + settle * 0.1;
 
   // Quick overshoot pop on the logo once the answer is revealed.
   const logoRevealPop = revealed
@@ -137,8 +147,8 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
     : 0;
   const logoScale = logoEntranceScale * (1 + logoRevealPop * 0.1);
 
-  // Once revealed, the logo springs up (with a slight overshoot) to make room
-  // for the description, fun fact and name.
+  // Once revealed, the logo springs up into the space the title frees, making
+  // room for the answer and the description / fun fact below it.
   const revealLift = revealed
     ? spring({
         frame: frame - revealDelayInFrames,
@@ -163,7 +173,7 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
   const titleTop = interpolate(
     frame,
     [revealDelayInFrames, revealDelayInFrames + REVEAL_TRANSITION_FRAMES],
-    [90, 32],
+    [TITLE_TOP, 32],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
@@ -205,20 +215,10 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
-  const nameOpacity = interpolate(
-    frame,
-    [
-      revealDelayInFrames + NAME_DELAY_FRAMES,
-      revealDelayInFrames + NAME_DELAY_FRAMES + NAME_FADE_FRAMES,
-    ],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
-
   const tickFrames = getTickFrames(revealDelayInFrames, fps);
 
   return (
-    <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
+    <AbsoluteFill>
       {tickFrames.map((tickFrame) => (
         <Sequence key={tickFrame} from={tickFrame} layout="none">
           <Audio src={staticFile("sounds/tick.wav")} volume={0.3} />
@@ -241,17 +241,29 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
           transform: `scale(${titleScale * titleRevealShrink})`,
         }}
       >
-        Guess the logo!
+        Name this logo!
       </div>
       <Img
         src={staticFile(resolveLogoIcon(logo.icon))}
         style={{
-          width: 560,
-          height: 560,
+          position: "absolute",
+          top: LOGO_CENTER_Y - LOGO_SIZE / 2,
+          left: `calc(50% - ${LOGO_SIZE / 2}px)`,
+          width: LOGO_SIZE,
+          height: LOGO_SIZE,
           objectFit: "contain",
           transform: `translateY(${-revealLift}px) scale(${logoScale})`,
         }}
       />
+      {choices.map((name, index) => (
+        <NameOption
+          key={name}
+          index={index}
+          name={name}
+          isCorrect={name === logo.name}
+          revealAtFrame={revealDelayInFrames}
+        />
+      ))}
       {!revealed && (
         <div
           style={{
@@ -307,17 +319,17 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
         </div>
       )}
       {revealed && (
-        // Stacked in one bottom-anchored column so a long description or fun
-        // fact pushes upwards instead of overlapping the name.
+        // Top-anchored right under the answer entry, which stays on screen as the name.
         <div
           style={{
             position: "absolute",
-            bottom: REVEAL_INFO_BOTTOM_OFFSET,
+            top: WINNER_TOP + OPTION_HEIGHT + WINNER_TO_DESCRIPTION_GAP,
+            left: "10%",
             width: "80%",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: REVEAL_INFO_GAP,
+            gap: DESCRIPTION_TO_FUN_FACT_GAP,
             textAlign: "center",
           }}
         >
@@ -367,17 +379,6 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
             >
               {logo.funFact}
             </div>
-          </div>
-          <div
-            style={{
-              fontSize: 110,
-              lineHeight: 1,
-              fontWeight: 700,
-              color: theme.colors.accentPink,
-              opacity: nameOpacity,
-            }}
-          >
-            {logo.name}
           </div>
         </div>
       )}

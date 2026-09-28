@@ -9,9 +9,11 @@
     "node": ">=22.12.0"
   },
   "dependencies": {
+    "@remotion/bundler": "4.0.513",
     "@remotion/cli": "4.0.513",
     "@remotion/fonts": "4.0.513",
     "@remotion/google-fonts": "4.0.513",
+    "@remotion/renderer": "4.0.513",
     "@slogodle/logos": "workspace:*",
     "matter-js": "^0.20.0",
     "react": "19.2.3",
@@ -26,13 +28,19 @@
     "@types/web": "0.0.166",
     "eslint": "9.19.0",
     "prettier": "3.8.1",
+    "tsx": "^4.23.15",
     "typescript": "5.9.3"
   },
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
     "render": "remotion render LogoMultipleChoice out/LogoMultipleChoice.mp4 --video-bitrate=9M",
+    "render:all": "tsx scripts/render-all.mts",
+    "render:all:multiple-choice": "tsx scripts/render-all.mts multiple-choice",
+    "render:all:guess": "tsx scripts/render-all.mts guess",
+    "render:all:name-choice": "tsx scripts/render-all.mts name-choice",
     "render:guess": "remotion render GuessTheLogo out/GuessTheLogo.mp4 --video-bitrate=9M",
+    "render:name-choice": "remotion render LogoNameChoice out/LogoNameChoice.mp4 --video-bitrate=9M",
     "render:banner": "remotion still SocialBanner out/SocialBanner.png --scale=2",
     "render:banner:youtube": "remotion still YoutubeBanner out/YoutubeBanner.png",
     "upgrade": "remotion upgrade",

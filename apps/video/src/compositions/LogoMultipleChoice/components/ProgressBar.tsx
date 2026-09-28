@@ -94,7 +94,7 @@ export const ProgressBar = () => {
                 >
                     <div
                         style={{
-                            width: `${progress * 100}%`,
+                            width: `${(1 - progress) * 100}%`,
                             height: "100%",
                             borderRadius: 999,
                             backgroundColor: urgentColor,

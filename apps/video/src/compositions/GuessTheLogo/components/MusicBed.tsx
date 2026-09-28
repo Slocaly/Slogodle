@@ -20,5 +20,5 @@ export const MusicBed: React.FC<{
         [BASE_VOLUME, DUCK_VOLUME, DUCK_VOLUME, BASE_VOLUME],
         { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
     );
-    return <Html5Audio src={staticFile(src)} loop volume={volume} />;
+    return <Html5Audio trimBefore={493} src={staticFile(src)} loop volume={volume} />;
 };

@@ -9,8 +9,6 @@ interface Hint {
 }
 
 export interface Frame {
-  /** How-to-play step highlighted during this frame (1-3) */
-  step: number;
   /** Duration of the frame in ms */
   hold: number;
   win: boolean;
@@ -33,24 +31,21 @@ const GUESSES: Guess[] = [
 
 /** Scripted round: type two wrong guesses letter by letter, then the right one */
 export function buildFrames(): Frame[] {
-  const raw: { typed: string; gs: Guess[]; step: number; hold: number; win?: boolean }[] = [];
-  raw.push({ typed: "", gs: [], step: 1, hold: 1600 });
+  const raw: { typed: string; gs: Guess[]; hold: number; win?: boolean }[] = [];
+  raw.push({ typed: "", gs: [], hold: 1600 });
   GUESSES.forEach((g, gi) => {
     const done = GUESSES.slice(0, gi);
-    const step = gi === 0 ? 1 : 2;
-    for (let c = 1; c <= g.t.length; c++) raw.push({ typed: g.t.slice(0, c), gs: done, step, hold: 95 });
-    raw.push({ typed: g.t, gs: done, step, hold: 500 });
+    for (let c = 1; c <= g.t.length; c++) raw.push({ typed: g.t.slice(0, c), gs: done, hold: 95 });
+    raw.push({ typed: g.t, gs: done, hold: 500 });
     raw.push({
       typed: "",
       gs: GUESSES.slice(0, gi + 1),
-      step: g.ok ? 3 : 2,
       hold: g.ok ? 4600 : 1900,
       win: g.ok,
     });
   });
 
   return raw.map((f) => ({
-    step: f.step,
     hold: f.hold,
     win: !!f.win,
     typed: f.typed,

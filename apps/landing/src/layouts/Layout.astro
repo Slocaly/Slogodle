@@ -1,4 +1,5 @@
 ---
+import "@fontsource-variable/fredoka";
 import "../styles/global.css";
 
 interface Props {
@@ -29,13 +30,7 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/slogodle-mark.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap"
-    />
-    <link rel="preload" href="/font/YangBagus.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/font/YangBagus.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <slot />

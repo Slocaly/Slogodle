@@ -1,4 +1,6 @@
 ---
+import Icon from "./Icon.astro";
+
 const faq = [
   {
     q: "When does a new logo come out?",
@@ -18,7 +20,7 @@ const faq = [
   },
   {
     q: "What is the pile of logos?",
-    a: "Every logo you find lands in a pile at the bottom of the screen. Solve today’s in fewer tries and more copies fly in. Click the pile to scatter it.",
+    a: "Every logo you find lands in a pile at the bottom of the screen. Solve today's in fewer tries and more copies fly in. Click the pile to scatter it.",
   },
   {
     q: "How do I share my score?",
@@ -28,17 +30,19 @@ const faq = [
 ---
 
 <section id="faq" class="faq">
-  <div class="section-head">
-    <span class="pill" style="background: var(--lilac)">FAQ</span>
-    <h2>Questions</h2>
-  </div>
-  <div class="grid">
+  <h2>Frequently asked questions</h2>
+  <div class="list">
     {
       faq.map((f) => (
-        <div class="item">
-          <h3>{f.q}</h3>
+        <details class="item" name="faq">
+          <summary>
+            <h3>{f.q}</h3>
+            <span class="toggle">
+              <Icon name="plus" />
+            </span>
+          </summary>
           <p>{f.a}</p>
-        </div>
+        </details>
       ))
     }
   </div>
@@ -46,31 +50,46 @@ const faq = [
 
 <style>
   .faq {
-    max-width: 1160px;
+    max-width: 760px;
     margin: 0 auto;
     padding: 64px clamp(20px, 5vw, 56px) 96px;
   }
 
-  .section-head {
-    margin-bottom: 40px;
+  h2 {
+    margin: 0 0 32px;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 700;
+    line-height: 1.1;
+    text-align: center;
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-    gap: 16px;
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 24px 28px;
-    border-radius: 24px;
+    border-radius: 16px;
     background: var(--surface);
     box-shadow:
       var(--highlight),
       0 3px 0 var(--shadow);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 16px;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
   }
 
   h3 {
@@ -80,10 +99,26 @@ const faq = [
     line-height: 1.4;
   }
 
+  .toggle {
+    display: flex;
+    color: var(--muted);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  summary:hover .toggle {
+    color: var(--accent);
+  }
+
+  .item[open] .toggle {
+    transform: rotate(45deg);
+  }
+
   p {
     margin: 0;
+    padding: 0 24px 22px;
     font-size: 15px;
     line-height: 1.6;
     color: var(--muted);
+    max-width: 60ch;
   }
 </style>

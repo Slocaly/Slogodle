@@ -25,17 +25,29 @@ import Layout from "../layouts/Layout.astro";
   const pileEl = document.querySelector<HTMLElement>("[data-pile]")!;
   const card = document.querySelector<HTMLElement>("[data-game-card]")!;
   const countdown = card.querySelector<HTMLElement>("[data-countdown]")!;
-  const steps = document.querySelectorAll<HTMLElement>("[data-step]");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const pile: Pile = startPile(pileEl, hero);
   const frames = buildFrames();
-  let i = 0;
+  // Reduced motion: show the solved card instead of playing the round
+  let i = reduceMotion ? frames.length - 1 : 0;
 
-  const show = () => {
-    const f = frames[i];
-    renderCard(card, f);
-    steps.forEach((el) => el.toggleAttribute("data-active", Number(el.dataset.step) === f.step));
+  // Reserve the tallest frame's height so the card growing never shifts the hero layout (and the pile)
+  const demo = card.parentElement!;
+  let demoWidth = 0;
+  const reserveDemoHeight = () => {
+    if (demo.clientWidth === demoWidth) return;
+    demoWidth = demo.clientWidth;
+    let max = 0;
+    for (const f of frames) {
+      renderCard(card, f);
+      max = Math.max(max, card.offsetHeight);
+    }
+    demo.style.minHeight = `${max}px`;
+    show();
   };
+
+  const show = () => renderCard(card, frames[i]);
 
   // Play the scripted round in a loop, throwing a Slogodle logo on the pile on each win
   const tick = () => {
@@ -50,8 +62,9 @@ import Layout from "../layouts/Layout.astro";
 
   const updateCountdown = () => (countdown.textContent = countdownToMidnight());
 
-  show();
-  tick();
+  reserveDemoHeight();
+  window.addEventListener("resize", reserveDemoHeight);
+  if (!reduceMotion) tick();
   updateCountdown();
   setInterval(updateCountdown, 1000);
 </script>

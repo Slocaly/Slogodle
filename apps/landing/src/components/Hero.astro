@@ -9,20 +9,22 @@ import Title from "./Title.astro";
   <div class="pile" data-pile aria-hidden="true"></div>
 
   <header class="header">
-    <Title class="header-title" />
+    <a href="/" class="brand" aria-label="Slogodle home">
+      <img src="/slogodle-mark.svg" width="36" height="36" alt="" />
+    </a>
     <nav class="nav">
       <a href="#how" class="nav-link">How to play</a>
       <a href="#videos" class="nav-link">Videos</a>
       <a href="#faq" class="nav-link">FAQ</a>
       <ThemeToggle />
-      <a href={gameUrl()} class="nav-play">Play</a>
+      <a href={gameUrl()} class="nav-play">Play today's logo</a>
     </nav>
   </header>
 
   <div class="content">
     <div class="intro">
       <Title as="h1" class="hero-title" />
-      <p class="tagline">Guess the tech logo of the day in three tries. A new puzzle every day.</p>
+      <p class="tagline">Name the tech logo of the day in three tries. A new one appears every midnight.</p>
       <div class="actions">
         <a href={gameUrl()} class="btn btn-primary">Play today's logo</a>
         <a href="#how" class="btn btn-secondary">How to play</a>
@@ -32,19 +34,13 @@ import Title from "./Title.astro";
       <GameCard />
     </div>
   </div>
-
-  <a href="#how" class="scroll-cue">
-    <span>Scroll</span>
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-  </a>
 </section>
 
 <style>
   .hero {
     position: relative;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -70,9 +66,13 @@ import Title from "./Title.astro";
     border-bottom: 1px solid var(--border);
   }
 
-  .header :global(.header-title) {
-    font-size: clamp(24px, 3vw, 34px);
-    line-height: 1;
+  .brand {
+    display: flex;
+    border-radius: 50%;
+  }
+
+  .brand img {
+    display: block;
   }
 
   .nav {
@@ -124,7 +124,8 @@ import Title from "./Title.astro";
     width: 100%;
     max-width: 1160px;
     margin: 0 auto;
-    padding: clamp(32px, 6vh, 72px) clamp(20px, 5vw, 56px) 0;
+    /* Bottom padding keeps the logo pile clear of the hero copy and card */
+    padding: clamp(32px, 6vh, 72px) clamp(20px, 5vw, 56px) calc(26vh + 24px);
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
     gap: 40px 56px;
@@ -162,45 +163,18 @@ import Title from "./Title.astro";
   .demo {
     display: flex;
     justify-content: center;
+    align-items: flex-start;
     pointer-events: auto;
   }
 
-  .scroll-cue {
-    position: relative;
-    z-index: 2;
-    align-self: center;
-    margin: 36px 0 calc(34vh + 12px);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px 8px 18px;
-    border-radius: 999px;
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .scroll-cue:hover {
-    color: var(--accent);
-  }
-
-  .scroll-cue svg {
-    animation: cue 1.6s ease-in-out infinite;
-  }
-
-  @keyframes cue {
-    0%,
-    100% {
-      transform: rotate(90deg) translateX(0);
+  /* Mobile: the section links don't fit next to the CTA; the page is short enough to scroll */
+  @media (max-width: 720px) {
+    .nav-link {
+      display: none;
     }
-    50% {
-      transform: rotate(90deg) translateX(5px);
+
+    .nav {
+      gap: 12px;
     }
   }
 </style>

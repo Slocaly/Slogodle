@@ -1,0 +1,34 @@
+---
+// Tabler outline icons, inlined so they inherit `currentColor`
+import check from "@tabler/icons/outline/check.svg?raw";
+import moon from "@tabler/icons/outline/moon.svg?raw";
+import plus from "@tabler/icons/outline/plus.svg?raw";
+import share from "@tabler/icons/outline/share-2.svg?raw";
+import sun from "@tabler/icons/outline/sun.svg?raw";
+import volumeOff from "@tabler/icons/outline/volume-3.svg?raw";
+import volume from "@tabler/icons/outline/volume.svg?raw";
+
+const icons = { check, moon, plus, share, sun, volume, "volume-off": volumeOff };
+
+interface Props {
+  name: keyof typeof icons;
+  size?: number;
+}
+
+const { name, size = 20 } = Astro.props;
+---
+
+<span class="icon" style={`--size: ${size}px`} aria-hidden="true" set:html={icons[name]} />
+
+<style>
+  .icon {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  .icon :global(svg) {
+    width: var(--size);
+    height: var(--size);
+    stroke-width: 2;
+  }
+</style>

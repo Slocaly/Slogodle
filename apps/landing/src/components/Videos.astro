@@ -1,25 +1,24 @@
 ---
+import Icon from "./Icon.astro";
+
 const videos = [
   {
     src: "/videos/guess-the-logo.mp4",
     poster: "/videos/guess-the-logo.jpg",
     title: "Guess the logo",
     copy: "One logo, five seconds. Name it before the timer runs out.",
-    color: "var(--title-1)",
   },
   {
     src: "/videos/multiple-choice.mp4",
     poster: "/videos/multiple-choice.jpg",
     title: "Pick the logo",
     copy: "Four logos, one name. Tap the right one.",
-    color: "var(--title-2)",
   },
   {
     src: "/videos/name-choice.mp4",
     poster: "/videos/name-choice.jpg",
     title: "Pick the name",
     copy: "One logo, four names. Choose the one that matches.",
-    color: "var(--title-3)",
   },
 ];
 
@@ -45,7 +44,6 @@ const socials = [
 
 <section id="videos" class="videos">
   <div class="section-head">
-    <span class="pill" style="background: var(--title-2)">VIDEOS</span>
     <h2>Play along on your feed.</h2>
     <p class="lead">Short logo quizzes in three formats. Can you beat the countdown?</p>
   </div>
@@ -57,21 +55,16 @@ const socials = [
           <div class="phone" data-video>
             <video src={v.src} poster={v.poster} muted loop playsinline preload="none" aria-label={`${v.title} example video`} />
             <button type="button" class="sound" data-sound aria-pressed="false" aria-label="Turn sound on">
-              <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M11 5 6 9H2v6h4l5 4V5z" />
-                <path d="m22 9-6 6M16 9l6 6" />
-              </svg>
-              <svg class="icon-sound" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M11 5 6 9H2v6h4l5 4V5z" />
-                <path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" />
-              </svg>
+              <span class="icon-muted">
+                <Icon name="volume-off" />
+              </span>
+              <span class="icon-sound">
+                <Icon name="volume" />
+              </span>
             </button>
           </div>
           <figcaption>
-            <h3>
-              <span class="dot" style={`background: ${v.color}`} />
-              {v.title}
-            </h3>
+            <h3>{v.title}</h3>
             <p>{v.copy}</p>
           </figcaption>
         </figure>
@@ -84,11 +77,11 @@ const socials = [
     <div class="socials">
       {
         socials.map((s) => (
-          <a href={s.href} class="social" target="_blank" rel="noopener noreferrer">
+          <a href={s.href} class="social" target="_blank" rel="noopener noreferrer" aria-label={s.name}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d={s.path} />
             </svg>
-            {s.name}
+            <span class="social-name">{s.name}</span>
           </a>
         ))
       }
@@ -181,14 +174,8 @@ const socials = [
     outline-offset: 3px;
   }
 
-  .sound svg {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+  .sound span {
+    display: flex;
   }
 
   .sound .icon-sound,
@@ -206,17 +193,8 @@ const socials = [
 
   h3 {
     margin: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
     font-size: 20px;
     font-weight: 700;
-  }
-
-  .dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
   }
 
   figcaption p {
@@ -280,6 +258,78 @@ const socials = [
     width: 20px;
     height: 20px;
     fill: currentColor;
+  }
+
+  /* Mobile: swipeable full-bleed carousel, icon-only social buttons */
+  @media (max-width: 640px) {
+    .grid {
+      display: flex;
+      gap: 16px;
+      margin-inline: calc(-1 * clamp(20px, 5vw, 56px));
+      padding: 4px clamp(20px, 5vw, 56px) 24px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: clamp(20px, 5vw, 56px);
+      scrollbar-width: none;
+    }
+
+    .grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card {
+      flex: 0 0 78%;
+      max-width: none;
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+    }
+
+    /* Native CSS dots where supported (scroll markers) */
+    @supports selector(::scroll-marker) {
+      .grid {
+        scroll-marker-group: after;
+      }
+
+      .grid::scroll-marker-group {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
+      .card::scroll-marker {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--border);
+        transition:
+          width 0.2s,
+          background 0.2s;
+      }
+
+      .card::scroll-marker:target-current {
+        width: 24px;
+        background: var(--accent);
+      }
+    }
+
+    .social {
+      width: 52px;
+      height: 52px;
+      padding: 0;
+      justify-content: center;
+    }
+
+    .social svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .social-name {
+      display: none;
+    }
   }
 </style>
 

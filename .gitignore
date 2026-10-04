@@ -32,3 +32,5 @@ pnpm-debug.log*
 
 # brag
 brag-output
+
+backup.sql

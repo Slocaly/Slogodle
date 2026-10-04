@@ -1,6 +1,6 @@
 import type { Logo } from '@slogodle/logos'
 
-const EPOCH = new Date(2024, 0, 1)
+const EPOCH = new Date(2026, 9, 5)
 
 export type GameStatus = 'playing' | 'won' | 'lost'
 

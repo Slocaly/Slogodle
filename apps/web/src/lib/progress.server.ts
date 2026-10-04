@@ -6,7 +6,7 @@ import { ARCHIVE_DAYS, dayIndexFor, pickLogo, resolveGuesses, rewardFor, type Ga
 // game-logic.ts's EPOCH is built from local Date components, so it resolves
 // to a different real instant per runtime timezone (this server always runs
 // in UTC; a browser doesn't). Combined with the DST offset difference
-// between January (when EPOCH is defined) and whatever month "now" falls
+// between October (when EPOCH is defined) and whatever month "now" falls
 // in, a client's own dayIndexFor(now()) can disagree with this server's by
 // a full day even in the middle of the afternoon, not just near a midnight
 // boundary. 2 days of slack covers that plus a genuine (bounded ±1 day)

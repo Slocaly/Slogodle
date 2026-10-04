@@ -11,7 +11,8 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { LOGOS, type Logo } from "@slogodle/logos";
+import type { Logo } from "@slogodle/logos";
+import { VIDEO_LOGOS } from "../../lib/videoLogos";
 import { theme } from "../../lib/theme";
 import { useAnimatedGradientBackground } from "../../lib/animatedGradientBackground";
 import { resolveLogoIcon } from "../../lib/pickLogos";
@@ -46,7 +47,7 @@ import type { LogoNameChoiceProps } from "./schema";
 export { REVEAL_SCENE_FRAMES } from "./constants";
 
 function resolveLogo(name: string): Logo {
-  const logo = LOGOS.find((candidate) => candidate.name === name);
+  const logo = VIDEO_LOGOS.find((candidate) => candidate.name === name);
   if (!logo) {
     throw new Error(`Unknown logo: ${name}`);
   }
@@ -90,7 +91,7 @@ export const LogoNameChoice: React.FC<LogoNameChoiceProps> = ({
         from={revealDelayInFrames + REVEAL_SCENE_FRAMES}
         durationInFrames={OUTRO_FRAMES}
       >
-        <Outro />
+        <Outro logoSeed={`name-choice-${targetLogoName}`} />
       </Sequence>
       {debugSafeZones && <SafeZoneOverlay />}
     </AbsoluteFill>

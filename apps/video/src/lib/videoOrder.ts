@@ -13,6 +13,16 @@ export const MUSIC_TRACKS = [
 
 export type MusicTrack = (typeof MUSIC_TRACKS)[number];
 
+// Frames skipped at the start of each track (30fps), so the music starts on a good part.
+const DEFAULT_MUSIC_TRIM_FRAMES = 493;
+const MUSIC_TRIM_FRAMES: Partial<Record<string, number>> = {
+  "music/HoliznaCC0 - Tetrapod.mp3": 505,
+};
+
+export function getMusicTrimFrames(src: string): number {
+  return MUSIC_TRIM_FRAMES[src] ?? DEFAULT_MUSIC_TRIM_FRAMES;
+}
+
 export interface MultipleChoiceEpisode {
   targetLogoName: string;
   decoyLogoNames: string[];

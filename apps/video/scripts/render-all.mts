@@ -35,7 +35,7 @@ const SERIES: Record<string, () => Series> = {
     episodes: buildNameChoiceEpisodes().map((episode) => ({
       name: episode.targetLogoName,
       label: `${episode.targetLogoName}  (decoys: ${episode.decoyLogoNames.join(", ")})`,
-      inputProps: { ...episode, revealDelayInFrames: 150 },
+      inputProps: { ...episode, revealDelayInFrames: 135 },
     })),
   }),
   guess: () => ({
@@ -43,7 +43,7 @@ const SERIES: Record<string, () => Series> = {
     episodes: buildGuessTheLogoEpisodes().map((episode) => ({
       name: episode.logoName,
       label: episode.logoName,
-      inputProps: { ...episode, revealDelayInFrames: 150 },
+      inputProps: { ...episode, revealDelayInFrames: 135 },
     })),
   }),
 };

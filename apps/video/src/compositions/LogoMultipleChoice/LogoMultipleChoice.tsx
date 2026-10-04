@@ -1,17 +1,18 @@
 import { AbsoluteFill, interpolate, random, Sequence, useCurrentFrame } from "remotion";
-import { LOGOS, type Logo } from "@slogodle/logos";
+import type { Logo } from "@slogodle/logos";
+import { VIDEO_LOGOS } from "../../lib/videoLogos";
 import { theme } from "../../lib/theme";
 import { useAnimatedGradientBackground } from "../../lib/animatedGradientBackground";
 import type { LogoMultipleChoiceProps } from "./schema";
 import { QuestionTitle } from "./components/QuestionTitle";
 import { ChoiceGrid } from "./components/ChoiceGrid";
 import { MusicBed } from "./components/MusicBed";
-import { Outro } from "../Outro";
-import { OUTRO_BEAT_FRAMES, OUTRO_START_FRAME, OUTRO_TRANSITION_FRAMES } from "./constants";
+import { Outro, OUTRO_FRAMES } from "../Outro";
+import { OUTRO_START_FRAME, OUTRO_TRANSITION_FRAMES } from "./constants";
 import { SafeZoneOverlay } from "./components/SafeZoneOverlay";
 
 function resolveLogo(name: string): Logo {
-  const logo = LOGOS.find((candidate) => candidate.name === name);
+  const logo = VIDEO_LOGOS.find((candidate) => candidate.name === name);
   if (!logo) {
     throw new Error(`Unknown logo: ${name}`);
   }
@@ -50,8 +51,8 @@ export const LogoMultipleChoice: React.FC<LogoMultipleChoiceProps> = ({
         <QuestionTitle targetName={target.name} />
         <ChoiceGrid choices={choices} target={target} />
       </AbsoluteFill>
-      <Sequence name="Outro" from={OUTRO_START_FRAME} durationInFrames={OUTRO_BEAT_FRAMES}>
-        <Outro />
+      <Sequence name="Outro" from={OUTRO_START_FRAME} durationInFrames={OUTRO_FRAMES}>
+        <Outro logoSeed={`multiple-choice-${targetLogoName}`} />
       </Sequence>
       {debugSafeZones && <SafeZoneOverlay />}
     </AbsoluteFill>

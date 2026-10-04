@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { LOGOS } from "@slogodle/logos";
+import { VIDEO_LOGOS } from "../../lib/videoLogos";
 import { MUSIC_TRACKS } from "../../lib/videoOrder";
 
-const logoNames = LOGOS.map((logo) => logo.name) as [string, ...string[]];
+const logoNames = VIDEO_LOGOS.map((logo) => logo.name) as [string, ...string[]];
 
 export const LogoMultipleChoiceSchema = z.object({
   targetLogoName: z.enum(logoNames),

@@ -1,4 +1,4 @@
-export const REVEAL_SCENE_FRAMES = 180; // hold after reveal before the Outro starts — long enough to read the fun fact
+export const REVEAL_SCENE_FRAMES = 195; // reveal transition (15) + 6s hold — matches LogoMultipleChoice, Outro starts at frame 330
 export const OUTRO_TRANSITION_FRAMES = 20; // content cross-fades out into the Outro scene
 
 export const SETTLE_FRAMES = 15; // 0.5s — everything is visible at frame 0, this is just a settle-in spring window

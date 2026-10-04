@@ -28,7 +28,12 @@ loadFont({
   weight: "normal",
 });
 
-export const Outro: React.FC = () => {
+interface OutroProps {
+  /** Seeds which logos fall in the background; pass something unique per video. */
+  logoSeed?: string;
+}
+
+export const Outro: React.FC<OutroProps> = ({ logoSeed }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -41,7 +46,7 @@ export const Outro: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
-      <FallingLogos />
+      <FallingLogos logoSeed={logoSeed} />
       <div
         style={{
           display: "flex",

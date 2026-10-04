@@ -1,3 +1,5 @@
+import { OUTRO_FRAMES } from "../Outro";
+
 export const SETTLE_FRAMES = 15; // 0.5s — everything is visible at frame 0, this is just a settle-in spring window
 export const COUNTDOWN_FRAMES = 120; // 4.0s countdown, runs during [0, REVEAL_AT_FRAME)
 export const REVEAL_AT_FRAME = SETTLE_FRAMES + COUNTDOWN_FRAMES; // 135
@@ -5,8 +7,7 @@ export const REVEAL_TRANSITION_FRAMES = 15; // 0.5s — wrong-card shake/flash, 
 export const HOLD_START_FRAME = REVEAL_AT_FRAME + REVEAL_TRANSITION_FRAMES; // 150
 export const HOLD_FRAMES = 180; // 6.0s answer hold — long enough to read the fun fact
 export const OUTRO_START_FRAME = HOLD_START_FRAME + HOLD_FRAMES; // 330
-export const OUTRO_BEAT_FRAMES = 90; // 3.0s trimmed Outro scene
-export const TOTAL_FRAMES = OUTRO_START_FRAME + OUTRO_BEAT_FRAMES; // 420 (14s @ 30fps)
+export const TOTAL_FRAMES = OUTRO_START_FRAME + OUTRO_FRAMES; // 450 (15s @ 30fps)
 export const OUTRO_TRANSITION_FRAMES = 20; // content (question + cards) cross-fades out into the Outro scene
 
 export const COUNTDOWN_FONT_SIZE = 128;

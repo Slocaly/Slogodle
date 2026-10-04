@@ -21,7 +21,12 @@ function randomInRange(seed: string, [min, max]: [number, number]): number {
   return min + random(seed) * (max - min);
 }
 
-export const FallingLogos: React.FC = () => {
+interface FallingLogosProps {
+  /** Picks which logos fall, so each video can get its own set. Motion stays the same. */
+  logoSeed?: string;
+}
+
+export const FallingLogos: React.FC<FallingLogosProps> = ({ logoSeed = "falling-logo" }) => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
 
@@ -29,7 +34,7 @@ export const FallingLogos: React.FC = () => {
     <AbsoluteFill style={{ pointerEvents: "none" }}>
       {Array.from({ length: LOGO_COUNT }, (_, i) => {
         const seed = `falling-logo-${i}`;
-        const logo = LOGOS[Math.floor(random(`${seed}-pick`) * LOGOS.length)];
+        const logo = LOGOS[Math.floor(random(`${logoSeed}-${i}-pick`) * LOGOS.length)];
         const size = randomInRange(`${seed}-size`, SIZE_RANGE);
         const opacity = randomInRange(`${seed}-opacity`, OPACITY_RANGE);
         const speed = randomInRange(`${seed}-speed`, SPEED_RANGE);

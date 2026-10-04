@@ -31,11 +31,11 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
-        durationInFrames={150 + REVEAL_SCENE_FRAMES + OUTRO_FRAMES}
+        durationInFrames={135 + REVEAL_SCENE_FRAMES + OUTRO_FRAMES}
         defaultProps={{
-          logoName: "Jasmine" as const,
-          revealDelayInFrames: 150,
-          musicSrc: "music/HoliznaCC0 - The Best Of Times.mp3" as const,
+          logoName: "Terraform" as const,
+          revealDelayInFrames: 135,
+          musicSrc: "music/HoliznaCC0 - Tetrapod.mp3" as const,
           debugSafeZones: false,
         }}
         calculateMetadata={({ props }) => ({
@@ -57,7 +57,7 @@ export const RemotionRoot: React.FC = () => {
             "Solidity" as const,
             "Waku" as const,
           ],
-          musicSrc: "music/HoliznaCC0 - The Best Of Times.mp3" as const,
+          musicSrc: "music/HoliznaCC0 - Break From Reality.mp3" as const,
           debugSafeZones: false,
         }}
       />
@@ -68,7 +68,7 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
-        durationInFrames={150 + NAME_CHOICE_REVEAL_SCENE_FRAMES + OUTRO_FRAMES}
+        durationInFrames={135 + NAME_CHOICE_REVEAL_SCENE_FRAMES + OUTRO_FRAMES}
         defaultProps={{
           targetLogoName: "Brain.js" as const,
           decoyLogoNames: [
@@ -76,8 +76,8 @@ export const RemotionRoot: React.FC = () => {
             "Solidity" as const,
             "Waku" as const,
           ],
-          revealDelayInFrames: 150,
-          musicSrc: "music/HoliznaCC0 - Tetrapod.mp3" as const,
+          revealDelayInFrames: 135,
+          musicSrc: "music/HoliznaCC0 - Break From Reality.mp3" as const,
           debugSafeZones: false,
         }}
         calculateMetadata={({ props }) => ({

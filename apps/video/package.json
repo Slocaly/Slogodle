@@ -41,6 +41,7 @@
     "render:all:name-choice": "tsx scripts/render-all.mts name-choice",
     "render:guess": "remotion render GuessTheLogo out/GuessTheLogo.mp4 --video-bitrate=9M",
     "render:name-choice": "remotion render LogoNameChoice out/LogoNameChoice.mp4 --video-bitrate=9M",
+    "render:landing": "tsx scripts/render-landing.mts",
     "render:banner": "remotion still SocialBanner out/SocialBanner.png --scale=2",
     "render:banner:youtube": "remotion still YoutubeBanner out/YoutubeBanner.png",
     "upgrade": "remotion upgrade",

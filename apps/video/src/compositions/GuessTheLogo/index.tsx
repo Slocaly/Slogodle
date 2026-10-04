@@ -10,12 +10,14 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { LOGOS, type Logo } from "@slogodle/logos";
+import type { Logo } from "@slogodle/logos";
+import { VIDEO_LOGOS } from "../../lib/videoLogos";
 import { theme } from "../../lib/theme";
 import { useAnimatedGradientBackground } from "../../lib/animatedGradientBackground";
 import { resolveLogoIcon } from "../../lib/pickLogos";
 import { Outro, OUTRO_FRAMES } from "../Outro";
 import { MusicBed } from "./components/MusicBed";
+import { NameReveal } from "./components/NameReveal";
 import { SafeZoneOverlay } from "./components/SafeZoneOverlay";
 import {
   COUNTDOWN_BADGE_SIZE,
@@ -26,8 +28,6 @@ import {
   DESCRIPTION_FADE_FRAMES,
   FUN_FACT_DELAY_FRAMES,
   FUN_FACT_FADE_FRAMES,
-  NAME_DELAY_FRAMES,
-  NAME_FADE_FRAMES,
   OUTRO_TRANSITION_FRAMES,
   REVEAL_INFO_BOTTOM_OFFSET,
   REVEAL_INFO_GAP,
@@ -46,7 +46,7 @@ export const GuessTheLogo: React.FC<GuessTheLogoProps> = ({
   musicSrc,
   debugSafeZones,
 }) => {
-  const logo = LOGOS.find((candidate) => candidate.name === logoName);
+  const logo = VIDEO_LOGOS.find((candidate) => candidate.name === logoName);
 
   if (!logo) {
     throw new Error(`Unknown logo: ${logoName}`);
@@ -74,7 +74,7 @@ export const GuessTheLogo: React.FC<GuessTheLogoProps> = ({
         from={revealDelayInFrames + REVEAL_SCENE_FRAMES}
         durationInFrames={OUTRO_FRAMES}
       >
-        <Outro />
+        <Outro logoSeed={`guess-the-logo-${logoName}`} />
       </Sequence>
       {debugSafeZones && <SafeZoneOverlay />}
     </AbsoluteFill>
@@ -200,16 +200,6 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
     [
       revealDelayInFrames + FUN_FACT_DELAY_FRAMES,
       revealDelayInFrames + FUN_FACT_DELAY_FRAMES + FUN_FACT_FADE_FRAMES,
-    ],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
-
-  const nameOpacity = interpolate(
-    frame,
-    [
-      revealDelayInFrames + NAME_DELAY_FRAMES,
-      revealDelayInFrames + NAME_DELAY_FRAMES + NAME_FADE_FRAMES,
     ],
     [0, 1],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
@@ -368,17 +358,7 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
               {logo.funFact}
             </div>
           </div>
-          <div
-            style={{
-              fontSize: 110,
-              lineHeight: 1,
-              fontWeight: 700,
-              color: theme.colors.accentPink,
-              opacity: nameOpacity,
-            }}
-          >
-            {logo.name}
-          </div>
+          <NameReveal name={logo.name} frame={frame - revealDelayInFrames} />
         </div>
       )}
     </AbsoluteFill>

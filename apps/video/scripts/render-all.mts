@@ -1,11 +1,14 @@
 // Renders one video per logo for a given series into out/<series>/.
 //
-//   pnpm render:all multiple-choice                      # everything, skipping videos already rendered
+//   pnpm render:all multiple-choice --count 3            # next 3 episodes after the last one rendered
 //   pnpm render:all guess --from 10 --count 5            # episodes 10..14 only
 //   pnpm render:all name-choice --list                   # print the episode order without rendering
 //
 // Series: multiple-choice (LogoMultipleChoice), guess (GuessTheLogo), name-choice (LogoNameChoice).
-import { existsSync, mkdirSync } from "node:fs";
+//
+// The last episode rendered for each series is tracked in rendered.txt (committed, unlike out/),
+// so --from defaults to the episode right after it.
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { bundle } from "@remotion/bundler";
@@ -51,7 +54,7 @@ const SERIES: Record<string, () => Series> = {
 const { values, positionals } = parseArgs({
   allowPositionals: true,
   options: {
-    from: { type: "string", default: "1" },
+    from: { type: "string" },
     count: { type: "string" },
     list: { type: "boolean", default: false },
   },
@@ -65,10 +68,30 @@ if (!seriesName || !(seriesName in SERIES)) {
 
 const root = path.resolve(import.meta.dirname, "..");
 const outDir = path.join(root, "out", seriesName);
+const renderedFile = path.join(root, "rendered.txt");
+
+function readRendered(): Record<string, number> {
+  if (!existsSync(renderedFile)) return {};
+  const rendered: Record<string, number> = {};
+  for (const line of readFileSync(renderedFile, "utf8").split("\n")) {
+    const [series, last] = line.trim().split(/\s+/);
+    if (!series || series.startsWith("#")) continue;
+    rendered[series] = Number(last);
+  }
+  return rendered;
+}
+
+function markRendered(episodeNumber: number) {
+  const rendered = readRendered();
+  if ((rendered[seriesName] ?? 0) >= episodeNumber) return;
+  rendered[seriesName] = episodeNumber;
+  const lines = Object.keys(SERIES).map((series) => `${series} ${rendered[series] ?? 0}`);
+  writeFileSync(renderedFile, `# Last episode rendered per series (updated by render-all.mts)\n${lines.join("\n")}\n`);
+}
 
 const { compositionId, episodes } = SERIES[seriesName]();
 const pad = String(episodes.length).length;
-const start = Number(values.from) - 1;
+const start = values.from ? Number(values.from) - 1 : (readRendered()[seriesName] ?? 0);
 const end = values.count ? start + Number(values.count) : episodes.length;
 
 function outputPath(index: number, name: string) {
@@ -99,6 +122,7 @@ for (let index = start; index < Math.min(end, episodes.length); index++) {
 
   if (existsSync(outputLocation)) {
     console.log(`${label} — already rendered, skipping`);
+    markRendered(index + 1);
     continue;
   }
 
@@ -117,4 +141,5 @@ for (let index = start; index < Math.min(end, episodes.length); index++) {
     },
   });
   process.stdout.write("\n");
+  markRendered(index + 1);
 }

@@ -196,6 +196,9 @@ function AdminPage() {
         <Link to="/" className={styles.backLink}>
           ← Back to game
         </Link>
+        <Link to="/admin/videos" className={`${styles.backLink} ${styles.navLink}`}>
+          Upcoming videos →
+        </Link>
 
         <h1 className={styles.title}>Admin — Logos ({entries.length})</h1>
 

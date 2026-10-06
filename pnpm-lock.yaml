@@ -112,6 +112,9 @@ importers:
       '@react-email/render':
         specifier: ^2.1.0
         version: 2.1.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@remotion/player':
+        specifier: 4.0.513
+        version: 4.0.513(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@slogodle/logos':
         specifier: workspace:*
         version: link:../../packages/logos
@@ -151,12 +154,18 @@ importers:
       react-dom:
         specifier: ^19.2.8
         version: 19.2.8(react@19.2.8)
+      remotion:
+        specifier: 4.0.513
+        version: 4.0.513(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       use-sound:
         specifier: ^5.0.0
         version: 5.0.0(react@19.2.8)
       valibot:
         specifier: ^1.4.2
         version: 1.4.2(typescript@5.9.3)
+      video:
+        specifier: workspace:*
+        version: link:../video
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: ^1.53.1
@@ -6628,6 +6637,12 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
       remotion: 4.0.513(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
 
+  '@remotion/player@4.0.513(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      remotion: 4.0.513(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+
   '@remotion/renderer@4.0.513(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@remotion/licensing': 4.0.513
@@ -9247,6 +9262,11 @@ snapshots:
     dependencies:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
+
+  remotion@4.0.513(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+    dependencies:
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
 
   require-from-string@2.0.2: {}
 

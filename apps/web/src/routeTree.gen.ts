@@ -21,6 +21,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as AdminStatsRouteImport } from './routes/admin_.stats'
+import { Route as AdminVideosRouteImport } from './routes/admin_.videos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -82,6 +83,11 @@ const AdminStatsRoute = AdminStatsRouteImport.update({
   path: '/admin/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminVideosRoute = AdminVideosRouteImport.update({
+  id: '/admin_/videos',
+  path: '/admin/videos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/stats': typeof StatsRoute
   '/admin/stats': typeof AdminStatsRoute
+  '/admin/videos': typeof AdminVideosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/stats': typeof StatsRoute
   '/admin/stats': typeof AdminStatsRoute
+  '/admin/videos': typeof AdminVideosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/stats': typeof StatsRoute
   '/admin_/stats': typeof AdminStatsRoute
+  '/admin_/videos': typeof AdminVideosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/stats'
     | '/admin/stats'
+    | '/admin/videos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/stats'
     | '/admin/stats'
+    | '/admin/videos'
   id:
     | '__root__'
     | '/'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/stats'
     | '/admin_/stats'
+    | '/admin_/videos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   StatsRoute: typeof StatsRoute
   AdminStatsRoute: typeof AdminStatsRoute
+  AdminVideosRoute: typeof AdminVideosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -272,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/videos': {
+      id: '/admin_/videos'
+      path: '/admin/videos'
+      fullPath: '/admin/videos'
+      preLoaderRoute: typeof AdminVideosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -288,6 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   StatsRoute: StatsRoute,
   AdminStatsRoute: AdminStatsRoute,
+  AdminVideosRoute: AdminVideosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

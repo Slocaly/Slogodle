@@ -111,7 +111,8 @@ async function route(request: Request): Promise<Response> {
 export default {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url)
-    if (url.protocol === 'http:') {
+    // The Vite dev server only speaks plain HTTP.
+    if (url.protocol === 'http:' && !import.meta.env.DEV) {
       url.protocol = 'https:'
       return Response.redirect(url.toString(), 301)
     }

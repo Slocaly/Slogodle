@@ -7,6 +7,11 @@ import tsConfigPaths from 'vite-tsconfig-paths'
 import { paraglideVitePlugin } from '@inlang/paraglide-js'
 
 export default defineConfig({
+  // The admin video previews import the Remotion compositions from apps/video, which
+  // resolve their own react/remotion copies otherwise (and break the Player's contexts).
+  resolve: {
+    dedupe: ['react', 'react-dom', 'remotion'],
+  },
   plugins: [
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
     tsConfigPaths({ projects: ['./tsconfig.json'] }),

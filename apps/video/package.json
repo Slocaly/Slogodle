@@ -5,6 +5,10 @@
   "repository": {},
   "license": "UNLICENSED",
   "private": true,
+  "exports": {
+    "./player": "./src/player.ts",
+    "./schedule": "./src/lib/videoSeries.ts"
+  },
   "engines": {
     "node": ">=22.12.0"
   },

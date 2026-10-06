@@ -21,6 +21,7 @@
     "@base-ui/react": "^1.7.0",
     "@better-auth/drizzle-adapter": "^1.7.1",
     "@react-email/render": "^2.1.0",
+    "@remotion/player": "4.0.513",
     "@slogodle/logos": "workspace:*",
     "@tanstack/charts": "^0.16.0",
     "@tanstack/react-charts": "^0.16.0",
@@ -34,8 +35,10 @@
     "nuqs": "^2.10.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "remotion": "4.0.513",
     "use-sound": "^5.0.0",
-    "valibot": "^1.4.2"
+    "valibot": "^1.4.2",
+    "video": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.53.1",

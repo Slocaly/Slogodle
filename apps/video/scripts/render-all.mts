@@ -13,43 +13,7 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
-import {
-  buildGuessTheLogoEpisodes,
-  buildMultipleChoiceEpisodes,
-  buildNameChoiceEpisodes,
-} from "../src/lib/videoOrder";
-
-interface Series {
-  compositionId: string;
-  episodes: { name: string; label: string; inputProps: Record<string, unknown> }[];
-}
-
-const SERIES: Record<string, () => Series> = {
-  "multiple-choice": () => ({
-    compositionId: "LogoMultipleChoice",
-    episodes: buildMultipleChoiceEpisodes().map((episode) => ({
-      name: episode.targetLogoName,
-      label: `${episode.targetLogoName}  (decoys: ${episode.decoyLogoNames.join(", ")})`,
-      inputProps: { ...episode },
-    })),
-  }),
-  "name-choice": () => ({
-    compositionId: "LogoNameChoice",
-    episodes: buildNameChoiceEpisodes().map((episode) => ({
-      name: episode.targetLogoName,
-      label: `${episode.targetLogoName}  (decoys: ${episode.decoyLogoNames.join(", ")})`,
-      inputProps: { ...episode, revealDelayInFrames: 135 },
-    })),
-  }),
-  guess: () => ({
-    compositionId: "GuessTheLogo",
-    episodes: buildGuessTheLogoEpisodes().map((episode) => ({
-      name: episode.logoName,
-      label: episode.logoName,
-      inputProps: { ...episode, revealDelayInFrames: 135 },
-    })),
-  }),
-};
+import { SERIES, type SeriesName } from "../src/lib/videoSeries";
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -89,7 +53,7 @@ function markRendered(episodeNumber: number) {
   writeFileSync(renderedFile, `# Last episode rendered per series (updated by render-all.mts)\n${lines.join("\n")}\n`);
 }
 
-const { compositionId, episodes } = SERIES[seriesName]();
+const { compositionId, episodes } = SERIES[seriesName as SeriesName]();
 const pad = String(episodes.length).length;
 const start = values.from ? Number(values.from) - 1 : (readRendered()[seriesName] ?? 0);
 const end = values.count ? start + Number(values.count) : episodes.length;

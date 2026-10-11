@@ -28,6 +28,8 @@ import {
   DESCRIPTION_FADE_FRAMES,
   FUN_FACT_DELAY_FRAMES,
   FUN_FACT_FADE_FRAMES,
+  LOGO_MAX_AREA,
+  LOGO_MAX_EDGE,
   OUTRO_TRANSITION_FRAMES,
   REVEAL_INFO_BOTTOM_OFFSET,
   REVEAL_INFO_GAP,
@@ -80,6 +82,15 @@ export const GuessTheLogo: React.FC<GuessTheLogoProps> = ({
     </AbsoluteFill>
   );
 };
+
+// Longest edge is LOGO_MAX_EDGE, but the area is capped so near-square logos
+// shrink while wide/tall ones keep their full size.
+function getLogoSize(aspect: number): { width: number; height: number } {
+  const longEdge = Math.min(LOGO_MAX_EDGE, Math.sqrt(LOGO_MAX_AREA * Math.max(aspect, 1 / aspect)));
+  return aspect >= 1
+    ? { width: longEdge, height: longEdge / aspect }
+    : { width: longEdge * aspect, height: longEdge };
+}
 
 function getTickFrames(revealDelayInFrames: number, fps: number): number[] {
   const frames: number[] = [];
@@ -206,6 +217,7 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
   );
 
   const tickFrames = getTickFrames(revealDelayInFrames, fps);
+  const logoSize = getLogoSize(logo.aspect || 1);
 
   return (
     <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
@@ -236,8 +248,8 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
       <Img
         src={staticFile(resolveLogoIcon(logo.icon))}
         style={{
-          width: 560,
-          height: 560,
+          width: logoSize.width,
+          height: logoSize.height,
           objectFit: "contain",
           transform: `translateY(${-revealLift}px) scale(${logoScale})`,
         }}

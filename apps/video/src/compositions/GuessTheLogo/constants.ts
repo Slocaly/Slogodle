@@ -19,3 +19,6 @@ export const FUN_FACT_DELAY_FRAMES = 45;
 export const FUN_FACT_FADE_FRAMES = 15;
 
 export const NAME_PILL_HEIGHT = 150;
+
+export const LOGO_MAX_EDGE = 560; // longest side of the logo box
+export const LOGO_MAX_AREA = 440 * 440; // caps square-ish logos (e.g. WebAssembly) so they don't feel heavier than wide ones

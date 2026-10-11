@@ -723,7 +723,7 @@ export const LOGOS: Logo[] = [
       "Deno is a secure-by-default JavaScript and TypeScript runtime built on V8 and Rust, with built-in tooling and native TypeScript support.",
     funFact:
       "Deno was created by Ryan Dahl, the original creator of Node.js, partly to fix design decisions he outlined regretting in a talk called '10 Things I Regret About Node.js'.",
-    icon: "/logos/denojs.svg",
+    icon: "/logos/deno.svg",
     aspect: 1,
     gitLink: "https://github.com/denoland/deno",
   },

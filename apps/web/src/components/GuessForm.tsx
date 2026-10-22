@@ -44,6 +44,7 @@ export function GuessForm({ onSubmit, logo, attemptCount, bank }: GuessFormProps
       <Combobox.Root
         items={suggestions}
         filter={null}
+        autoHighlight
         inputValue={value}
         onInputValueChange={handleInputValueChange}
         onValueChange={handleValueChange}

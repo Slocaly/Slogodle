@@ -8,6 +8,11 @@ import { NotFoundPage } from '../components/NotFoundPage'
 
 const queryClient = new QueryClient()
 
+// Link-preview crawlers ignore relative URLs, so OG tags need the absolute production URL.
+const SITE_URL = 'https://tech.slogodle.com'
+// Rendered from apps/video with `pnpm run render:og`; crawlers don't accept SVG.
+const OG_IMAGE_URL = `${SITE_URL}/og-image.png`
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -17,12 +22,19 @@ export const Route = createRootRoute({
       { name: 'description', content: m.site_description() },
       { name: 'theme-color', content: '#f4a6c6' },
       { property: 'og:type', content: 'website' },
+      { property: 'og:site_name', content: m.site_title() },
+      { property: 'og:url', content: SITE_URL },
       { property: 'og:title', content: m.site_title() },
       { property: 'og:description', content: m.site_description() },
-      { property: 'og:image', content: '/favicon.svg' },
-      { name: 'twitter:card', content: 'summary' },
+      { property: 'og:image', content: OG_IMAGE_URL },
+      { property: 'og:image:type', content: 'image/png' },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:image:alt', content: m.site_description() },
+      { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: m.site_title() },
       { name: 'twitter:description', content: m.site_description() },
+      { name: 'twitter:image', content: OG_IMAGE_URL },
     ],
     links: [
       { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },

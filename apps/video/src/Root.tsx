@@ -105,6 +105,20 @@ export const RemotionRoot: React.FC = () => {
           cardLiftRatio: 0.09,
         }}
       />
+      {/* Open Graph preview for shared links (1.91:1, the size social platforms crop to). */}
+      <Still
+        id="OgImage"
+        component={SocialBanner}
+        width={1200}
+        height={630}
+        defaultProps={{
+          pileLogoCount: 30,
+          logoSizeRange: [60, 90] as [number, number],
+          titleFontSize: 140,
+          subtitleFontSize: 38,
+          cardLiftRatio: 0.09,
+        }}
+      />
       {/* YouTube only guarantees the centre 1546x423 on every device, so the card fills it. */}
       <Still
         id="YoutubeBanner"

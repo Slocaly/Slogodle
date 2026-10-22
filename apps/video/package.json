@@ -48,6 +48,7 @@
     "render:landing": "tsx scripts/render-landing.mts",
     "render:banner": "remotion still SocialBanner out/SocialBanner.png --scale=2",
     "render:banner:youtube": "remotion still YoutubeBanner out/YoutubeBanner.png",
+    "render:og": "remotion still OgImage ../web/public/og-image.png",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   }

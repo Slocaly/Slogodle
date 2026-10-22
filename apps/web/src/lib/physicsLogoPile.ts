@@ -16,6 +16,10 @@ const SPAWN_STAGGER = 300
 const CEILING_MARGIN = 100
 const EXPLOSION_RADIUS = 425
 const EXPLOSION_STRENGTH = 82
+// The explosion scales with the pile size: full strength from this many logos up,
+// down to EXPLOSION_MIN_RATIO of it when there's only a handful.
+const EXPLOSION_FULL_STRENGTH_COUNT = 20
+const EXPLOSION_MIN_RATIO = 0.2
 const LAUNCH_STAGGER = 90
 const LAUNCH_SPEED = 42
 const LAUNCH_SPEED_VARIANCE = 12
@@ -152,12 +156,14 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
     const rect = container.getBoundingClientRect()
     const cx = event.clientX - rect.left
     const cy = event.clientY - rect.top
+    const ratio = Math.max(Math.min(pileBodies.length / EXPLOSION_FULL_STRENGTH_COUNT, 1), EXPLOSION_MIN_RATIO)
+    const strength = EXPLOSION_STRENGTH * ratio
     for (const { body } of pileBodies) {
       const dx = body.position.x - cx
       const dy = body.position.y - cy
       const dist = Math.sqrt(dx * dx + dy * dy) || 1
       if (dist > EXPLOSION_RADIUS) continue
-      const impulse = (1 - dist / EXPLOSION_RADIUS) * EXPLOSION_STRENGTH
+      const impulse = (1 - dist / EXPLOSION_RADIUS) * strength
       Matter.Body.setVelocity(body, {
         x: body.velocity.x + (dx / dist) * impulse,
         y: body.velocity.y + (dy / dist) * impulse,

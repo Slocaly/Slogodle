@@ -7,6 +7,9 @@
     "enabled": true
   },
   "main": "src/server.ts",
+  "vars": {
+    "ADMIN_EMAIL": "lucasaudart@gmail.com"
+  },
   "assets": {
     "directory": "dist/client"
   },

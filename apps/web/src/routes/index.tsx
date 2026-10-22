@@ -133,7 +133,9 @@ function Home() {
         </div>
         <main className={shared.gameArea} id="main">
           <div className={styles.cardStack}>
-            {!isPlaying && g.isToday && <CountdownTimer />}
+            {!isPlaying && g.isToday && (
+              <CountdownTimer dayIndex={g.dayIndex} onPrevDay={handlePrevDay} />
+            )}
             {!g.isToday && (
               <BackToTodayButton
                 dayIndex={g.dayIndex}

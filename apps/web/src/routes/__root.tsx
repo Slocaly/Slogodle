@@ -1,19 +1,17 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import { QueryClientProvider, type QueryClient } from '@tanstack/react-query'
 import { NuqsAdapter } from 'nuqs/adapters/tanstack-router'
 import globalCss from '../styles/global.css?url'
 import { getLocale } from '../paraglide/runtime.js'
 import { m } from '../paraglide/messages.js'
 import { NotFoundPage } from '../components/NotFoundPage'
 
-const queryClient = new QueryClient()
-
 // Link-preview crawlers ignore relative URLs, so OG tags need the absolute production URL.
 const SITE_URL = 'https://tech.slogodle.com'
 // Rendered from apps/video with `pnpm run render:og`; crawlers don't accept SVG.
 const OG_IMAGE_URL = `${SITE_URL}/og-image.png`
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
@@ -54,6 +52,8 @@ export const Route = createRootRoute({
 })
 
 function RootComponent() {
+  const { queryClient } = Route.useRouteContext()
+
   return (
     <html lang={getLocale()}>
       <head>

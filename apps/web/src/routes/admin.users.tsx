@@ -1,31 +1,12 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { now } from "../lib/clock";
-import { useDarkMode } from "../hooks/useDarkMode";
-import { useSoundSettings } from "../hooks/useSoundSettings";
-import { useSoundEffects } from "../hooks/useSoundEffects";
-import { GameHeader } from "../components/GameHeader";
-import { GameFooter } from "../components/GameFooter";
-import { fetchIsAdmin } from "../lib/session";
 import { fetchAdminUsers } from "../lib/users";
 import styles from "./admin.module.css";
 
-const queryClient = new QueryClient();
-
-export const Route = createFileRoute("/admin_/users")({
-  ssr: false,
-  beforeLoad: async () => {
-    const isAdmin = await fetchIsAdmin();
-    if (!isAdmin) {
-      throw notFound();
-    }
-  },
-  component: AdminUsersPage,
+export const Route = createFileRoute("/admin/users")({
+  component: UsersSection,
 });
 
 function formatDateTime(timestamp: number | null): string {
@@ -48,38 +29,6 @@ function relativeLabel(timestamp: number | null): string {
   if (hours < 24) return `${hours} h ago`;
   const days = Math.floor(hours / 24);
   return `${days} d ago`;
-}
-
-function AdminUsersPage() {
-  const { dark, toggleDark } = useDarkMode();
-  const { soundEnabled, toggleSound } = useSoundSettings();
-  const { playClick, playBubble } = useSoundEffects(soundEnabled);
-
-  return (
-    <div className={styles.page}>
-      <GameHeader
-        dark={dark}
-        onToggleDark={toggleDark}
-        soundEnabled={soundEnabled}
-        onToggleSound={toggleSound}
-        playClick={playClick}
-        playBubble={playBubble}
-        statsLinkTo="/admin"
-      />
-
-      <div className={styles.content}>
-        <Link to="/admin" className={styles.backLink}>
-          ← Back to admin
-        </Link>
-
-        <QueryClientProvider client={queryClient}>
-          <UsersSection />
-        </QueryClientProvider>
-      </div>
-
-      <GameFooter />
-    </div>
-  );
 }
 
 function UsersSection() {

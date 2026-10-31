@@ -8,21 +8,47 @@
   padding: 32px;
 }
 
-.backLink {
-  display: inline-block;
-  margin: 16px 0;
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 8px 0 24px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 10px 16px;
+  margin-bottom: -1px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tabActive {
+  color: var(--text);
+  border-bottom-color: var(--accent-yellow);
+}
+
+.tabsBackLink {
+  margin-left: auto;
+  padding: 10px 0 10px 16px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--muted);
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.backLink:hover {
+.tabsBackLink:hover {
   color: var(--accent-pink);
-}
-
-.navLink {
-  margin-left: 20px;
 }
 
 .title {

@@ -1,24 +1,13 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import { useState } from "react";
 import { now } from "../lib/clock";
 import { useDarkMode } from "../hooks/useDarkMode";
-import { useSoundSettings } from "../hooks/useSoundSettings";
-import { useSoundEffects } from "../hooks/useSoundEffects";
-import { GameHeader } from "../components/GameHeader";
-import { GameFooter } from "../components/GameFooter";
 import { DailyFinishChart } from "../components/DailyFinishChart";
-import { fetchIsAdmin } from "../lib/session";
 import { fetchDailyFinishStats } from "../lib/stats";
 import { fetchTopMistakes } from "../lib/mistakes";
 import styles from "./admin.module.css";
-
-const queryClient = new QueryClient();
 
 function monthKeyFor(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
@@ -40,71 +29,42 @@ const viewModeParser = parseAsStringLiteral(["finishes", "mistakes"] as const).w
   "finishes",
 );
 
-export const Route = createFileRoute("/admin_/stats")({
-  ssr: false,
-  beforeLoad: async () => {
-    const isAdmin = await fetchIsAdmin();
-    if (!isAdmin) {
-      throw notFound();
-    }
-  },
+export const Route = createFileRoute("/admin/stats")({
   component: AdminStatsPage,
 });
 
 function AdminStatsPage() {
-  const { dark, toggleDark } = useDarkMode();
-  const { soundEnabled, toggleSound } = useSoundSettings();
-  const { playClick, playBubble } = useSoundEffects(soundEnabled);
+  const { dark } = useDarkMode();
   const [viewMode, setViewMode] = useQueryState("view", viewModeParser);
 
   return (
-    <div className={styles.page}>
-      <GameHeader
-        dark={dark}
-        onToggleDark={toggleDark}
-        soundEnabled={soundEnabled}
-        onToggleSound={toggleSound}
-        playClick={playClick}
-        playBubble={playBubble}
-        statsLinkTo="/admin"
-      />
+    <>
+      <h1 className={styles.title}>Admin — Stats</h1>
 
-      <div className={styles.content}>
-        <Link to="/" className={styles.backLink}>
-          ← Back to game
-        </Link>
-
-        <h1 className={styles.title}>Admin — Stats</h1>
-
-        <div className={styles.sortRow}>
-          <span className={styles.sortLabel}>View</span>
-          <button
-            type="button"
-            className={`${styles.sortBtn} ${viewMode === "finishes" ? styles.sortBtnActive : ""}`}
-            onClick={() => setViewMode("finishes")}
-          >
-            Daily finishes
-          </button>
-          <button
-            type="button"
-            className={`${styles.sortBtn} ${viewMode === "mistakes" ? styles.sortBtnActive : ""}`}
-            onClick={() => setViewMode("mistakes")}
-          >
-            Common mistakes
-          </button>
-        </div>
-
-        <QueryClientProvider client={queryClient}>
-          {viewMode === "finishes" ? (
-            <DailyFinishSection dark={dark} />
-          ) : (
-            <MistakesSection />
-          )}
-        </QueryClientProvider>
+      <div className={styles.sortRow}>
+        <span className={styles.sortLabel}>View</span>
+        <button
+          type="button"
+          className={`${styles.sortBtn} ${viewMode === "finishes" ? styles.sortBtnActive : ""}`}
+          onClick={() => setViewMode("finishes")}
+        >
+          Daily finishes
+        </button>
+        <button
+          type="button"
+          className={`${styles.sortBtn} ${viewMode === "mistakes" ? styles.sortBtnActive : ""}`}
+          onClick={() => setViewMode("mistakes")}
+        >
+          Common mistakes
+        </button>
       </div>
 
-      <GameFooter />
-    </div>
+      {viewMode === "finishes" ? (
+        <DailyFinishSection dark={dark} />
+      ) : (
+        <MistakesSection />
+      )}
+    </>
   );
 }
 

@@ -169,6 +169,7 @@ function Home() {
                   guesses={g.guesses}
                   status={g.status}
                   maxTries={g.maxTries}
+                  streak={g.streak}
                   playClick={playClick}
                 />
               )}

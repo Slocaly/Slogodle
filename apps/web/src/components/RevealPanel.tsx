@@ -16,6 +16,7 @@ interface RevealPanelProps {
   guesses: Guess[];
   status: GameStatus;
   maxTries: number;
+  streak?: number;
   playClick: () => void;
 }
 
@@ -25,6 +26,7 @@ export function RevealPanel({
   guesses,
   status,
   maxTries,
+  streak,
   playClick,
 }: RevealPanelProps) {
   const [copied, setCopied] = useState(false);
@@ -39,6 +41,7 @@ export function RevealPanel({
       guesses,
       status,
       maxTries,
+      streakLine: streak ? m.share_streak({ streak }) : undefined,
       origin: window.location.origin,
     });
     try {

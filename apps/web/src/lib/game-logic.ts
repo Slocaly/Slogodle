@@ -106,10 +106,12 @@ export function buildShareText(params: {
   guesses: Guess[]
   status: GameStatus
   maxTries: number
+  streakLine?: string
   origin: string
 }): string {
-  const { intro, title, dayIndex, guesses, status, maxTries, origin } = params
+  const { intro, title, dayIndex, guesses, status, maxTries, streakLine, origin } = params
   const score = status === 'won' ? `${guesses.length}/${maxTries}` : `X/${maxTries}`
   const grid = guesses.map((g) => (g.correct ? '🟩' : '🟥')).join('')
-  return `${intro}\n${title} #${dayIndex + 1} ${score}\n\n${grid}\n\n${origin}`
+  const streak = streakLine ? `${streakLine}\n\n` : ''
+  return `${intro}\n${title} #${dayIndex + 1} ${score}\n\n${grid}\n\n${streak}${origin}`
 }

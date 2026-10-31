@@ -26,6 +26,7 @@
   "reveal_login_cta": "Save your streak — sign up",
   "share_intro_won": "I found today's tech logo!",
   "share_intro_lost": "I couldn't find today's tech logo...",
+  "share_streak": "🔥 {streak}-day streak",
   "share_button": "Share result",
   "share_copied": "Copied!",
   "archive_status_solved": "Solved",

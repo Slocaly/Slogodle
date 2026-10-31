@@ -1,32 +1,38 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "tech-slogodle",
-  "compatibility_date": "2026-08-19",
-  "compatibility_flags": ["nodejs_compat"],
-  "observability": {
-    "enabled": true
-  },
-  "main": "src/server.ts",
-  "vars": {
-    "ADMIN_EMAIL": "lucasaudart@gmail.com"
-  },
-  "assets": {
-    "directory": "dist/client"
-  },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "slogodle",
-      "database_id": "d993c41e-9dc1-4065-aa03-7988fca0ff06",
-      "migrations_dir": "migrations",
-      "remote": true
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "LOGO_BUCKET",
-      "bucket_name": "logos",
-      "remote": true
-    }
-  ]
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "tech-slogodle",
+	"compatibility_date": "2026-08-19",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"observability": {
+		"enabled": true
+	},
+	"main": "src/server.ts",
+	"vars": {
+		"ADMIN_EMAIL": "lucasaudart@gmail.com"
+	},
+	"assets": {
+		"directory": "dist/client"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "slogodle",
+			"database_id": "d993c41e-9dc1-4065-aa03-7988fca0ff06",
+			"migrations_dir": "migrations",
+			"remote": true
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "LOGO_BUCKET",
+			"bucket_name": "logos",
+			"remote": true
+		},
+		{
+			"bucket_name": "slogodle-videos-tmp",
+			"binding": "slogodle_videos_tmp"
+		}
+	]
 }

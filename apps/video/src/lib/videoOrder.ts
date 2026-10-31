@@ -75,8 +75,24 @@ export function buildNameChoiceEpisodes(
   return buildChoiceEpisodes(logos, decoyCount, `${VIDEO_ORDER_SEED}-name-choice`, 1);
 }
 
+// Manual tweaks to the shuffled order, as pairs of 1-based episode numbers to swap.
+// Only touch episodes that haven't been rendered yet (see rendered.txt).
+const GUESS_EPISODE_SWAPS: [number, number][] = [
+  // opencode landed two days after its name-choice episode.
+  [10, 20],
+];
+
+function applySwaps<T>(items: T[], swaps: [number, number][]): T[] {
+  const swapped = [...items];
+  for (const [a, b] of swaps) {
+    [swapped[a - 1], swapped[b - 1]] = [swapped[b - 1], swapped[a - 1]];
+  }
+  return swapped;
+}
+
 export function buildGuessTheLogoEpisodes(logos: Logo[] = LOGOS): GuessTheLogoEpisode[] {
-  return seededShuffle(logos, `${VIDEO_ORDER_SEED}-guess`).map((logo, index) => ({
+  const order = applySwaps(seededShuffle(logos, `${VIDEO_ORDER_SEED}-guess`), GUESS_EPISODE_SWAPS);
+  return order.map((logo, index) => ({
     logoName: logo.name,
     musicSrc: MUSIC_TRACKS[(index + 2) % MUSIC_TRACKS.length],
   }));

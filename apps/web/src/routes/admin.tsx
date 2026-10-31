@@ -199,6 +199,9 @@ function AdminPage() {
         <Link to="/admin/videos" className={`${styles.backLink} ${styles.navLink}`}>
           Upcoming videos →
         </Link>
+        <Link to="/admin/users" className={`${styles.backLink} ${styles.navLink}`}>
+          Users →
+        </Link>
 
         <h1 className={styles.title}>Admin — Logos ({entries.length})</h1>
 

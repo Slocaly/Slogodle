@@ -298,7 +298,7 @@ function AdminPage() {
                 </p>
               )}
               <div className={styles.r2List}>
-                {sortedRows.map(({ entry }, index) => (
+                {sortedRows.map(({ entry }) => (
                   <R2LogoCard
                     key={entry.logo.key}
                     logo={entry.logo}
@@ -310,8 +310,10 @@ function AdminPage() {
                       const from = dayBank.findIndex(
                         (e) => e.logo.key === fromR2Key,
                       );
-                      const to = index;
-                      if (from === -1 || from === to) return;
+                      const to = dayBank.findIndex(
+                        (e) => e.logo.key === entry.logo.key,
+                      );
+                      if (from === -1 || to === -1 || from === to) return;
                       const reordered = [...dayBank];
                       const [moved] = reordered.splice(from, 1);
                       reordered.splice(to, 0, moved);

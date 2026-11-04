@@ -13,6 +13,7 @@ import {
   createLogoPileSimulation,
   type LogoPileSimulation,
 } from "../lib/physicsLogoPile";
+import { createTiltGravity } from "../lib/tiltGravity";
 import { getStickerIconSrc } from "../lib/stickerIcons";
 import styles from "./PhysicsLogoPile.module.css";
 
@@ -89,7 +90,19 @@ export function PhysicsLogoPile({
     });
     simRef.current = simulation;
 
+    // Cosmetic: on touch devices, tilting the phone steers gravity. The first tap
+    // enables it (iOS needs a user gesture to grant motion access).
+    const tilt = reducedMotion
+      ? null
+      : createTiltGravity((x, y) => simulation.setGravity(x, y));
+    const enableTilt = () => tilt?.enable();
+    // "click", not "pointerdown": iOS only grants the motion permission prompt from a
+    // completed tap.
+    if (tilt) container.addEventListener("click", enableTilt);
+
     return () => {
+      container.removeEventListener("click", enableTilt);
+      tilt?.destroy();
       simRef.current = null;
       simulation.destroy();
     };

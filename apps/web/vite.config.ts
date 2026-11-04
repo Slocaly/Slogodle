@@ -12,6 +12,10 @@ export default defineConfig({
   resolve: {
     dedupe: ['react', 'react-dom', 'remotion'],
   },
+  // Lets the dev server be reached through a temporary Cloudflare tunnel (phone testing).
+  server: {
+    allowedHosts: ['.trycloudflare.com'],
+  },
   plugins: [
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
     tsConfigPaths({ projects: ['./tsconfig.json'] }),

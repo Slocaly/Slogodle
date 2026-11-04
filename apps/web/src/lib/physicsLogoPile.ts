@@ -53,6 +53,8 @@ export interface LogoPileSimulation {
   launchFromSide(entries: PileLogo[], side: 'left' | 'right'): void
   /** Removes every body whose key isn't in `keepKeys`. */
   removeAllExcept(keepKeys: string[]): void
+  /** Sets the gravity direction/strength (1 = default downward gravity). */
+  setGravity(x: number, y: number): void
 }
 
 // Sizes an element within the pile's body-size range, from its icon's intrinsic aspect
@@ -305,6 +307,10 @@ export function createLogoPileSimulation(options: CreateLogoPileSimulationOption
   return {
     launchFromSide,
     removeAllExcept,
+    setGravity(x, y) {
+      engine.gravity.x = x
+      engine.gravity.y = y
+    },
     destroy() {
       clearTimeout(resizeTimer)
       clearTimeout(footerResizeTimer)

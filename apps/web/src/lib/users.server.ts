@@ -53,3 +53,18 @@ export async function listAdminUsers(): Promise<AdminUser[]> {
     gamesPlayed: row.games_played ?? 0,
   }));
 }
+
+export interface AdminUserCounts {
+  registered: number;
+  /** Distinct anon_ids with progress that haven't been claimed by an account. */
+  anonymous: number;
+}
+
+export async function getAdminUserCounts(): Promise<AdminUserCounts> {
+  const row = await env.DB.prepare(
+    `SELECT
+       (SELECT COUNT(*) FROM user) AS registered,
+       (SELECT COUNT(DISTINCT anon_id) FROM progress WHERE anon_id IS NOT NULL) AS anonymous`,
+  ).first<{ registered: number; anonymous: number }>();
+  return { registered: row?.registered ?? 0, anonymous: row?.anonymous ?? 0 };
+}

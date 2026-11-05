@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { now } from "../lib/clock";
-import { fetchAdminUsers } from "../lib/users";
+import { fetchAdminUserCounts, fetchAdminUsers } from "../lib/users";
 import styles from "./admin.module.css";
 
 export const Route = createFileRoute("/admin/users")({
@@ -39,6 +39,11 @@ function UsersSection() {
     queryFn: () => fetchAdminUsers(),
   });
 
+  const { data: counts } = useQuery({
+    queryKey: ["admin-user-counts"],
+    queryFn: () => fetchAdminUserCounts(),
+  });
+
   const query = search.trim().toLowerCase();
   const filtered = (data ?? []).filter(
     (user) =>
@@ -51,6 +56,13 @@ function UsersSection() {
       <h1 className={styles.title}>
         Admin — Users{data ? ` (${data.length})` : ""}
       </h1>
+
+      {counts && (
+        <p className={styles.empty}>
+          {counts.registered} registered · {counts.anonymous} anonymous (
+          {counts.registered + counts.anonymous} total)
+        </p>
+      )}
 
       <div className={styles.sortRow}>
         <input

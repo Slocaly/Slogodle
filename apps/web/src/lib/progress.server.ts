@@ -103,6 +103,18 @@ export async function claimAnon(headers: Headers, anonId: string): Promise<{ ok:
     ).bind(anonId, userId),
     env.DB.prepare(`UPDATE progress SET user_id = ?, anon_id = NULL WHERE anon_id = ?`).bind(userId, anonId),
   ])
+  // Speed-round runs follow the same rule (an existing account run for a day
+  // wins). Kept in its own batch so the main game's claim never depends on it.
+  try {
+    await env.DB.batch([
+      env.DB.prepare(
+        `DELETE FROM speed_run WHERE anon_id = ? AND day_index IN (SELECT day_index FROM speed_run WHERE user_id = ?)`,
+      ).bind(anonId, userId),
+      env.DB.prepare(`UPDATE speed_run SET user_id = ?, anon_id = NULL WHERE anon_id = ?`).bind(userId, anonId),
+    ])
+  } catch (error) {
+    console.error('claimAnon: could not claim speed runs', error)
+  }
   return { ok: true }
 }
 

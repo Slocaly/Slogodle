@@ -1,0 +1,29 @@
+.switch {
+  display: flex;
+  padding: 3px;
+  gap: 2px;
+  border-radius: 999px;
+  background: var(--toggle-bg);
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+}
+
+.item:hover {
+  color: var(--accent-pink);
+}
+
+.item[data-active] {
+  color: var(--text);
+  background: var(--panel-bg);
+}

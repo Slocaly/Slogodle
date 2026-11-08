@@ -26,6 +26,7 @@ const TABS = [
   { to: "/admin/stats", label: "Stats" },
   { to: "/admin/videos", label: "Videos" },
   { to: "/admin/users", label: "Users" },
+  { to: "/admin/speed", label: "Speed" },
 ] as const;
 
 function AdminLayout() {

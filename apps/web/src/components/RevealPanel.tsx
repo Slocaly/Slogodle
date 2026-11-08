@@ -3,6 +3,7 @@ import type { Logo } from "@slogodle/logos";
 import { Link } from "@tanstack/react-router";
 import { buildShareText, type GameStatus, type Guess } from "../lib/game-logic";
 import { authClient } from "../lib/auth-client";
+import { useSpeedStanding } from "../hooks/useSpeedStanding";
 import { m } from "../paraglide/messages.js";
 import shared from "../styles/shared.module.css";
 import { GithubIcon } from "./icons/GithubIcon";
@@ -31,6 +32,7 @@ export function RevealPanel({
 }: RevealPanelProps) {
   const [copied, setCopied] = useState(false);
   const { data: session, isPending } = authClient.useSession();
+  const { data: speedStanding, isFetched: speedFetched } = useSpeedStanding();
 
   async function handleShare() {
     playClick();
@@ -73,6 +75,11 @@ export function RevealPanel({
             <span>{copied ? m.share_copied() : m.share_button()}</span>
           </button>
         </div>
+        {speedFetched && !speedStanding && (
+          <Link to="/speed" className={styles.speedCtaBtn}>
+            {m.reveal_speed_cta()}
+          </Link>
+        )}
         {!isPending && !session && (
           <Link to="/signup" className={styles.loginCtaBtn}>
             <UserIcon />

@@ -1,0 +1,613 @@
+/*
+ * Speed round. Three-column desk on desktop (series / stage / ladder),
+ * single column on phones. One radius scale: 14px rows, 28px surfaces, pill controls.
+ */
+
+.layout {
+  flex: 1;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+  padding: 32px 24px 48px;
+}
+
+.layout[data-ladder="true"] {
+  grid-template-columns: 250px minmax(0, 1fr) 300px;
+}
+
+/* ---------- Series rail ---------- */
+
+.aside {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 28px;
+  background: var(--panel-bg);
+  box-shadow: 0 10px 24px -12px var(--shadow-color);
+}
+
+.asideTitle {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.item:disabled {
+  cursor: default;
+}
+
+.item:not(:disabled):hover {
+  background: var(--card-bg);
+}
+
+.item:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.item[data-active="true"] {
+  border-color: var(--accent-yellow);
+  background: var(--card-bg);
+  color: var(--text);
+}
+
+.item[data-solved="true"] {
+  color: var(--success);
+}
+
+.itemNumber {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--toggle-bg);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.item[data-solved="true"] .itemNumber {
+  background: var(--success);
+  color: var(--card-bg);
+}
+
+/* Check mark drawn with borders, no icon dependency. */
+.check {
+  width: 5px;
+  height: 10px;
+  border: solid currentColor;
+  border-width: 0 2.5px 2.5px 0;
+  border-radius: 1px;
+  transform: translateY(-1px) rotate(45deg);
+}
+
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.side {
+  min-width: 0;
+}
+
+/* ---------- Stage ---------- */
+
+.main {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.stage {
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px 36px 32px;
+  border-radius: 28px;
+  background: var(--card-bg);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    0 24px 48px -16px var(--shadow-color);
+}
+
+/* Wrong guess: nudge the input only, the card stays put. */
+.stage[data-shake="true"] .guessInput {
+  animation: shake 0.28s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+.stageHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pips {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  max-width: 180px;
+}
+
+.pip {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background-color 0.3s;
+}
+
+.pip[data-solved="true"] {
+  background: var(--success);
+}
+
+.pip[data-active="true"] {
+  background: var(--accent-yellow);
+}
+
+.timer {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.timerIdle {
+  color: var(--faint);
+}
+
+.logoTile {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 5 / 3;
+  border-radius: 28px;
+  background: var(--panel-bg);
+}
+
+.logo {
+  width: min(180px, 60%);
+  height: 70%;
+  object-fit: contain;
+  animation: logoIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.progress {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.skip {
+  align-self: center;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.skip:hover {
+  background: var(--panel-bg);
+}
+
+.skip:active {
+  transform: scale(0.97);
+}
+
+/* ---------- Intro / result ---------- */
+
+.panel {
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 40px;
+  border-radius: 28px;
+  background: var(--card-bg);
+  box-shadow:
+    inset 0 1px 0 var(--card-highlight),
+    0 24px 48px -16px var(--shadow-color);
+  animation: stageIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.panelLead {
+  margin: -8px 0 0;
+  max-width: 38ch;
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.rules {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  counter-reset: rule;
+}
+
+.rules li {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--text);
+  counter-increment: rule;
+  animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 70ms + 120ms);
+}
+
+.rules li::before {
+  content: counter(rule);
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-lavender);
+  font-size: 13px;
+  font-weight: 700;
+  transform: translateY(-1px);
+}
+
+.primary {
+  align-self: flex-start;
+  min-width: 160px;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent-yellow);
+  color: oklch(0.25 0.02 90);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--shadow-color);
+  transition:
+    transform 0.12s,
+    box-shadow 0.12s;
+}
+
+.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 var(--shadow-color);
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--shadow-color);
+}
+
+.primary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.scoreBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scoreLabel {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.doneTime {
+  font-size: clamp(56px, 11vw, 88px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.recap {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.recapItem {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 70ms + 150ms);
+}
+
+.recapTile {
+  width: 100%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--panel-bg);
+}
+
+.recapLogo {
+  width: 64%;
+  height: 64%;
+  object-fit: contain;
+}
+
+.recapName {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.breakdown {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.breakdown > div {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--panel-bg);
+}
+
+.breakdown dt {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.breakdown dd {
+  margin: 2px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  margin: 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* ---------- Guess form ---------- */
+
+.guessForm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.guessInput {
+  width: 100%;
+  height: 56px;
+  border: 3px solid var(--text);
+  border-radius: 999px;
+  background: var(--card-bg);
+  padding: 0 20px;
+  font-family: "Fredoka", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--text);
+  outline: none;
+  box-shadow: 0 4px 0 var(--accent-pink);
+  transition:
+    box-shadow 0.1s,
+    transform 0.1s;
+}
+
+.guessInput::placeholder {
+  color: var(--faint);
+}
+
+.guessInput:focus {
+  box-shadow: 0 2px 0 var(--accent-pink);
+  transform: translateY(2px);
+}
+
+.mask {
+  height: 32px;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  visibility: hidden;
+}
+
+.mask[data-visible="true"] {
+  visibility: visible;
+}
+
+.maskLetter {
+  min-width: 14px;
+  height: 26px;
+  flex: 0 1 18px;
+  border-bottom: 3px solid var(--text);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 22px;
+  text-align: center;
+  color: var(--text);
+}
+
+.maskGap {
+  font-weight: 700;
+  color: var(--muted);
+  padding: 0 2px;
+}
+
+/* ---------- Motion ---------- */
+
+@keyframes stageIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes logoIn {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+}
+
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage[data-shake="true"] .guessInput,
+  .panel,
+  .rules li,
+  .recapItem,
+  .logo {
+    animation: none;
+  }
+  .item,
+  .primary,
+  .guessInput {
+    transition: none;
+  }
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1080px) {
+  .layout[data-ladder="true"] {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+  .side {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .layout,
+  .layout[data-ladder="true"] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px 16px 40px;
+  }
+  /* Stage first on phones, series and ladder follow. */
+  .main {
+    order: -1;
+  }
+  .aside {
+    position: static;
+  }
+  .list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .item {
+    width: auto;
+  }
+  .stage {
+    padding: 20px;
+  }
+  .panel {
+    padding: 28px 24px;
+  }
+  .panelTitle {
+    font-size: 32px;
+  }
+  .timer {
+    font-size: 36px;
+  }
+  .primary {
+    align-self: stretch;
+  }
+}

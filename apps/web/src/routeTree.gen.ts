@@ -19,8 +19,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as MentionsLegalesRouteImport } from './routes/mentions-legales'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SpeedRouteImport } from './routes/speed'
 import { Route as StatsRouteImport } from './routes/stats'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminSpeedRouteImport } from './routes/admin.speed'
 import { Route as AdminStatsRouteImport } from './routes/admin.stats'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminVideosRouteImport } from './routes/admin.videos'
@@ -75,6 +77,11 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SpeedRoute = SpeedRouteImport.update({
+  id: '/speed',
+  path: '/speed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
@@ -83,6 +90,11 @@ const StatsRoute = StatsRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSpeedRoute = AdminSpeedRouteImport.update({
+  id: '/speed',
+  path: '/speed',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminStatsRoute = AdminStatsRouteImport.update({
@@ -112,7 +124,9 @@ export interface FileRoutesByFullPath {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/speed': typeof SpeedRoute
   '/stats': typeof StatsRoute
+  '/admin/speed': typeof AdminSpeedRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/videos': typeof AdminVideosRoute
@@ -128,7 +142,9 @@ export interface FileRoutesByTo {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/speed': typeof SpeedRoute
   '/stats': typeof StatsRoute
+  '/admin/speed': typeof AdminSpeedRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/videos': typeof AdminVideosRoute
@@ -146,7 +162,9 @@ export interface FileRoutesById {
   '/mentions-legales': typeof MentionsLegalesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/speed': typeof SpeedRoute
   '/stats': typeof StatsRoute
+  '/admin/speed': typeof AdminSpeedRoute
   '/admin/stats': typeof AdminStatsRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/videos': typeof AdminVideosRoute
@@ -165,7 +183,9 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/signup'
+    | '/speed'
     | '/stats'
+    | '/admin/speed'
     | '/admin/stats'
     | '/admin/users'
     | '/admin/videos'
@@ -181,7 +201,9 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/signup'
+    | '/speed'
     | '/stats'
+    | '/admin/speed'
     | '/admin/stats'
     | '/admin/users'
     | '/admin/videos'
@@ -198,7 +220,9 @@ export interface FileRouteTypes {
     | '/mentions-legales'
     | '/reset-password'
     | '/signup'
+    | '/speed'
     | '/stats'
+    | '/admin/speed'
     | '/admin/stats'
     | '/admin/users'
     | '/admin/videos'
@@ -216,6 +240,7 @@ export interface RootRouteChildren {
   MentionsLegalesRoute: typeof MentionsLegalesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
+  SpeedRoute: typeof SpeedRoute
   StatsRoute: typeof StatsRoute
 }
 
@@ -291,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/speed': {
+      id: '/speed'
+      path: '/speed'
+      fullPath: '/speed'
+      preLoaderRoute: typeof SpeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/stats': {
       id: '/stats'
       path: '/stats'
@@ -303,6 +335,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/speed': {
+      id: '/admin/speed'
+      path: '/speed'
+      fullPath: '/admin/speed'
+      preLoaderRoute: typeof AdminSpeedRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/stats': {
@@ -330,6 +369,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminSpeedRoute: typeof AdminSpeedRoute
   AdminStatsRoute: typeof AdminStatsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminVideosRoute: typeof AdminVideosRoute
@@ -337,6 +377,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminSpeedRoute: AdminSpeedRoute,
   AdminStatsRoute: AdminStatsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminVideosRoute: AdminVideosRoute,
@@ -356,6 +397,7 @@ const rootRouteChildren: RootRouteChildren = {
   MentionsLegalesRoute: MentionsLegalesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
+  SpeedRoute: SpeedRoute,
   StatsRoute: StatsRoute,
 }
 export const routeTree = rootRouteImport

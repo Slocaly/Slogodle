@@ -1,0 +1,75 @@
+.label {
+  padding: 0 12px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 12px;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.card:hover,
+.card:active {
+  background: var(--toggle-bg);
+  border-color: var(--accent-pink);
+}
+
+.card[data-active] {
+  border-color: var(--accent-pink);
+  background: var(--toggle-bg);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.status strong {
+  color: var(--accent-pink);
+}
+
+.status svg {
+  width: 16px;
+  height: 16px;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.streakLit {
+  color: #ff6a3d;
+}
+
+.streakDim {
+  color: var(--muted);
+}

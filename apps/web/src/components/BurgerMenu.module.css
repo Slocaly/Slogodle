@@ -143,16 +143,3 @@
   background: var(--toggle-bg);
   color: var(--accent-pink);
 }
-
-.streakLit {
-  color: #ff6a3d;
-}
-
-.streakDim {
-  color: var(--muted);
-}
-
-.streakCount {
-  margin-left: auto;
-  font-weight: 700;
-}

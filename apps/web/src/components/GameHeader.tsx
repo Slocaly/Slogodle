@@ -4,6 +4,7 @@ import { AccountMenu } from "./AccountMenu";
 import { ArchiveToggle } from "./ArchiveToggle";
 import { BurgerMenu } from "./BurgerMenu";
 import { DarkModeToggle } from "./DarkModeToggle";
+import { ModeSwitch } from "./ModeSwitch";
 import { SoundToggle } from "./SoundToggle";
 import { StatsLink } from "./StatsLink";
 import styles from "./GameHeader.module.css";
@@ -107,6 +108,7 @@ export function GameHeader({
       </h1>
       <div className={styles.headerActions}>
         <div className={styles.desktopActions}>
+          <ModeSwitch />
           {onToggleArchive && <ArchiveToggle onToggleArchive={handleArchiveToggle} />}
           {statsLinkTo && <StatsLink to={statsLinkTo} streak={streak} />}
         </div>

@@ -31,6 +31,7 @@ function HistoryPage() {
         onToggleSound={g.toggleSound}
         playClick={playClick}
         playBubble={playBubble}
+        statsLinkTo="/"
       />
 
       <div className={styles.body}>

@@ -1,13 +1,14 @@
 import { Dialog } from "@base-ui/react/dialog";
-import { useNavigate } from "@tanstack/react-router";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { m } from "../paraglide/messages.js";
 import { authClient } from "../lib/auth-client";
 import { useAccountSession } from "../hooks/useAccountSession";
 import { ArchiveIcon } from "./icons/ArchiveIcon";
 import { BurgerIcon } from "./icons/BurgerIcon";
+import { ChartIcon } from "./icons/ChartIcon";
 import { CloseIcon } from "./icons/CloseIcon";
-import { FireIcon } from "./icons/FireIcon";
+import { GameModeCards } from "./GameModeCards";
 import styles from "./BurgerMenu.module.css";
 
 interface BurgerMenuProps {
@@ -16,6 +17,8 @@ interface BurgerMenuProps {
 
 export function BurgerMenu({ streak }: BurgerMenuProps) {
   const navigate = useNavigate();
+  // Speed has no history or stats yet.
+  const showDailyLinks = useLocation().pathname !== "/speed";
   const { session, isPending, isAdmin } = useAccountSession();
   const [open, setOpen] = useState(false);
 
@@ -47,28 +50,28 @@ export function BurgerMenu({ streak }: BurgerMenuProps) {
             </Dialog.Close>
           </div>
 
-          <button
-            type="button"
-            className={styles.menuItem}
-            onClick={() => go("/history")}
-          >
-            <ArchiveIcon />
-            {m.burger_history_label()}
-          </button>
+          <GameModeCards streak={streak} onNavigate={() => setOpen(false)} />
 
-          {streak !== undefined && (
-            <button
-              type="button"
-              className={styles.menuItem}
-              onClick={() => go("/stats")}
-            >
-              <FireIcon
-                filled={streak > 0}
-                className={streak > 0 ? styles.streakLit : styles.streakDim}
-              />
-              {m.burger_streak_label()}
-              <span className={styles.streakCount}>{streak}</span>
-            </button>
+          {showDailyLinks && (
+            <>
+              <button
+                type="button"
+                className={styles.menuItem}
+                onClick={() => go("/history")}
+              >
+                <ArchiveIcon />
+                {m.burger_history_label()}
+              </button>
+
+              <button
+                type="button"
+                className={styles.menuItem}
+                onClick={() => go("/stats")}
+              >
+                <ChartIcon />
+                {m.stats_link_label()}
+              </button>
+            </>
           )}
 
           <div className={styles.divider} />

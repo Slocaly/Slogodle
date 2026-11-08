@@ -12,6 +12,8 @@ import {
   speedScore,
   type SpeedResult,
 } from "../lib/speed";
+import { m } from "../paraglide/messages.js";
+import { ShareIcon } from "./icons/ShareIcon";
 import styles from "./SpeedGame.module.css";
 
 /** Local cache of a run, so a reload resumes where the player was. */
@@ -59,6 +61,8 @@ interface SpeedGameProps {
   rightPanel?: ReactNode;
   /** Shows a "Play again" button once finished (practice mode). */
   onRestart?: () => void;
+  /** Daily series number (0-based); enables the share button on the result. */
+  dayIndex?: number;
 }
 
 export function SpeedGame({
@@ -68,6 +72,7 @@ export function SpeedGame({
   remote,
   rightPanel,
   onRestart,
+  dayIndex,
 }: SpeedGameProps) {
   // Per logo: the order in which its letters get revealed (random, fixed for the round).
   const revealOrders = useMemo(
@@ -106,6 +111,7 @@ export function SpeedGame({
   const [starting, setStarting] = useState(false);
   const [now, setNow] = useState(() => Date.now() + clockOffset);
   const [shaking, setShaking] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const started = startedAt !== null;
   const allSolved = solved.every(Boolean);
@@ -196,6 +202,24 @@ export function SpeedGame({
       setStartedAt(run.startedAt);
     } finally {
       setStarting(false);
+    }
+  }
+
+  async function handleShare() {
+    if (!result || dayIndex === undefined) return;
+    playBubble();
+    const wrong = result.wrongCount;
+    const text =
+      `⚡ ${m.site_title()} Speed #${dayIndex + 1}\n` +
+      `⏱ ${formatTime(result.scoreMs)} (${formatTime(result.durationMs)} + ${wrong} wrong)\n\n` +
+      `Beat my time 👇\n` +
+      `${window.location.origin}/speed`;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // clipboard unavailable; nothing to fall back to
     }
   }
 
@@ -315,6 +339,12 @@ export function SpeedGame({
                 <dd>+{formatTime(result.wrongCount * SPEED_MISS_PENALTY_MS)}</dd>
               </div>
             </dl>
+            {dayIndex !== undefined && (
+              <button type="button" className={styles.shareBtn} onClick={handleShare}>
+                <ShareIcon />
+                <span>{copied ? m.share_copied() : m.share_button()}</span>
+              </button>
+            )}
             {onRestart ? (
               <button type="button" className={styles.primary} onClick={onRestart}>
                 Play again

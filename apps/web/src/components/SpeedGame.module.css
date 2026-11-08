@@ -611,3 +611,35 @@
     align-self: stretch;
   }
 }
+
+.shareBtn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 999px;
+  background: var(--toggle-bg);
+  color: var(--text);
+  padding: 12px 22px 12px 18px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.shareBtn:hover {
+  background: var(--accent-yellow);
+  transform: translateY(-1px);
+}
+
+.shareBtn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.shareBtn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}

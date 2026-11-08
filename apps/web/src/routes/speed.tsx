@@ -72,6 +72,7 @@ function SpeedPage() {
       ) : logos.length === SPEED_ROUND_SIZE && runQuery.data ? (
         <SpeedGame
           key={dayIndex}
+          dayIndex={dayIndex}
           logos={logos}
           rightPanel={<SpeedLadder dayIndex={dayIndex} />}
           playBubble={playBubble}

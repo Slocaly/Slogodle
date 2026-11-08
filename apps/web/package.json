@@ -14,6 +14,7 @@
     "postinstall": "wrangler types",
     "sync-logos": "node --env-file=.env scripts/sync-logos.ts",
     "rename-logos": "node --env-file=.env scripts/rename-logos.ts",
+    "delete:tmp:videos": "node scripts/delete-tmp-videos.ts",
     "email": "email dev --dir src/emails"
   },
   "dependencies": {

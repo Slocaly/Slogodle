@@ -1,4 +1,4 @@
 # Last episode rendered per series (updated by render-all.mts)
-multiple-choice 12
-name-choice 11
-guess 11
+multiple-choice 15
+name-choice 14
+guess 15

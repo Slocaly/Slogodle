@@ -510,6 +510,13 @@ function PlainGuessForm({ logo, attemptCount, onSubmit }: PlainGuessFormProps) {
         data-form-type="other"
         aria-label="Logo name"
       />
+      <button
+        type="submit"
+        className={styles.submitBtn}
+        disabled={!value.trim()}
+      >
+        Submit
+      </button>
       <GuessHints logo={logo} attemptCount={attemptCount} />
     </form>
   );

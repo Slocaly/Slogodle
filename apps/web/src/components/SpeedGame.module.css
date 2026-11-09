@@ -643,3 +643,36 @@
   height: 18px;
   flex-shrink: 0;
 }
+
+.submitBtn {
+  min-width: 160px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent-yellow);
+  color: oklch(0.25 0.02 90);
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--shadow-color);
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s,
+    opacity 0.2s;
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 var(--shadow-color);
+}
+
+.submitBtn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--shadow-color);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

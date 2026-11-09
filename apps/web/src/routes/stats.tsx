@@ -24,7 +24,7 @@ function bucketCounts(
     "1 try": 0,
     "2 tries": 0,
     "3 tries": 0,
-    "Historic win": 0,
+    "Historic": 0,
     Failed: 0,
   };
   for (const [key, status] of Object.entries(history)) {
@@ -33,7 +33,7 @@ function bucketCounts(
       continue;
     }
     if (!dayPlayedFresh[key]) {
-      counts["Historic win"] += 1;
+      counts["Historic"] += 1;
       continue;
     }
     const tries = dayGuesses[key]?.length;

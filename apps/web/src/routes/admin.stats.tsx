@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { now } from "../lib/clock";
+import { dayIndexFor } from "../lib/game-logic";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { DailyFinishChart } from "../components/DailyFinishChart";
 import { fetchDailyFinishStats } from "../lib/stats";
@@ -132,6 +133,25 @@ function MistakesSection() {
     queryFn: () => fetchTopMistakes(),
   });
 
+  const cardRefs = useRef(new Map<number, HTMLDivElement>());
+  const [scrollTarget, setScrollTarget] = useState<number | null>(null);
+
+  // Same wraparound as pickLogo(): the daily logo is the day index modulo bank size.
+  const todayLogo = data?.length
+    ? data[((dayIndexFor(now()) % data.length) + data.length) % data.length]
+    : null;
+
+  // Runs after the search reset has re-rendered the full list, so the
+  // target card is guaranteed to be in the DOM.
+  useEffect(() => {
+    if (scrollTarget === null) return;
+    cardRefs.current.get(scrollTarget)?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+    setScrollTarget(null);
+  }, [scrollTarget]);
+
   const query = search.trim().toLowerCase();
   const filtered = (data ?? []).filter((logo) =>
     logo.name.toLowerCase().includes(query),
@@ -141,6 +161,18 @@ function MistakesSection() {
     <div className={styles.statsCard}>
       <div className={styles.statsCardHeader}>
         <h2 className={styles.statsCardTitle}>Common mistakes by logo</h2>
+        <button
+          type="button"
+          className={styles.sortBtn}
+          disabled={!todayLogo}
+          onClick={() => {
+            if (!todayLogo) return;
+            setSearch("");
+            setScrollTarget(todayLogo.logoId);
+          }}
+        >
+          Go to today
+        </button>
         <input
           type="text"
           className={styles.searchInput}
@@ -161,7 +193,14 @@ function MistakesSection() {
       ) : (
         <div className={styles.mistakesList}>
           {filtered.map((logo) => (
-            <div key={logo.logoId} className={styles.mistakeCard}>
+            <div
+              key={logo.logoId}
+              className={`${styles.mistakeCard} ${logo.logoId === todayLogo?.logoId ? styles.mistakeCardToday : ""}`}
+              ref={(el) => {
+                if (el) cardRefs.current.set(logo.logoId, el);
+                else cardRefs.current.delete(logo.logoId);
+              }}
+            >
               <div className={styles.mistakeCardHeader}>
                 <img src={logo.icon} alt="" width={56} height={56} />
                 <span className={styles.mistakeName}>{logo.name}</span>

@@ -1,7 +1,7 @@
 import { env } from "cloudflare:workers";
 import { dayIndexFor } from "./game-logic";
 
-export type FinishBucket = "tries1" | "tries2" | "tries3" | "failed";
+export type FinishBucket = "tries1" | "tries2" | "tries3" | "historic" | "failed";
 
 export interface DailyFinishStat {
   dayIndex: number;
@@ -9,6 +9,7 @@ export interface DailyFinishStat {
   tries1: number;
   tries2: number;
   tries3: number;
+  historic: number;
   failed: number;
 }
 
@@ -16,13 +17,17 @@ interface FinishCountRow {
   day_index: number;
   status: "won" | "lost";
   guess_count: number;
+  played_fresh: number;
   count: number;
 }
 
-type Counts = Pick<DailyFinishStat, "tries1" | "tries2" | "tries3" | "failed">;
+type Counts = Pick<
+  DailyFinishStat,
+  "tries1" | "tries2" | "tries3" | "historic" | "failed"
+>;
 
 function emptyCounts(): Counts {
-  return { tries1: 0, tries2: 0, tries3: 0, failed: 0 };
+  return { tries1: 0, tries2: 0, tries3: 0, historic: 0, failed: 0 };
 }
 
 function isoDate(d: Date): string {
@@ -34,6 +39,7 @@ function isoDate(d: Date): string {
 
 function bucketFor(row: FinishCountRow): FinishBucket | null {
   if (row.status === "lost") return "failed";
+  if (!row.played_fresh) return "historic";
   if (row.guess_count === 1) return "tries1";
   if (row.guess_count === 2) return "tries2";
   if (row.guess_count === 3) return "tries3";
@@ -51,10 +57,10 @@ export async function dailyFinishStats(
   const endDayIndex = dayIndexFor(nextMonthStart) - 1;
 
   const { results } = await env.DB.prepare(
-    `SELECT day_index, status, guess_count, COUNT(*) as count
+    `SELECT day_index, status, guess_count, played_fresh, COUNT(*) as count
      FROM progress
      WHERE day_index BETWEEN ? AND ? AND status IN ('won', 'lost')
-     GROUP BY day_index, status, guess_count`,
+     GROUP BY day_index, status, guess_count, played_fresh`,
   )
     .bind(startDayIndex, endDayIndex)
     .all<FinishCountRow>();

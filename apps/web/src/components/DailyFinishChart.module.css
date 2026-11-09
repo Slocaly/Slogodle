@@ -1,0 +1,11 @@
+.tooltip :global(.ts-chart-tooltip__rows) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+/* The Total row is always last. */
+.tooltip :global(.ts-chart-tooltip__row:last-child) {
+  font-weight: 700;
+  margin-top: 0.2rem;
+}

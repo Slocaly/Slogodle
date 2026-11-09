@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GameHeader } from "../components/GameHeader";
 import { GameFooter } from "../components/GameFooter";
@@ -94,11 +94,6 @@ function SpeedPage() {
           dayIndex={replay ? undefined : dayIndex}
           title={replay ? `Series #${dayIndex + 1}` : undefined}
           replay={replay && !runQuery.data.viewingRanked}
-          footer={
-            <Link to="/speed/history" className={styles.topLink}>
-              ← Back to history
-            </Link>
-          }
           logos={logos}
           rightPanel={<SpeedLadder dayIndex={dayIndex} />}
           playBubble={playBubble}

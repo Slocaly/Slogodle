@@ -71,8 +71,6 @@ interface SpeedGameProps {
   title?: string;
   /** Replay of a past series: the result is kept but never ranked. */
   replay?: boolean;
-  /** Shown instead of "come back tomorrow" once a past series is done. */
-  footer?: ReactNode;
 }
 
 export function SpeedGame({
@@ -85,7 +83,6 @@ export function SpeedGame({
   dayIndex,
   title = "Today's series",
   replay = false,
-  footer,
 }: SpeedGameProps) {
   // Per logo: the order in which its letters get revealed (random, fixed for the round).
   const revealOrders = useMemo(
@@ -405,11 +402,8 @@ export function SpeedGame({
               <button type="button" className={styles.primary} onClick={onRestart}>
                 Play again
               </button>
-            ) : footer ? (
-              <>
-                {replay && <p className={styles.note}>Replays aren&apos;t ranked.</p>}
-                {footer}
-              </>
+            ) : replay ? (
+              <p className={styles.note}>Replays aren&apos;t ranked.</p>
             ) : (
               <p className={styles.note}>Come back tomorrow for a new series.</p>
             )}
@@ -426,7 +420,7 @@ export function SpeedGame({
             <p className={styles.note}>
               {replay ? "Replays aren't ranked." : "Timed-out runs aren't ranked."}
             </p>
-            {footer ?? <p className={styles.note}>Come back tomorrow for a new series.</p>}
+            <p className={styles.note}>Come back tomorrow for a new series.</p>
           </div>
         ) : allSolved ? (
           <div className={styles.panel}>

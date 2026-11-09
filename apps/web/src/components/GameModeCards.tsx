@@ -58,7 +58,7 @@ export function GameModeCards({ streak, onNavigate }: GameModeCardsProps) {
           </span>
           {standing ? (
             <span className={styles.status}>
-              {standing.rank !== null && <strong>#{standing.rank}</strong>}
+              <strong>#{standing.rank}</strong>
               {formatTime(standing.scoreMs)}
             </span>
           ) : (

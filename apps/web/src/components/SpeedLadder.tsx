@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { getAnonId } from "../lib/anon-id";
 import { formatTime } from "../lib/speed";
 import { fetchSpeedLadder } from "../lib/speed-runs";
 import styles from "./SpeedLadder.module.css";
@@ -6,7 +7,7 @@ import styles from "./SpeedLadder.module.css";
 export function SpeedLadder({ dayIndex }: { dayIndex: number }) {
   const { data } = useQuery({
     queryKey: ["speed-ladder", dayIndex],
-    queryFn: () => fetchSpeedLadder({ data: { dayIndex } }),
+    queryFn: () => fetchSpeedLadder({ data: { dayIndex, anonId: getAnonId() } }),
     refetchOnWindowFocus: false,
   });
   if (!data) return null;

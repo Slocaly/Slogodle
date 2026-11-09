@@ -32,8 +32,8 @@ export const finishSpeedRun = createServerFn({ method: "POST" })
   .validator((input: RunInput & { guesses: string[][] }) => input)
   .handler(({ data }) => finishSpeedRunDb(data));
 
-export const fetchSpeedLadder = createServerFn({ method: "GET" })
-  .validator((input: { dayIndex: number }) => input)
+export const fetchSpeedLadder = createServerFn({ method: "POST" })
+  .validator((input: { dayIndex: number; anonId: string }) => input)
   .handler(({ data }) => getSpeedLadder(data));
 
 export const fetchSpeedStanding = createServerFn({ method: "POST" })

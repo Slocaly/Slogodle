@@ -125,27 +125,61 @@ export interface LadderEntry {
   isMe: boolean;
 }
 
-/** Day ladder: accounts only (anonymous runs are stored but not ranked). */
-export async function getSpeedLadder(input: { dayIndex: number }): Promise<LadderEntry[]> {
+/** Stable, non-reversible display tag for an anonymous player: "Anon #4F2A". */
+function anonName(anonId: string): string {
+  let h = 0x811c9dc5; // FNV-1a
+  for (let i = 0; i < anonId.length; i++) {
+    h ^= anonId.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return `Anon #${(h & 0xffff).toString(16).toUpperCase().padStart(4, "0")}`;
+}
+
+interface LadderRow {
+  name: string | null;
+  anonId: string | null;
+  durationMs: number;
+  wrongCount: number;
+  scoreMs: number;
+  isMe: number;
+}
+
+/** Day ladder: accounts and anonymous players, ranked together. */
+export async function getSpeedLadder(input: {
+  dayIndex: number;
+  anonId?: string;
+}): Promise<LadderEntry[]> {
   if (!Number.isInteger(input.dayIndex)) throw new Error("invalid day");
   const session = await getAuth().api.getSession({ headers: getRequestHeaders() });
+  const meUser = session?.user?.id ?? "";
+  const meAnon =
+    !session && typeof input.anonId === "string" && input.anonId.length > 0 && input.anonId.length <= 100
+      ? input.anonId
+      : "";
   const { results } = await env.DB.prepare(
-    `SELECT u.name AS name, r.duration_ms AS durationMs, r.wrong_count AS wrongCount, r.score_ms AS scoreMs,
-            (r.user_id = ?) AS isMe
-     FROM speed_run r JOIN user u ON u.id = r.user_id
+    `SELECT u.name AS name, r.anon_id AS anonId, r.duration_ms AS durationMs, r.wrong_count AS wrongCount,
+            r.score_ms AS scoreMs, (r.user_id = ? OR r.anon_id = ?) AS isMe
+     FROM speed_run r LEFT JOIN user u ON u.id = r.user_id
      WHERE r.day_index = ? AND r.finished_at IS NOT NULL
      ORDER BY r.score_ms ASC, r.finished_at ASC
      LIMIT 50`,
   )
-    .bind(session?.user?.id ?? "", input.dayIndex)
-    .all<Omit<LadderEntry, "isMe"> & { isMe: number }>();
-  return results.map((r) => ({ ...r, isMe: r.isMe === 1 }));
+    .bind(meUser, meAnon, input.dayIndex)
+    .all<LadderRow>();
+  // anon_id is a credential for that run: only a derived tag leaves the server.
+  return results.map((r) => ({
+    name: r.name ?? anonName(r.anonId ?? ""),
+    durationMs: r.durationMs,
+    wrongCount: r.wrongCount,
+    scoreMs: r.scoreMs,
+    isMe: r.isMe === 1,
+  }));
 }
 
 export interface SpeedStanding {
   scoreMs: number;
-  /** Rank on the day ladder; null for anonymous runs (not ranked). */
-  rank: number | null;
+  /** Rank on the day ladder (accounts and anonymous players together). */
+  rank: number;
 }
 
 /** The caller's finished run for the day, or null if they haven't finished one. */
@@ -157,10 +191,9 @@ export async function getSpeedStanding(input: {
   const who = await identify(input.anonId);
   const run = await findRun(who, input.dayIndex);
   if (!run || run.finished_at === null || run.score_ms === null) return null;
-  if (!who.userId) return { scoreMs: run.score_ms, rank: null };
   const ahead = await env.DB.prepare(
     `SELECT COUNT(*) AS n FROM speed_run
-     WHERE day_index = ? AND finished_at IS NOT NULL AND user_id IS NOT NULL
+     WHERE day_index = ? AND finished_at IS NOT NULL
        AND (score_ms < ? OR (score_ms = ? AND finished_at < ?))`,
   )
     .bind(input.dayIndex, run.score_ms, run.score_ms, run.finished_at)

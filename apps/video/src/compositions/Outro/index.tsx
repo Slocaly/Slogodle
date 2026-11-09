@@ -1,4 +1,13 @@
-import { AbsoluteFill, Html5Audio, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  Html5Audio,
+  interpolate,
+  Sequence,
+  spring,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { loadFont } from "@remotion/fonts";
 import { theme } from "../../lib/theme";
 import { FallingLogos } from "./FallingLogos";
@@ -92,7 +101,8 @@ export const Outro: React.FC<OutroProps> = ({ logoSeed }) => {
                     opacity: letterOpacity,
                     color:
                       TITLE_LETTER_COLORS[
-                      titleGroupEnds.findIndex((end) => i < end) % TITLE_LETTER_COLORS.length
+                        titleGroupEnds.findIndex((end) => i < end) %
+                          TITLE_LETTER_COLORS.length
                       ],
                   }}
                 >

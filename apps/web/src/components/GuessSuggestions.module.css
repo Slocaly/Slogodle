@@ -12,7 +12,7 @@
 }
 
 .suggestions[data-scrollable]::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   right: 0;
@@ -40,7 +40,9 @@
   letter-spacing: 0.03em;
   color: var(--muted);
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 }
 
 .suggestion:hover,

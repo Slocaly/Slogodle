@@ -1,5 +1,6 @@
 import Matter from "matter-js";
-import { LOGOS, type Logo } from "@slogodle/logos";
+import { LOGOS } from "@slogodle/logos";
+import type { Logo } from "@slogodle/logos";
 
 const MARK = "/slogodle-mark.svg";
 // Icons referenced in @slogodle/logos that have no file under public/logos yet.
@@ -37,7 +38,11 @@ function randomLogos(n: number): Logo[] {
  * Logos thrown in by `launch` are the Slogodle mark.
  * Clicking anywhere in `hero` (outside interactive elements) scatters it.
  */
-export function startPile(container: HTMLElement, hero: HTMLElement, maxCount = 45): Pile {
+export function startPile(
+  container: HTMLElement,
+  hero: HTMLElement,
+  maxCount = 45,
+): Pile {
   const { Engine, Bodies, Body, Composite, Events, Runner } = Matter;
   container.innerHTML = "";
 
@@ -48,8 +53,8 @@ export function startPile(container: HTMLElement, hero: HTMLElement, maxCount = 
   let walls: Matter.Body[] = [];
 
   const makeWalls = () => {
-    if (walls.length) Composite.remove(engine.world, walls);
-    const o = { isStatic: true, friction: 0.8 };
+    if (walls.length > 0) Composite.remove(engine.world, walls);
+    const o = { friction: 0.8, isStatic: true };
     walls = [
       Bodies.rectangle(W / 2, H + WALL / 2, W + WALL * 2, WALL, o),
       Bodies.rectangle(-WALL / 2, H / 2 - 400, WALL, H + 1000, o),
@@ -64,7 +69,10 @@ export function startPile(container: HTMLElement, hero: HTMLElement, maxCount = 
   const [mn, mx] = mobile ? [36, 60] : [64, 104];
   const band = window.innerHeight * 0.3;
   const avg = ((mn + mx) / 2) ** 2;
-  const count = Math.min(maxCount, Math.max(6, Math.floor((W * band * 0.55) / avg)));
+  const count = Math.min(
+    maxCount,
+    Math.max(6, Math.floor((W * band * 0.55) / avg)),
+  );
   const randomSize = () => mn + Math.random() * (mx - mn);
 
   const makeEl = (src: string, w: number, h: number) => {
@@ -74,18 +82,18 @@ export function startPile(container: HTMLElement, hero: HTMLElement, maxCount = 
     img.src = src;
     img.alt = "";
     img.style.cssText = `display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 8px var(--shadow))`;
-    el.appendChild(img);
-    container.appendChild(el);
+    el.append(img);
+    container.append(el);
     return el;
   };
 
   const makeBody = (x: number, y: number, w: number, h: number) =>
     Bodies.rectangle(x, y, w, h, {
+      angle: Math.random() * Math.PI * 2,
       chamfer: { radius: Math.min(w, h) * 0.18 },
-      restitution: 0.15,
       friction: 0.6,
       frictionAir: 0.02,
-      angle: Math.random() * Math.PI * 2,
+      restitution: 0.15,
     });
 
   let items: Item[] = [];
@@ -96,13 +104,18 @@ export function startPile(container: HTMLElement, hero: HTMLElement, maxCount = 
     const h = aspect >= 1 ? s / aspect : s;
     const el = makeEl(logo.icon, w, h);
     const x = w / 2 + Math.random() * Math.max(W - w, 1);
-    const y = reduced ? H - h / 2 - Math.random() * 60 : -h - Math.random() * 700;
+    const y = reduced
+      ? H - h / 2 - Math.random() * 60
+      : -h - Math.random() * 700;
     const body = makeBody(x, y, w, h);
     if (!reduced) {
-      Body.setVelocity(body, { x: (Math.random() - 0.5) * 30, y: Math.random() * 6 });
+      Body.setVelocity(body, {
+        x: (Math.random() - 0.5) * 30,
+        y: Math.random() * 6,
+      });
       Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.6);
     }
-    items.push({ el, body, w, h });
+    items.push({ body, el, h, w });
   }
   Composite.add(
     engine.world,
@@ -118,7 +131,8 @@ export function startPile(container: HTMLElement, hero: HTMLElement, maxCount = 
   Runner.run(runner, engine);
 
   const onDown = (e: PointerEvent) => {
-    if ((e.target as Element).closest('a,button,input,summary,[role="button"]')) return;
+    if ((e.target as Element).closest('a,button,input,summary,[role="button"]'))
+      return;
     const r = container.getBoundingClientRect();
     const cx = e.clientX - r.left;
     const cy = e.clientY - r.top;
@@ -128,8 +142,14 @@ export function startPile(container: HTMLElement, hero: HTMLElement, maxCount = 
       const d = Math.hypot(dx, dy) || 1;
       if (d > SCATTER_RADIUS) continue;
       const imp = (1 - d / SCATTER_RADIUS) * 40;
-      Body.setVelocity(body, { x: body.velocity.x + (dx / d) * imp, y: body.velocity.y + (dy / d) * imp });
-      Body.setAngularVelocity(body, body.angularVelocity + (Math.random() - 0.5) * 0.6);
+      Body.setVelocity(body, {
+        x: body.velocity.x + (dx / d) * imp,
+        y: body.velocity.y + (dy / d) * imp,
+      });
+      Body.setAngularVelocity(
+        body,
+        body.angularVelocity + (Math.random() - 0.5) * 0.6,
+      );
     }
   };
   hero.addEventListener("pointerdown", onDown);
@@ -148,6 +168,16 @@ export function startPile(container: HTMLElement, hero: HTMLElement, maxCount = 
   const timers: ReturnType<typeof setTimeout>[] = [];
 
   return {
+    clearLaunched() {
+      const gone = items.filter((i) => i.launched);
+      if (gone.length === 0) return;
+      Composite.remove(
+        engine.world,
+        gone.map((i) => i.body),
+      );
+      gone.forEach((i) => i.el.remove());
+      items = items.filter((i) => !i.launched);
+    },
     launch(n) {
       if (reduced) return;
       const left = Math.random() < 0.5;
@@ -160,23 +190,16 @@ export function startPile(container: HTMLElement, hero: HTMLElement, maxCount = 
             const y = H * 0.55 + Math.random() * H * 0.15;
             const body = makeBody(x, y, s, s);
             const sp = 30 + Math.random() * 10;
-            Body.setVelocity(body, { x: left ? sp : -sp, y: -(15 + Math.random() * 10) });
+            Body.setVelocity(body, {
+              x: left ? sp : -sp,
+              y: -(15 + Math.random() * 10),
+            });
             Body.setAngularVelocity(body, (Math.random() - 0.5) * 1);
             Composite.add(engine.world, body);
             items.push({ el, body, w: s, h: s, launched: true });
           }, k * 90),
         );
       }
-    },
-    clearLaunched() {
-      const gone = items.filter((i) => i.launched);
-      if (!gone.length) return;
-      Composite.remove(
-        engine.world,
-        gone.map((i) => i.body),
-      );
-      gone.forEach((i) => i.el.remove());
-      items = items.filter((i) => !i.launched);
     },
     stop() {
       timers.forEach(clearTimeout);

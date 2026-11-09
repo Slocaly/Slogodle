@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "useTabs": false,
+  "bracketSpacing": true,
+  "tabWidth": 2,
+  "printWidth": 80,
+  "sortPackageJson": false,
+  "ignorePatterns": ["**/routeTree.gen.ts"]
+}

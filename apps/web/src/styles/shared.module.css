@@ -82,7 +82,9 @@
   font-weight: 600;
   color: var(--muted);
   cursor: pointer;
-  transition: color 0.15s, transform 0.1s;
+  transition:
+    color 0.15s,
+    transform 0.1s;
 }
 
 .backTodayBtn:hover {

@@ -2,12 +2,16 @@ import { Composition, Still } from "remotion";
 import { pickRandomLogo } from "./lib/pickLogos";
 import { GuessTheLogo } from "./compositions/GuessTheLogo";
 import { REVEAL_SCENE_FRAMES } from "./compositions/GuessTheLogo/constants";
-import { GuessTheLogoSchema, type LogoName } from "./compositions/GuessTheLogo/schema";
 import {
-  LogoMultipleChoice,
-} from "./compositions/LogoMultipleChoice/LogoMultipleChoice";
+  GuessTheLogoSchema,
+  type LogoName,
+} from "./compositions/GuessTheLogo/schema";
+import { LogoMultipleChoice } from "./compositions/LogoMultipleChoice/LogoMultipleChoice";
 import { LogoMultipleChoiceSchema } from "./compositions/LogoMultipleChoice/schema";
-import { LogoNameChoice, REVEAL_SCENE_FRAMES as NAME_CHOICE_REVEAL_SCENE_FRAMES } from "./compositions/LogoNameChoice";
+import {
+  LogoNameChoice,
+  REVEAL_SCENE_FRAMES as NAME_CHOICE_REVEAL_SCENE_FRAMES,
+} from "./compositions/LogoNameChoice";
 import { LogoNameChoiceSchema } from "./compositions/LogoNameChoice/schema";
 import { Outro, OUTRO_FRAMES } from "./compositions/Outro";
 import { TOTAL_FRAMES } from "./compositions/LogoMultipleChoice/constants";
@@ -39,7 +43,8 @@ export const RemotionRoot: React.FC = () => {
           debugSafeZones: false,
         }}
         calculateMetadata={({ props }) => ({
-          durationInFrames: props.revealDelayInFrames + REVEAL_SCENE_FRAMES + OUTRO_FRAMES,
+          durationInFrames:
+            props.revealDelayInFrames + REVEAL_SCENE_FRAMES + OUTRO_FRAMES,
         })}
       />
       <Composition
@@ -81,7 +86,10 @@ export const RemotionRoot: React.FC = () => {
           debugSafeZones: false,
         }}
         calculateMetadata={({ props }) => ({
-          durationInFrames: props.revealDelayInFrames + NAME_CHOICE_REVEAL_SCENE_FRAMES + OUTRO_FRAMES,
+          durationInFrames:
+            props.revealDelayInFrames +
+            NAME_CHOICE_REVEAL_SCENE_FRAMES +
+            OUTRO_FRAMES,
         })}
       />
       <Composition

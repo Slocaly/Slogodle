@@ -35,7 +35,7 @@ day-index-to-logo mapping across the cutover.
    admin-managed going forward, rather than relying on D1 row id/insertion
    order.
 3. **Local package fate:** `packages/logos` (the `LOGOS` array, `public/logos`
-   SVGs, and the `slogodle-add-logo` skill) stays as the *authoring* source.
+   SVGs, and the `slogodle-add-logo` skill) stays as the _authoring_ source.
    New logos are still added there first, then pushed to R2/D1 via
    `sync-logos.ts`. The live game never reads `packages/logos` at runtime —
    it's a staging format only.
@@ -122,27 +122,27 @@ D1-native reshuffle script), not solved here.
 delegating to the TanStack Start handler:
 
 ```ts
-import { env } from "cloudflare:workers"
+import { env } from "cloudflare:workers";
 
-const LOGO_ROUTE = /^\/api\/logos\/([^/]+)$/
+const LOGO_ROUTE = /^\/api\/logos\/([^/]+)$/;
 
 export default {
   async fetch(request: Request): Promise<Response> {
-    const url = new URL(request.url)
-    const match = url.pathname.match(LOGO_ROUTE)
+    const url = new URL(request.url);
+    const match = url.pathname.match(LOGO_ROUTE);
     if (match) {
-      const object = await env.LOGO_BUCKET.get(match[1])
-      if (!object) return new Response('Not found', { status: 404 })
+      const object = await env.LOGO_BUCKET.get(match[1]);
+      if (!object) return new Response("Not found", { status: 404 });
       return new Response(object.body, {
         headers: {
-          'Content-Type': 'image/svg+xml',
-          'Cache-Control': 'public, max-age=31536000, immutable',
+          "Content-Type": "image/svg+xml",
+          "Cache-Control": "public, max-age=31536000, immutable",
         },
-      })
+      });
     }
-    return paraglideMiddleware(request, () => handler.fetch(request))
+    return paraglideMiddleware(request, () => handler.fetch(request));
   },
-}
+};
 ```
 
 Same-origin, so `stickerIcons.ts`'s canvas-based sticker baking keeps working
@@ -163,9 +163,9 @@ export async function listGameLogos(): Promise<Logo[]> {
      WHERE name IS NOT NULL AND industry IS NOT NULL AND founded IS NOT NULL
        AND description IS NOT NULL AND fun_fact IS NOT NULL
        AND git_link IS NOT NULL AND aspect IS NOT NULL AND day_order IS NOT NULL
-     ORDER BY day_order`
-  ).all()
-  return rows.results.map(toLogo)
+     ORDER BY day_order`,
+  ).all();
+  return rows.results.map(toLogo);
 }
 ```
 

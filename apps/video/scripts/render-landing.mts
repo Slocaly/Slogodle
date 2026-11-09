@@ -17,7 +17,10 @@ const VIDEOS = [
   {
     slug: "guess-the-logo",
     compositionId: "GuessTheLogo",
-    inputProps: { logoName: "Slogodle", musicSrc: "music/HoliznaCC0 - The Best Of Times.mp3" },
+    inputProps: {
+      logoName: "Slogodle",
+      musicSrc: "music/HoliznaCC0 - The Best Of Times.mp3",
+    },
   },
   {
     slug: "multiple-choice",
@@ -31,7 +34,11 @@ const VIDEOS = [
   {
     slug: "name-choice",
     compositionId: "LogoNameChoice",
-    inputProps: { targetLogoName: "Slogodle", decoyLogoNames: DECOYS, musicSrc: "music/HoliznaCC0 - Tetrapod.mp3" },
+    inputProps: {
+      targetLogoName: "Slogodle",
+      decoyLogoNames: DECOYS,
+      musicSrc: "music/HoliznaCC0 - Tetrapod.mp3",
+    },
   },
 ];
 
@@ -52,7 +59,11 @@ for (const video of VIDEOS) {
   const master = path.join(masterDir, `${video.slug}.mp4`);
   const inputProps = { ...video.inputProps, debugSafeZones: false };
   // Remaining props (revealDelayInFrames) come from the composition's defaultProps.
-  const composition = await selectComposition({ serveUrl, id: video.compositionId, inputProps });
+  const composition = await selectComposition({
+    serveUrl,
+    id: video.compositionId,
+    inputProps,
+  });
 
   await renderMedia({
     composition,
@@ -82,5 +93,7 @@ for (const video of VIDEOS) {
     "-frames:v", "1", "-vf", "scale=540:960", "-q:v", "3",
     poster,
   ], { stdio: "inherit" });
-  console.log(`${video.slug} — wrote ${path.relative(process.cwd(), web)} + poster`);
+  console.log(
+    `${video.slug} — wrote ${path.relative(process.cwd(), web)} + poster`,
+  );
 }

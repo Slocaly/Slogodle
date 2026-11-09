@@ -1,4 +1,4 @@
-import type { Ref } from "react";
+import { useState, type Ref } from "react";
 import { Link } from "@tanstack/react-router";
 import { m } from "../paraglide/messages.js";
 import styles from "./GameFooter.module.css";
@@ -9,7 +9,7 @@ interface GameFooterProps {
 }
 
 export function GameFooter({ ref }: GameFooterProps) {
-  const year = new Date().getFullYear();
+  const [year] = useState(() => new Date().getFullYear());
 
   return (
     <footer className={styles.footer}>
@@ -25,7 +25,10 @@ export function GameFooter({ ref }: GameFooterProps) {
             {m.footer_author()}
           </a>
         </p>
-        <nav className={styles.legalLinks} aria-label={m.footer_legal_nav_label()}>
+        <nav
+          className={styles.legalLinks}
+          aria-label={m.footer_legal_nav_label()}
+        >
           <Link to="/mentions-legales" className={styles.link}>
             {m.footer_mentions_legales()}
           </Link>

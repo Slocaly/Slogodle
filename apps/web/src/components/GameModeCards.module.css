@@ -23,7 +23,9 @@
   border: 2px solid var(--border);
   color: var(--text);
   text-decoration: none;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
 .card:hover,

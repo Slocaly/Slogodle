@@ -1,4 +1,12 @@
-import { Html5Audio, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import {
+  Html5Audio,
+  interpolate,
+  Sequence,
+  spring,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { theme } from "../../../lib/theme";
 import {
   LOSER_FADE_FRAMES,
@@ -58,17 +66,23 @@ export const NameOption: React.FC<{
     : 0;
 
   // Wrong options get a brief shake + red flash before they fade.
-  const shakeX = !isCorrect && revealed
-    ? Math.sin(revealProgress * Math.PI * 6) * (1 - revealProgress) * 10
-    : 0;
-  const wrongFlash = !isCorrect && revealed
-    ? interpolate(
-        frame,
-        [revealAtFrame, revealAtFrame + 5, revealAtFrame + REVEAL_TRANSITION_FRAMES],
-        [0, 1, 0],
-        { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-      )
-    : 0;
+  const shakeX =
+    !isCorrect && revealed
+      ? Math.sin(revealProgress * Math.PI * 6) * (1 - revealProgress) * 10
+      : 0;
+  const wrongFlash =
+    !isCorrect && revealed
+      ? interpolate(
+          frame,
+          [
+            revealAtFrame,
+            revealAtFrame + 5,
+            revealAtFrame + REVEAL_TRANSITION_FRAMES,
+          ],
+          [0, 1, 0],
+          { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+        )
+      : 0;
 
   const loserOpacity = interpolate(
     frame,
@@ -81,15 +95,17 @@ export const NameOption: React.FC<{
   // The correct option holds its green highlight in place for a beat, then
   // slides up under the logo and stays there as the answer's name. Slightly
   // underdamped so it overshoots a touch (~5%) and settles back into place.
-  const moveProgress = isCorrect && frame >= revealAtFrame + WINNER_HOLD_FRAMES
-    ? spring({
-        frame: frame - revealAtFrame - WINNER_HOLD_FRAMES,
-        fps,
-        config: { damping: 15, stiffness: 120 },
-      })
-    : 0;
+  const moveProgress =
+    isCorrect && frame >= revealAtFrame + WINNER_HOLD_FRAMES
+      ? spring({
+          frame: frame - revealAtFrame - WINNER_HOLD_FRAMES,
+          fps,
+          config: { damping: 15, stiffness: 120 },
+        })
+      : 0;
 
-  const accentColor = isCorrect && revealed ? theme.colors.success : theme.colors.accentPink;
+  const accentColor =
+    isCorrect && revealed ? theme.colors.success : theme.colors.accentPink;
   const scale = entranceScale * (1 + popScale * (isCorrect ? 0.08 : 0.03));
   const slotTop = OPTIONS_TOP + index * (OPTION_HEIGHT + OPTION_GAP);
   const top = interpolate(moveProgress, [0, 1], [slotTop, WINNER_TOP]);

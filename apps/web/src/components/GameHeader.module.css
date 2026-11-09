@@ -21,7 +21,20 @@
   user-select: none;
 }
 
-.title:focus-visible {
+.titleButton {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  color: inherit;
+  cursor: pointer;
+  user-select: none;
+}
+
+.titleButton:focus-visible {
   outline: 2px solid var(--accent-pink);
   outline-offset: 4px;
   border-radius: 4px;
@@ -82,7 +95,10 @@
   font-size: 11px;
   font-weight: 700;
   color: var(--muted);
-  transition: color 0.15s, background 0.15s, transform 0.2s;
+  transition:
+    color 0.15s,
+    background 0.15s,
+    transform 0.2s;
 }
 
 .localeToggle:hover {

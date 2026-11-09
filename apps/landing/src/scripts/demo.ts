@@ -24,33 +24,37 @@ const HINTS: Hint[] = [
 ];
 
 const GUESSES: Guess[] = [
-  { t: "Stripe", ok: false },
-  { t: "Wordle", ok: false },
-  { t: "Slogodle", ok: true },
+  { ok: false, t: "Stripe" },
+  { ok: false, t: "Wordle" },
+  { ok: true, t: "Slogodle" },
 ];
 
 /** Scripted round: type two wrong guesses letter by letter, then the right one */
 export function buildFrames(): Frame[] {
-  const raw: { typed: string; gs: Guess[]; hold: number; win?: boolean }[] = [];
-  raw.push({ typed: "", gs: [], hold: 1600 });
+  const raw: { typed: string; gs: Guess[]; hold: number; win?: boolean }[] = [
+    { gs: [], hold: 1600, typed: "" },
+  ];
   GUESSES.forEach((g, gi) => {
     const done = GUESSES.slice(0, gi);
-    for (let c = 1; c <= g.t.length; c++) raw.push({ typed: g.t.slice(0, c), gs: done, hold: 95 });
-    raw.push({ typed: g.t, gs: done, hold: 500 });
-    raw.push({
-      typed: "",
-      gs: GUESSES.slice(0, gi + 1),
-      hold: g.ok ? 4600 : 1900,
-      win: g.ok,
-    });
+    for (let c = 1; c <= g.t.length; c++)
+      raw.push({ gs: done, hold: 95, typed: g.t.slice(0, c) });
+    raw.push(
+      { gs: done, hold: 500, typed: g.t },
+      {
+        typed: "",
+        gs: GUESSES.slice(0, gi + 1),
+        hold: g.ok ? 4600 : 1900,
+        win: g.ok,
+      },
+    );
   });
 
   return raw.map((f) => ({
-    hold: f.hold,
-    win: !!f.win,
-    typed: f.typed,
     guesses: f.gs,
     hints: HINTS.slice(0, f.gs.filter((g) => !g.ok).length),
+    hold: f.hold,
+    typed: f.typed,
+    win: !!f.win,
     won: f.gs.some((g) => g.ok),
   }));
 }
@@ -78,7 +82,9 @@ export function renderCard(card: HTMLElement, f: Frame) {
 
   const hints = card.querySelector<HTMLElement>("[data-hints]")!;
   if (hints.childElementCount !== f.hints.length) {
-    const tpl = card.querySelector<HTMLTemplateElement>("[data-hint-template]")!;
+    const tpl = card.querySelector<HTMLTemplateElement>(
+      "[data-hint-template]",
+    )!;
     hints.replaceChildren(
       ...f.hints.map((h) => {
         const node = tpl.content.cloneNode(true) as DocumentFragment;

@@ -4,7 +4,12 @@ import { barY, defineChart } from "@tanstack/charts";
 import { scaleBand } from "@tanstack/charts/scales/band";
 import { scaleLinear } from "@tanstack/charts/scales/linear";
 import { tooltip } from "@tanstack/charts/tooltip";
-import { BUCKET_ORDER, BUCKET_COLORS_DARK, BUCKET_COLORS_LIGHT, type Bucket } from "./chartBuckets";
+import {
+  BUCKET_ORDER,
+  BUCKET_COLORS_DARK,
+  BUCKET_COLORS_LIGHT,
+} from "./chartBuckets";
+import type { Bucket } from "./chartBuckets";
 
 interface CountRow {
   bucket: Bucket;
@@ -20,8 +25,15 @@ export function WinsByTriesChart({
 }) {
   const definition = useMemo(() => {
     const colors = dark ? BUCKET_COLORS_DARK : BUCKET_COLORS_LIGHT;
-    const rows: CountRow[] = BUCKET_ORDER.map((bucket) => ({ bucket, count: counts[bucket] }));
+    const rows: CountRow[] = BUCKET_ORDER.map((bucket) => ({
+      bucket,
+      count: counts[bucket],
+    }));
     return defineChart({
+      color: {
+        domain: [...BUCKET_ORDER],
+        range: BUCKET_ORDER.map((bucket) => colors[bucket]),
+      },
       marks: [
         barY(rows, {
           x: "bucket",
@@ -31,18 +43,16 @@ export function WinsByTriesChart({
       ],
       scales: {
         x: {
-          scale: scaleBand<string>().domain([...BUCKET_ORDER]).padding(0.35),
+          scale: scaleBand<string>()
+            .domain([...BUCKET_ORDER])
+            .padding(0.35),
         },
         y: {
-          scale: scaleLinear,
-          nice: true,
-          grid: true,
           axis: { label: "Days" },
+          grid: true,
+          nice: true,
+          scale: scaleLinear,
         },
-      },
-      color: {
-        domain: [...BUCKET_ORDER],
-        range: BUCKET_ORDER.map((bucket) => colors[bucket]),
       },
       tooltip,
     });

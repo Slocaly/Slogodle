@@ -4,7 +4,11 @@ interface ChevronIconProps extends SVGProps<SVGSVGElement> {
   direction?: "left" | "right";
 }
 
-export function ChevronIcon({ direction = "right", style, ...props }: ChevronIconProps) {
+export function ChevronIcon({
+  direction = "right",
+  style,
+  ...props
+}: ChevronIconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -14,7 +18,9 @@ export function ChevronIcon({ direction = "right", style, ...props }: ChevronIco
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      style={direction === "left" ? { transform: "scaleX(-1)", ...style } : style}
+      style={
+        direction === "left" ? { transform: "scaleX(-1)", ...style } : style
+      }
       {...props}
     >
       <polyline points="9 18 15 12 9 6" />

@@ -13,7 +13,10 @@ function getNameFontSize(name: string): number {
  * same green "correct" border + glow as the winning card / option in the other
  * videos. `frame` is relative to the reveal (0 = reveal frame).
  */
-export const NameReveal: React.FC<{ name: string; frame: number }> = ({ name, frame }) => {
+export const NameReveal: React.FC<{ name: string; frame: number }> = ({
+  name,
+  frame,
+}) => {
   const { fps } = useVideoConfig();
 
   // Same overshoot pop as the winning answer in LogoMultipleChoice / LogoNameChoice.
@@ -24,7 +27,9 @@ export const NameReveal: React.FC<{ name: string; frame: number }> = ({ name, fr
     durationInFrames: REVEAL_TRANSITION_FRAMES,
   });
   const scale = interpolate(pop, [0, 1], [0.6, 1]);
-  const opacity = interpolate(frame, [0, 4], [0, 1], { extrapolateRight: "clamp" });
+  const opacity = interpolate(frame, [0, 4], [0, 1], {
+    extrapolateRight: "clamp",
+  });
   const highlight = interpolate(frame, [0, REVEAL_TRANSITION_FRAMES], [0, 1], {
     extrapolateRight: "clamp",
   });

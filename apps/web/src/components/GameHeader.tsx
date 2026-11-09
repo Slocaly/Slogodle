@@ -9,7 +9,11 @@ import { SoundToggle } from "./SoundToggle";
 import { StatsLink } from "./StatsLink";
 import styles from "./GameHeader.module.css";
 
-const TITLE_LETTER_COLORS = ["var(--title-1)", "var(--title-2)", "var(--title-3)"];
+const TITLE_LETTER_COLORS = [
+  "var(--title-1)",
+  "var(--title-2)",
+  "var(--title-3)",
+];
 const TITLE_GROUP_SIZES = [3, 2, 3];
 const LETTER_STAGGER_MS = 100;
 const BUBBLE_PITCH_STEP = 0.1;
@@ -68,51 +72,47 @@ export function GameHeader({
     }
   };
 
-  const handleTitleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      handleTitleActivate();
-    }
-  };
-
   return (
     <header className={styles.header}>
-      <h1
-        className={styles.title}
-        role="button"
-        tabIndex={0}
-        aria-label={m.site_title()}
-        onClick={handleTitleActivate}
-        onKeyDown={handleTitleKeyDown}
-      >
-        {(() => {
-          const letters = [...m.site_title()];
-          const groupEnds = TITLE_GROUP_SIZES.reduce<number[]>((ends, size) => {
-            ends.push((ends.at(-1) ?? 0) + size);
-            return ends;
-          }, []);
-          return letters.map((letter, i) => (
-            <span
-              key={`${i}-${bounceKey}`}
-              className={bounceKey > 0 ? styles.bounceLetter : undefined}
-              style={{
-                color:
-                  TITLE_LETTER_COLORS[
-                    groupEnds.findIndex((end) => i < end) % TITLE_LETTER_COLORS.length
-                  ],
-                animationDelay:
-                  bounceKey > 0 ? `${i * LETTER_STAGGER_MS}ms` : undefined,
-              }}
-            >
-              {letter}
-            </span>
-          ));
-        })()}
+      <h1 className={styles.title}>
+        <button
+          type="button"
+          className={styles.titleButton}
+          aria-label={m.site_title()}
+          onClick={handleTitleActivate}
+        >
+          {(() => {
+            const letters = [...m.site_title()];
+            const groupEnds: number[] = [];
+            for (const size of TITLE_GROUP_SIZES) {
+              groupEnds.push((groupEnds.at(-1) ?? 0) + size);
+            }
+            return letters.map((letter, i) => (
+              <span
+                key={`${i}-${bounceKey}`}
+                className={bounceKey > 0 ? styles.bounceLetter : undefined}
+                style={{
+                  animationDelay:
+                    bounceKey > 0 ? `${i * LETTER_STAGGER_MS}ms` : undefined,
+                  color:
+                    TITLE_LETTER_COLORS[
+                      groupEnds.findIndex((end) => i < end) %
+                        TITLE_LETTER_COLORS.length
+                    ],
+                }}
+              >
+                {letter}
+              </span>
+            ));
+          })()}
+        </button>
       </h1>
       <div className={styles.headerActions}>
         <div className={styles.desktopActions}>
           <ModeSwitch />
-          {onToggleArchive && <ArchiveToggle onToggleArchive={handleArchiveToggle} />}
+          {onToggleArchive && (
+            <ArchiveToggle onToggleArchive={handleArchiveToggle} />
+          )}
           {historyLinkTo && <ArchiveToggle to={historyLinkTo} />}
           {statsLinkTo && <StatsLink to={statsLinkTo} streak={streak} />}
         </div>

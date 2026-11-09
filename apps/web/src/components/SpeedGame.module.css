@@ -696,7 +696,9 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition:
+    background 0.15s,
+    transform 0.1s;
 }
 
 .shareBtn:hover {
@@ -791,7 +793,9 @@
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
-  transition: background 0.15s, transform 0.1s;
+  transition:
+    background 0.15s,
+    transform 0.1s;
 }
 
 .githubLink:hover {

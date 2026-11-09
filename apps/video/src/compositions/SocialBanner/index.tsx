@@ -1,5 +1,11 @@
 import { useMemo } from "react";
-import { AbsoluteFill, Img, random, staticFile, useVideoConfig } from "remotion";
+import {
+  AbsoluteFill,
+  Img,
+  random,
+  staticFile,
+  useVideoConfig,
+} from "remotion";
 import { loadFont } from "@remotion/fonts";
 import Matter from "matter-js";
 import { LOGOS, type Logo } from "@slogodle/logos";
@@ -91,18 +97,38 @@ function simulatePile(
   Matter.Common._seed = 42;
   const engine = Matter.Engine.create({ gravity: { x: 0, y: 1 } });
 
-  const floor = Matter.Bodies.rectangle(width / 2, height + WALL_THICKNESS / 2, width * 2, WALL_THICKNESS, {
-    isStatic: true,
-  });
-  const leftWall = Matter.Bodies.rectangle(-WALL_THICKNESS / 2, 0, WALL_THICKNESS, height * 20, { isStatic: true });
-  const rightWall = Matter.Bodies.rectangle(width + WALL_THICKNESS / 2, 0, WALL_THICKNESS, height * 20, {
-    isStatic: true,
-  });
+  const floor = Matter.Bodies.rectangle(
+    width / 2,
+    height + WALL_THICKNESS / 2,
+    width * 2,
+    WALL_THICKNESS,
+    {
+      isStatic: true,
+    },
+  );
+  const leftWall = Matter.Bodies.rectangle(
+    -WALL_THICKNESS / 2,
+    0,
+    WALL_THICKNESS,
+    height * 20,
+    { isStatic: true },
+  );
+  const rightWall = Matter.Bodies.rectangle(
+    width + WALL_THICKNESS / 2,
+    0,
+    WALL_THICKNESS,
+    height * 20,
+    {
+      isStatic: true,
+    },
+  );
   Matter.Composite.add(engine.world, [floor, leftWall, rightWall]);
   if (card) {
     Matter.Composite.add(
       engine.world,
-      Matter.Bodies.rectangle(card.x, card.y, card.width, card.height, { isStatic: true }),
+      Matter.Bodies.rectangle(card.x, card.y, card.width, card.height, {
+        isStatic: true,
+      }),
     );
   }
 
@@ -114,8 +140,11 @@ function simulatePile(
     const bodyWidth = aspect >= 1 ? longEdge : longEdge * aspect;
     const bodyHeight = aspect >= 1 ? longEdge / aspect : longEdge;
     // With a card obstacle, logos drop on either side of it rather than on top of it.
-    const sideWidth = card ? (width - card.width) / 2 - bodyWidth : width - bodyWidth;
-    const sideOffset = card && random(`${seed}-side`) < 0.5 ? width - sideWidth - bodyWidth : 0;
+    const sideWidth = card
+      ? (width - card.width) / 2 - bodyWidth
+      : width - bodyWidth;
+    const sideOffset =
+      card && random(`${seed}-side`) < 0.5 ? width - sideWidth - bodyWidth : 0;
     const x = bodyWidth / 2 + sideOffset + random(`${seed}-x`) * sideWidth;
     const y = height * 0.4 - i * SPAWN_STAGGER;
     const body = Matter.Bodies.rectangle(x, y, bodyWidth, bodyHeight, {
@@ -157,7 +186,16 @@ export const SocialBanner: React.FC<SocialBannerProps> = ({
   const pile = useMemo(
     () => simulatePile(width, height, pileLogoCount, logoSizeRange, cardRect),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [width, height, pileLogoCount, logoSizeRange[0], logoSizeRange[1], cardObstacle?.width, cardObstacle?.height, cardLiftRatio],
+    [
+      width,
+      height,
+      pileLogoCount,
+      logoSizeRange[0],
+      logoSizeRange[1],
+      cardObstacle?.width,
+      cardObstacle?.height,
+      cardLiftRatio,
+    ],
   );
 
   return (
@@ -188,7 +226,13 @@ export const SocialBanner: React.FC<SocialBannerProps> = ({
           }}
         />
       ))}
-      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", paddingBottom: height * cardLiftRatio * 2 }}>
+      <AbsoluteFill
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          paddingBottom: height * cardLiftRatio * 2,
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -206,12 +250,22 @@ export const SocialBanner: React.FC<SocialBannerProps> = ({
             boxShadow: "0 24px 60px oklch(0.3 0.05 290 / 0.15)",
           }}
         >
-          <div style={{ fontFamily: TITLE_FONT_FAMILY, fontSize: titleFontSize, lineHeight: 1 }}>
+          <div
+            style={{
+              fontFamily: TITLE_FONT_FAMILY,
+              fontSize: titleFontSize,
+              lineHeight: 1,
+            }}
+          >
             {[...TITLE_TEXT].map((letter, i) => (
               <span
                 key={i}
                 style={{
-                  color: TITLE_LETTER_COLORS[titleGroupEnds.findIndex((end) => i < end) % TITLE_LETTER_COLORS.length],
+                  color:
+                    TITLE_LETTER_COLORS[
+                      titleGroupEnds.findIndex((end) => i < end) %
+                        TITLE_LETTER_COLORS.length
+                    ],
                 }}
               >
                 {letter}
@@ -219,7 +273,13 @@ export const SocialBanner: React.FC<SocialBannerProps> = ({
             ))}
           </div>
           {subtitleFontSize ? (
-            <div style={{ fontSize: subtitleFontSize, fontWeight: 500, color: theme.colors.muted }}>
+            <div
+              style={{
+                fontSize: subtitleFontSize,
+                fontWeight: 500,
+                color: theme.colors.muted,
+              }}
+            >
               Logo games every day
             </div>
           ) : null}

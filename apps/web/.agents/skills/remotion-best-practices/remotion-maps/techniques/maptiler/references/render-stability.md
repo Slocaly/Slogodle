@@ -31,7 +31,7 @@ const map = new maptilersdk.Map({
   bearing: end.bearing ?? 0,
   interactive: false,
   fadeDuration: 0,
-  canvasContextAttributes: {preserveDrawingBuffer: true},
+  canvasContextAttributes: { preserveDrawingBuffer: true },
 });
 
 // Per Remotion frame. `camera` is the approved centre/zoom interpolation.

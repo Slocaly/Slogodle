@@ -1,4 +1,10 @@
-import { AbsoluteFill, interpolate, random, Sequence, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  random,
+  Sequence,
+  useCurrentFrame,
+} from "remotion";
 import type { Logo } from "@slogodle/logos";
 import { VIDEO_LOGOS } from "../../lib/videoLogos";
 import { theme } from "../../lib/theme";
@@ -30,7 +36,11 @@ export const LogoMultipleChoice: React.FC<LogoMultipleChoiceProps> = ({
   const decoys = decoyLogoNames.map(resolveLogo);
   // Deterministic (not Math.random) so the layout stays identical across frame renders.
   const targetIndex = Math.floor(random(targetLogoName) * (decoys.length + 1));
-  const choices = [...decoys.slice(0, targetIndex), target, ...decoys.slice(targetIndex)];
+  const choices = [
+    ...decoys.slice(0, targetIndex),
+    target,
+    ...decoys.slice(targetIndex),
+  ];
   const background = useAnimatedGradientBackground();
   const contentOpacity = interpolate(
     frame,
@@ -51,7 +61,11 @@ export const LogoMultipleChoice: React.FC<LogoMultipleChoiceProps> = ({
         <QuestionTitle targetName={target.name} />
         <ChoiceGrid choices={choices} target={target} />
       </AbsoluteFill>
-      <Sequence name="Outro" from={OUTRO_START_FRAME} durationInFrames={OUTRO_FRAMES}>
+      <Sequence
+        name="Outro"
+        from={OUTRO_START_FRAME}
+        durationInFrames={OUTRO_FRAMES}
+      >
         <Outro logoSeed={`multiple-choice-${targetLogoName}`} />
       </Sequence>
       {debugSafeZones && <SafeZoneOverlay />}

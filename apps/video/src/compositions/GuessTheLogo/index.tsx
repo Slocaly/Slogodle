@@ -68,8 +68,14 @@ export const GuessTheLogo: React.FC<GuessTheLogoProps> = ({
         revealAtFrame={revealDelayInFrames}
         revealTransitionFrames={REVEAL_TRANSITION_FRAMES}
       />
-      <Sequence name="Guess" durationInFrames={revealDelayInFrames + REVEAL_SCENE_FRAMES}>
-        <GuessSceneWithFade logo={logo} revealDelayInFrames={revealDelayInFrames} />
+      <Sequence
+        name="Guess"
+        durationInFrames={revealDelayInFrames + REVEAL_SCENE_FRAMES}
+      >
+        <GuessSceneWithFade
+          logo={logo}
+          revealDelayInFrames={revealDelayInFrames}
+        />
       </Sequence>
       <Sequence
         name="Outro"
@@ -86,7 +92,10 @@ export const GuessTheLogo: React.FC<GuessTheLogoProps> = ({
 // Longest edge is LOGO_MAX_EDGE, but the area is capped so near-square logos
 // shrink while wide/tall ones keep their full size.
 function getLogoSize(aspect: number): { width: number; height: number } {
-  const longEdge = Math.min(LOGO_MAX_EDGE, Math.sqrt(LOGO_MAX_AREA * Math.max(aspect, 1 / aspect)));
+  const longEdge = Math.min(
+    LOGO_MAX_EDGE,
+    Math.sqrt(LOGO_MAX_AREA * Math.max(aspect, 1 / aspect)),
+  );
   return aspect >= 1
     ? { width: longEdge, height: longEdge / aspect }
     : { width: longEdge * aspect, height: longEdge };
@@ -100,10 +109,10 @@ function getTickFrames(revealDelayInFrames: number, fps: number): number[] {
   return frames;
 }
 
-const GuessSceneWithFade: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
-  logo,
-  revealDelayInFrames,
-}) => {
+const GuessSceneWithFade: React.FC<{
+  logo: Logo;
+  revealDelayInFrames: number;
+}> = ({ logo, revealDelayInFrames }) => {
   const frame = useCurrentFrame();
   const sceneEnd = revealDelayInFrames + REVEAL_SCENE_FRAMES;
   const contentOpacity = interpolate(
@@ -127,14 +136,27 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const revealed = frame >= revealDelayInFrames;
-  const secondsLeft = Math.max(1, Math.ceil((revealDelayInFrames - frame) / fps));
+  const secondsLeft = Math.max(
+    1,
+    Math.ceil((revealDelayInFrames - frame) / fps),
+  );
 
   // Settle only — title and logo are already fully visible at frame 0, this
   // just eases them in from a slightly smaller/lower resting position.
-  const titleSettle = spring({ frame, fps, config: { damping: 14 }, durationInFrames: SETTLE_FRAMES });
+  const titleSettle = spring({
+    frame,
+    fps,
+    config: { damping: 14 },
+    durationInFrames: SETTLE_FRAMES,
+  });
   const titleScale = 0.94 + titleSettle * 0.06;
 
-  const logoSettle = spring({ frame, fps, config: { damping: 14 }, durationInFrames: SETTLE_FRAMES });
+  const logoSettle = spring({
+    frame,
+    fps,
+    config: { damping: 14 },
+    durationInFrames: SETTLE_FRAMES,
+  });
   const logoEntranceScale = 0.9 + logoSettle * 0.1;
 
   // Quick overshoot pop on the logo once the answer is revealed.
@@ -185,10 +207,15 @@ const GuessScene: React.FC<{ logo: Logo; revealDelayInFrames: number }> = ({
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
-  const drainProgress = interpolate(frame, [SETTLE_FRAMES, revealDelayInFrames], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const drainProgress = interpolate(
+    frame,
+    [SETTLE_FRAMES, revealDelayInFrames],
+    [0, 1],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    },
+  );
 
   const urgentColor = interpolateColors(
     drainProgress,

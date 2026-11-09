@@ -22,10 +22,10 @@ const {
       // Set the theme before first paint. Same storage key as the game app;
       // falls back to the system preference when nothing is stored.
       try {
-        var v = localStorage.getItem("logodle_dark_v1");
-        var dark = v === null ? matchMedia("(prefers-color-scheme: dark)").matches : v === "1";
+        const v = localStorage.getItem("logodle_dark_v1");
+        const dark = v === null ? matchMedia("(prefers-color-scheme: dark)").matches : v === "1";
         document.documentElement.dataset.theme = dark ? "dark" : "light";
-      } catch (e) {}
+      } catch {}
     </script>
     <title>{title}</title>
     <meta name="description" content={description} />

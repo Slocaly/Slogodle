@@ -1,4 +1,4 @@
-Drive motion with `interpolate()` over an explicit frame range. 
+Drive motion with `interpolate()` over an explicit frame range.
 To customize timing, use **`Easing.bezier`** or `Easing.spring`.
 
 A simple linear interpolation is done using the `interpolate` function.
@@ -50,7 +50,7 @@ A nice push movement with no bounce:
 import { interpolate, Easing } from "remotion";
 
 const opacity = interpolate(frame, [0, 0.3 * fps], [0, 1], {
-  easing: Easing.spring({damping: 200}),
+  easing: Easing.spring({ damping: 200 }),
   extrapolateLeft: "clamp",
   extrapolateRight: "clamp",
 });
@@ -80,7 +80,7 @@ const scale = interpolate(frame, [0, 0.3 * fps], [0, 1], {
   easing: Easing.bezier(0.16, 1, 0.3, 1),
   extrapolateLeft: "clamp",
   extrapolateRight: "clamp",
-  output: 'perceptual-scale' // <- Add this to scale animations
+  output: "perceptual-scale", // <- Add this to scale animations
 });
 ```
 
@@ -89,12 +89,21 @@ const scale = interpolate(frame, [0, 0.3 * fps], [0, 1], {
 Add as many keyframes as you want. For multiple easings, pass an array with `n - 1` items:
 
 ```ts
-const scale = interpolate(frame, [0, 1 * fps, 9 * fps, 10 * fps], [0, 1, 1, 0], {
-  easing: [Easing.bezier(0.16, 1, 0.3, 1), Easing.linear, Easing.spring({damping: 200})],
-  extrapolateLeft: "clamp",
-  extrapolateRight: "clamp",
-  output: 'perceptual-scale' // <- Add this to scale animations
-});
+const scale = interpolate(
+  frame,
+  [0, 1 * fps, 9 * fps, 10 * fps],
+  [0, 1, 1, 0],
+  {
+    easing: [
+      Easing.bezier(0.16, 1, 0.3, 1),
+      Easing.linear,
+      Easing.spring({ damping: 200 }),
+    ],
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    output: "perceptual-scale", // <- Add this to scale animations
+  },
+);
 ```
 
 ## Posterization
@@ -106,6 +115,6 @@ const scale = interpolate(frame, [0, 1 * fps], [0, 1], {
   easing: Easing.bezier(0.16, 1, 0.3, 1),
   extrapolateLeft: "clamp",
   extrapolateRight: "clamp",
-  posterize: 3 // Only every 3rd frame is sampled
+  posterize: 3, // Only every 3rd frame is sampled
 });
 ```

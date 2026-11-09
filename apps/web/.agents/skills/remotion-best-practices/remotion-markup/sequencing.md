@@ -16,18 +16,13 @@ const Main = () => {
         <Sequence name="Title" from={30} durationInFrames={60} layout="none">
           <Title />
         </Sequence>
-        <Sequence
-          name="Subtitle"
-          from={60}
-          durationInFrames={60}
-          layout="none"
-        >
+        <Sequence name="Subtitle" from={60} durationInFrames={60} layout="none">
           <Subtitle />
         </Sequence>
       </AbsoluteFill>
     </AbsoluteFill>
   );
-}
+};
 
 export const Title = () => {
   const frame = useCurrentFrame();
@@ -41,7 +36,7 @@ export const Title = () => {
           extrapolateLeft: "clamp",
           easing: Easing.bezier(0.16, 1, 0.3, 1),
         }),
-        fontSize: 88
+        fontSize: 88,
       }}
     >
       Title
@@ -61,7 +56,7 @@ export const Subtitle = () => {
           extrapolateLeft: "clamp",
           easing: Easing.bezier(0.16, 1, 0.3, 1),
         }),
-        fontSize: 32
+        fontSize: 32,
       }}
     >
       Subtitle

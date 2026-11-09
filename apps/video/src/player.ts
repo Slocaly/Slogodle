@@ -22,7 +22,9 @@ export interface PlayerComposition {
 }
 
 const revealDelay = (inputProps: Record<string, unknown>) =>
-  typeof inputProps.revealDelayInFrames === "number" ? inputProps.revealDelayInFrames : 135;
+  typeof inputProps.revealDelayInFrames === "number"
+    ? inputProps.revealDelayInFrames
+    : 135;
 
 export const PLAYER_COMPOSITIONS: Record<CompositionId, PlayerComposition> = {
   GuessTheLogo: {
@@ -30,7 +32,8 @@ export const PLAYER_COMPOSITIONS: Record<CompositionId, PlayerComposition> = {
     fps: 30,
     width: 1080,
     height: 1920,
-    durationInFrames: (inputProps) => revealDelay(inputProps) + REVEAL_SCENE_FRAMES + OUTRO_FRAMES,
+    durationInFrames: (inputProps) =>
+      revealDelay(inputProps) + REVEAL_SCENE_FRAMES + OUTRO_FRAMES,
   },
   LogoMultipleChoice: {
     component: LogoMultipleChoice,

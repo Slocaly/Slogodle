@@ -10,7 +10,7 @@ interface StatsLinkProps {
   streak?: number;
 }
 
-const STATS_TARGETS: StatsLinkProps["to"][] = ["/admin/stats", "/stats"];
+const STATS_TARGETS = new Set<StatsLinkProps["to"]>(["/admin/stats", "/stats"]);
 const BACK_LABELS: Record<StatsLinkProps["to"], (() => string) | undefined> = {
   "/admin/stats": undefined,
   "/stats": undefined,
@@ -20,14 +20,20 @@ const BACK_LABELS: Record<StatsLinkProps["to"], (() => string) | undefined> = {
 };
 
 export function StatsLink({ to, streak }: StatsLinkProps) {
-  const isBack = !STATS_TARGETS.includes(to);
+  const isBack = !STATS_TARGETS.has(to);
   const isPersonalStats = to === "/stats" && streak !== undefined;
 
   return (
     <Link
       to={to}
       className={`${styles.statsLink} ${isPersonalStats ? styles.statsLinkLabeled : ""}`}
-      aria-label={isBack ? BACK_LABELS[to]!() : isPersonalStats ? undefined : m.stats_link_label()}
+      aria-label={
+        isBack
+          ? BACK_LABELS[to]!()
+          : isPersonalStats
+            ? undefined
+            : m.stats_link_label()
+      }
     >
       {isBack ? (
         <ChevronIcon direction="left" />

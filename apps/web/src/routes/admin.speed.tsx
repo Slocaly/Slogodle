@@ -21,7 +21,10 @@ function AdminSpeedPage() {
   const [round, setRound] = useState(0);
   // `round` is a deliberate re-roll trigger, not a value used in the callback.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const logos = useMemo(() => (bank ? randomSpeedLogos(bank) : []), [bank, round]);
+  const logos = useMemo(
+    () => (bank ? randomSpeedLogos(bank) : []),
+    [bank, round],
+  );
 
   if (logos.length !== SPEED_ROUND_SIZE) return <p>Loading logos…</p>;
 

@@ -27,6 +27,7 @@ From the same results, count the posts still `scheduled` on each channel. If tha
 The posts point straight at the r2.dev URLs. Buffer doesn't copy the file when the post is created, so a file can only go once **every** post that uses it is `sent`.
 
 From the `list_posts` results (page further if needed), collect asset `source` URLs under the r2.dev base:
+
 - **deletable:** every post using the URL is `sent`;
 - **keep:** at least one post using it is still `scheduled`, `sending` or `error`.
 
@@ -45,6 +46,7 @@ cd apps/video && pnpm plan:batch --from-day <N+1> --count <X>
 ```
 
 This prints JSON with:
+
 - `videos[]`: day, date, `dueAt` (10:00 Paris with the right UTC offset), series, episode, logo, local `file`, `r2Key`;
 - `renders[]`: the `render:all` ranges needed per series;
 - `warnings[]`: logos that come back within 3 days (`--window` changes that). `kind: "answer"` means the same logo is the answer twice. `kind: "decoy"` means the answer one day shows up among the choices of a neighboring day.
@@ -87,6 +89,7 @@ The calls don't depend on each other, so send them in parallel batches. Check th
 ## 7. Summary
 
 Finish with:
+
 1. A table: day, date, series, logo.
 2. Any repeated-logo warnings left in.
 3. The delete command from step 2, if there's anything to delete.

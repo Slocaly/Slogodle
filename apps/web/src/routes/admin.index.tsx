@@ -3,14 +3,17 @@ import { useEffect, useState } from "react";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { now } from "../lib/clock";
 import { dayIndexFor } from "../lib/game-logic";
-import { fetchR2Logos, type R2Logo } from "../lib/r2-logos";
+import { fetchR2Logos } from "../lib/r2-logos";
+import type { R2Logo } from "../lib/r2-logos";
 import {
   fetchLogoMetadata,
   saveLogoMetadata,
   deleteLogo,
   reorderLogoMetadata,
-  type LogoMetadata,
-  type UpsertLogoMetadataInput,
+} from "../lib/logo-metadata";
+import type {
+  LogoMetadata,
+  UpsertLogoMetadataInput,
 } from "../lib/logo-metadata";
 import styles from "./admin.module.css";
 
@@ -18,12 +21,15 @@ export const Route = createFileRoute("/admin/")({
   component: AdminPage,
 });
 
-const sortModeParser = parseAsStringLiteral(["alpha", "day"] as const).withDefault(
+const sortModeParser = parseAsStringLiteral([
   "alpha",
-);
-const viewModeParser = parseAsStringLiteral(["table", "grid", "form"] as const).withDefault(
+  "day",
+] as const).withDefault("alpha");
+const viewModeParser = parseAsStringLiteral([
   "table",
-);
+  "grid",
+  "form",
+] as const).withDefault("table");
 
 interface AdminLogo {
   logo: R2Logo;
@@ -67,9 +73,7 @@ function AdminPage() {
       );
   }, [r2Logos, r2Error]);
 
-  const [metadataList, setMetadataList] = useState<LogoMetadata[] | null>(
-    null,
-  );
+  const [metadataList, setMetadataList] = useState<LogoMetadata[] | null>(null);
   const [metadataError, setMetadataError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -77,7 +81,9 @@ function AdminPage() {
     fetchLogoMetadata()
       .then(setMetadataList)
       .catch((error: unknown) =>
-        setMetadataError(error instanceof Error ? error.message : String(error)),
+        setMetadataError(
+          error instanceof Error ? error.message : String(error),
+        ),
       );
   }, [metadataList, metadataError]);
 
@@ -128,10 +134,11 @@ function AdminPage() {
   const unorderedEntries = filteredEntries.filter(
     (entry) => entry.metadata?.dayOrder == null,
   );
-  const dayTodayIndex = dayBank.length
-    ? ((dayIndexFor(now()) % dayBank.length) + dayBank.length) %
-      dayBank.length
-    : 0;
+  const dayTodayIndex =
+    dayBank.length > 0
+      ? ((dayIndexFor(now()) % dayBank.length) + dayBank.length) %
+        dayBank.length
+      : 0;
   const dayRows = [
     ...dayBank
       .map((entry, index) => ({
@@ -147,8 +154,8 @@ function AdminPage() {
 
   const handleReorder = (orderedR2Keys: string[]) => {
     const updates = orderedR2Keys.map((r2Key, index) => ({
-      r2Key,
       dayOrder: index + 1,
+      r2Key,
     }));
     setMetadataList((prev) =>
       (prev ?? []).map((metadata) => {
@@ -162,7 +169,8 @@ function AdminPage() {
   };
 
   const loading =
-    r2Error === null && (r2Logos === null || (metadataList === null && metadataError === null));
+    r2Error === null &&
+    (r2Logos === null || (metadataList === null && metadataError === null));
 
   return (
     <>
@@ -259,7 +267,12 @@ function AdminPage() {
                       }}
                     >
                       <td className={styles.iconCell}>
-                        <img src={entry.logo.url} alt="" width={28} height={28} />
+                        <img
+                          src={entry.logo.url}
+                          alt=""
+                          width={28}
+                          height={28}
+                        />
                       </td>
                       <td>{displayName(entry)}</td>
                       <td>{entry.metadata?.industry ?? "—"}</td>
@@ -341,12 +354,12 @@ interface R2LogoCardForm {
 
 function metadataToForm(metadata: LogoMetadata | undefined): R2LogoCardForm {
   return {
-    name: metadata?.name ?? "",
-    industry: metadata?.industry ?? "",
-    founded: metadata?.founded?.toString() ?? "",
     description: metadata?.description ?? "",
+    founded: metadata?.founded?.toString() ?? "",
     funFact: metadata?.funFact ?? "",
     gitLink: metadata?.gitLink ?? "",
+    industry: metadata?.industry ?? "",
+    name: metadata?.name ?? "",
   };
 }
 
@@ -384,8 +397,10 @@ function R2LogoCard({
       .then(() => {
         onDeleted(logo.key);
       })
-      .catch((err: unknown) => {
-        setDeleteError(err instanceof Error ? err.message : String(err));
+      .catch((error_: unknown) => {
+        setDeleteError(
+          error_ instanceof Error ? error_.message : String(error_),
+        );
         setDeleting(false);
       });
   };
@@ -412,14 +427,14 @@ function R2LogoCard({
     setSaving(true);
     setError(null);
     const input: UpsertLogoMetadataInput = {
-      r2Key: logo.key,
-      name: form.name || null,
-      industry: form.industry || null,
-      founded: form.founded ? Number(form.founded) : null,
+      aspect: metadata?.aspect ?? null,
       description: form.description || null,
+      founded: form.founded ? Number(form.founded) : null,
       funFact: form.funFact || null,
       gitLink: form.gitLink || null,
-      aspect: metadata?.aspect ?? null,
+      industry: form.industry || null,
+      name: form.name || null,
+      r2Key: logo.key,
     };
     saveLogoMetadata({ data: input })
       .then((result) => {
@@ -427,8 +442,8 @@ function R2LogoCard({
         setSaved(true);
         setEditing(false);
       })
-      .catch((err: unknown) =>
-        setError(err instanceof Error ? err.message : String(err)),
+      .catch((error_: unknown) =>
+        setError(error_ instanceof Error ? error_.message : String(error_)),
       )
       .finally(() => setSaving(false));
   };
@@ -459,7 +474,9 @@ function R2LogoCard({
         <img src={logo.url} alt="" width={64} height={64} />
         <span className={styles.gridName}>{logo.key}</span>
         <span className={styles.r2DayOrderBadge}>
-          {metadata?.dayOrder != null ? `Day #${metadata.dayOrder}` : "No day order"}
+          {metadata?.dayOrder != null
+            ? `Day #${metadata.dayOrder}`
+            : "No day order"}
         </span>
       </div>
 
@@ -594,17 +611,18 @@ function DeleteLogoModal({
   const canConfirm = confirmText === fileName && !deleting;
 
   return (
-    <div className={styles.modalOverlay} onClick={onCancel}>
-      <div
-        className={styles.modalBox}
-        role="dialog"
-        aria-modal="true"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div
+      className={styles.modalOverlay}
+      role="presentation"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onCancel();
+      }}
+    >
+      <div className={styles.modalBox} role="dialog" aria-modal="true">
         <h3 className={styles.modalTitle}>Delete logo</h3>
         <p className={styles.modalText}>
-          This permanently deletes <strong>{fileName}</strong> from the
-          bucket and its metadata. This can’t be undone.
+          This permanently deletes <strong>{fileName}</strong> from the bucket
+          and its metadata. This can’t be undone.
         </p>
         <p className={styles.modalText}>
           Remember to also remove it from the <strong>logos</strong> package
@@ -668,9 +686,7 @@ function ReadOnlyView({
         <h3 className={styles.r2ReadTitle}>
           {metadata?.name || "Untitled logo"}
         </h3>
-        {incomplete && (
-          <span className={styles.r2Badge}>Incomplete</span>
-        )}
+        {incomplete && <span className={styles.r2Badge}>Incomplete</span>}
       </div>
 
       <div className={styles.r2MetaRow}>
@@ -723,11 +739,7 @@ function ReadOnlyView({
         <button type="button" className={styles.r2SaveBtn} onClick={onEdit}>
           Edit
         </button>
-        <button
-          type="button"
-          className={styles.r2DeleteBtn}
-          onClick={onDelete}
-        >
+        <button type="button" className={styles.r2DeleteBtn} onClick={onDelete}>
           Delete
         </button>
         {saved && <span className={styles.r2Saved}>Saved</span>}

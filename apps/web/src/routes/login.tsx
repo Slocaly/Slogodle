@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { m } from "../paraglide/messages.js";
@@ -18,7 +18,6 @@ function LoginPage() {
 
   const form = useForm({
     defaultValues: { email: "", password: "" },
-    validators: { onChange: loginSchema },
     onSubmit: async ({ value }) => {
       setError(null);
       const { error: signInError } = await authClient.signIn.email(value);
@@ -28,13 +27,14 @@ function LoginPage() {
       }
       navigate({ to: "/" });
     },
+    validators: { onChange: loginSchema },
   });
 
   const handleGithub = async () => {
     setError(null);
     const { error: signInError } = await authClient.signIn.social({
-      provider: "github",
       callbackURL: "/",
+      provider: "github",
     });
     if (signInError) {
       setError(signInError.message ?? m.login_generic_error());
@@ -82,9 +82,7 @@ function LoginPage() {
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {errorText && (
-                          <span className={styles.fieldError}>
-                            {errorText}
-                          </span>
+                          <span className={styles.fieldError}>{errorText}</span>
                         )}
                       </label>
                     );
@@ -109,9 +107,7 @@ function LoginPage() {
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {errorText && (
-                          <span className={styles.fieldError}>
-                            {errorText}
-                          </span>
+                          <span className={styles.fieldError}>{errorText}</span>
                         )}
                       </label>
                     );

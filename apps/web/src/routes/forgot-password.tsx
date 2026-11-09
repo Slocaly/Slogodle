@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { m } from "../paraglide/messages.js";
@@ -17,7 +17,6 @@ function ForgotPasswordPage() {
 
   const form = useForm({
     defaultValues: { email: "" },
-    validators: { onChange: forgotPasswordSchema },
     onSubmit: async ({ value }) => {
       setError(null);
       const { error: requestError } = await authClient.requestPasswordReset({
@@ -30,6 +29,7 @@ function ForgotPasswordPage() {
       }
       setSubmitted(true);
     },
+    validators: { onChange: forgotPasswordSchema },
   });
 
   return (
@@ -84,9 +84,7 @@ function ForgotPasswordPage() {
                             className={styles.input}
                             value={field.state.value}
                             onBlur={field.handleBlur}
-                            onChange={(e) =>
-                              field.handleChange(e.target.value)
-                            }
+                            onChange={(e) => field.handleChange(e.target.value)}
                           />
                           {errorText && (
                             <span className={styles.fieldError}>

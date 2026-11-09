@@ -1,23 +1,23 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
-const SOUND_KEY = 'logodle_sound_v1'
+const SOUND_KEY = "logodle_sound_v1";
 
 export function useSoundSettings() {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
     try {
-      return localStorage.getItem(SOUND_KEY) === '1'
-    } catch (e) {
-      return false
+      return localStorage.getItem(SOUND_KEY) === "1";
+    } catch {
+      return false;
     }
-  })
+  });
 
   useEffect(() => {
     try {
-      localStorage.setItem(SOUND_KEY, soundEnabled ? '1' : '0')
-    } catch (e) {
+      localStorage.setItem(SOUND_KEY, soundEnabled ? "1" : "0");
+    } catch {
       // best-effort, matches useDarkMode behavior
     }
-  }, [soundEnabled])
+  }, [soundEnabled]);
 
-  return { soundEnabled, toggleSound: () => setSoundEnabled((v) => !v) }
+  return { soundEnabled, toggleSound: () => setSoundEnabled((v) => !v) };
 }

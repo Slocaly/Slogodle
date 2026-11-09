@@ -43,17 +43,17 @@ interface LogoMetadataRow {
 
 function toLogoMetadata(row: LogoMetadataRow): LogoMetadata {
   return {
-    id: row.id,
-    r2Key: row.r2_key,
-    name: row.name,
-    industry: row.industry,
-    founded: row.founded,
+    aspect: row.aspect,
+    createdAt: row.created_at,
+    dayOrder: row.day_order,
     description: row.description,
+    founded: row.founded,
     funFact: row.fun_fact,
     gitLink: row.git_link,
-    aspect: row.aspect,
-    dayOrder: row.day_order,
-    createdAt: row.created_at,
+    id: row.id,
+    industry: row.industry,
+    name: row.name,
+    r2Key: row.r2_key,
     updatedAt: row.updated_at,
   };
 }

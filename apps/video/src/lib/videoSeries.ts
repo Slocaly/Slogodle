@@ -8,7 +8,10 @@ import {
 
 export type SeriesName = "multiple-choice" | "name-choice" | "guess";
 
-export type CompositionId = "LogoMultipleChoice" | "LogoNameChoice" | "GuessTheLogo";
+export type CompositionId =
+  | "LogoMultipleChoice"
+  | "LogoNameChoice"
+  | "GuessTheLogo";
 
 export interface SeriesEpisode {
   name: string;
@@ -49,7 +52,11 @@ export const SERIES: Record<SeriesName, () => Series> = {
 };
 
 /** One video goes out per day, cycling through the series in this order. */
-export const PUBLISH_ORDER: SeriesName[] = ["multiple-choice", "guess", "name-choice"];
+export const PUBLISH_ORDER: SeriesName[] = [
+  "multiple-choice",
+  "guess",
+  "name-choice",
+];
 
 /** Local date of the first published video (month is 0-based). */
 export const PUBLISH_START_DATE = new Date(2026, 9, 5);
@@ -75,7 +82,13 @@ export function buildPublishSchedule(): ScheduledVideo[] {
       if (!episode) continue;
       const date = new Date(PUBLISH_START_DATE);
       date.setDate(date.getDate() + schedule.length);
-      schedule.push({ date, series: name, compositionId, episodeNumber: round + 1, episode });
+      schedule.push({
+        date,
+        series: name,
+        compositionId,
+        episodeNumber: round + 1,
+        episode,
+      });
     }
   }
 

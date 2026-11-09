@@ -26,7 +26,9 @@ const { values, positionals } = parseArgs({
 
 const seriesName = positionals[0];
 if (!seriesName || !(seriesName in SERIES)) {
-  console.error(`Usage: pnpm render:all <${Object.keys(SERIES).join("|")}> [--from N] [--count N] [--list]`);
+  console.error(
+    `Usage: pnpm render:all <${Object.keys(SERIES).join("|")}> [--from N] [--count N] [--list]`,
+  );
   process.exit(1);
 }
 
@@ -49,18 +51,31 @@ function markRendered(episodeNumber: number) {
   const rendered = readRendered();
   if ((rendered[seriesName] ?? 0) >= episodeNumber) return;
   rendered[seriesName] = episodeNumber;
-  const lines = Object.keys(SERIES).map((series) => `${series} ${rendered[series] ?? 0}`);
-  writeFileSync(renderedFile, `# Last episode rendered per series (updated by render-all.mts)\n${lines.join("\n")}\n`);
+  const lines = Object.keys(SERIES).map(
+    (series) => `${series} ${rendered[series] ?? 0}`,
+  );
+  writeFileSync(
+    renderedFile,
+    `# Last episode rendered per series (updated by render-all.mts)\n${lines.join("\n")}\n`,
+  );
 }
 
 const { compositionId, episodes } = SERIES[seriesName as SeriesName]();
 const pad = String(episodes.length).length;
-const start = values.from ? Number(values.from) - 1 : (readRendered()[seriesName] ?? 0);
+const start = values.from
+  ? Number(values.from) - 1
+  : (readRendered()[seriesName] ?? 0);
 const end = values.count ? start + Number(values.count) : episodes.length;
 
 function outputPath(index: number, name: string) {
-  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  return path.join(outDir, `${String(index + 1).padStart(pad, "0")}-${slug}.mp4`);
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  return path.join(
+    outDir,
+    `${String(index + 1).padStart(pad, "0")}-${slug}.mp4`,
+  );
 }
 
 if (values.list) {
@@ -91,7 +106,11 @@ for (let index = start; index < Math.min(end, episodes.length); index++) {
   }
 
   const inputProps = { ...episode.inputProps, debugSafeZones: false };
-  const composition = await selectComposition({ serveUrl, id: compositionId, inputProps });
+  const composition = await selectComposition({
+    serveUrl,
+    id: compositionId,
+    inputProps,
+  });
 
   await renderMedia({
     composition,

@@ -16,7 +16,7 @@ function monthKeyFor(date: Date): string {
 
 function parseMonthKey(key: string): { year: number; month: number } {
   const [year, month] = key.split("-").map(Number);
-  return { year, month: month - 1 };
+  return { month: month - 1, year };
 }
 
 function monthLabel(year: number, month: number): string {
@@ -26,9 +26,10 @@ function monthLabel(year: number, month: number): string {
   });
 }
 
-const viewModeParser = parseAsStringLiteral(["finishes", "mistakes"] as const).withDefault(
+const viewModeParser = parseAsStringLiteral([
   "finishes",
-);
+  "mistakes",
+] as const).withDefault("finishes");
 
 export const Route = createFileRoute("/admin/stats")({
   component: AdminStatsPage,
@@ -78,8 +79,8 @@ function DailyFinishSection({ dark }: { dark: boolean }) {
   const { year, month } = parseMonthKey(monthKey);
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["admin-stats", "daily-finish", year, month],
     queryFn: () => fetchDailyFinishStats({ data: { year, month } }),
+    queryKey: ["admin-stats", "daily-finish", year, month],
   });
 
   const shiftMonth = (delta: number) => {
@@ -129,8 +130,8 @@ function MistakesSection() {
   const [search, setSearch] = useState("");
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["admin-stats", "mistakes"],
     queryFn: () => fetchTopMistakes(),
+    queryKey: ["admin-stats", "mistakes"],
   });
 
   const cardRefs = useRef(new Map<number, HTMLDivElement>());
@@ -213,9 +214,7 @@ function MistakesSection() {
                 ) : (
                   logo.mistakes.map((mistake) => (
                     <div key={mistake.text} className={styles.mistakeRow}>
-                      <span className={styles.mistakeText}>
-                        {mistake.text}
-                      </span>
+                      <span className={styles.mistakeText}>{mistake.text}</span>
                       <span className={styles.mistakeCount}>
                         {mistake.count}×
                       </span>

@@ -28,11 +28,17 @@ each country **triggers when the river reaches it** and runs a fixed sequence. T
 long as the sequences need.
 
 ```ts
-const RIVER_START = 0.3, RIVER_END = 8.0;            // river draws over this window
-const BORDER_S = 2.5, FILL_S = 1.0, LABEL_S = 0.7;   // per-country sequence (constant durations)
-const trigger = (c) => RIVER_START + META[c].stop * (RIVER_END - RIVER_START);  // river-arrival time
+const RIVER_START = 0.3,
+  RIVER_END = 8.0; // river draws over this window
+const BORDER_S = 2.5,
+  FILL_S = 1.0,
+  LABEL_S = 0.7; // per-country sequence (constant durations)
+const trigger = (c) => RIVER_START + META[c].stop * (RIVER_END - RIVER_START); // river-arrival time
 // beat length = max over c of (trigger(c) + BORDER_S + FILL_S + LABEL_S) + tail
-const reveal = interpolate(t, [RIVER_START, RIVER_END], [0,1], { ...clamp, easing: Easing.bezier(0.645, 0.045, 0.355, 1) });
+const reveal = interpolate(t, [RIVER_START, RIVER_END], [0, 1], {
+  ...clamp,
+  easing: Easing.bezier(0.645, 0.045, 0.355, 1),
+});
 ```
 
 **Constant durations matter:** drive the border draw by _time since trigger_, not a slice of the reveal —
@@ -55,12 +61,22 @@ bright + glow layers, faded out once the river completes.
 
 ```ts
 const riverDrawnKm = lineKm * reveal;
-map.getSource("river").setData(turf.lineSliceAlong(line, 0, Math.max(0.001, riverDrawnKm)));
+map
+  .getSource("river")
+  .setData(turf.lineSliceAlong(line, 0, Math.max(0.001, riverDrawnKm)));
 const headKm = lineKm * 0.03;
-map.getSource("river-head").setData(turf.lineSliceAlong(line, Math.max(0, riverDrawnKm - headKm), Math.max(0.001, riverDrawnKm)));
+map
+  .getSource("river-head")
+  .setData(
+    turf.lineSliceAlong(
+      line,
+      Math.max(0, riverDrawnKm - headKm),
+      Math.max(0.001, riverDrawnKm),
+    ),
+  );
 let headFade = 0;
 if (reveal > 0.002 && reveal < 0.999) headFade = 1;
-else if (reveal >= 0.999) headFade = 1 - clamp01((t - RIVER_END) / 0.5);  // fade out at the mouth
+else if (reveal >= 0.999) headFade = 1 - clamp01((t - RIVER_END) / 0.5); // fade out at the mouth
 map.setPaintProperty("river-headglow", "line-opacity", 0.85 * headFade);
 map.setPaintProperty("river-head", "line-opacity", headFade);
 ```
@@ -75,13 +91,25 @@ Triggered by river arrival, each country runs three sequential phases. The borde
 of the country colour (the electricity is on the river, not here).
 
 ```ts
-const lt = t - trigger(c);                                   // local seconds since trigger
+const lt = t - trigger(c); // local seconds since trigger
 // 1) complete source border draws on over a constant BORDER_S, multi-segment-safe
-const bp = interpolate(clamp01(lt / BORDER_S), [0,1], [0,1], { easing: Easing.bezier(0.645, 0.045, 0.355, 1) });
-map.getSource(`trail-${c}`).setData(sliceBorder(DRAW[c], 0, DRAW[c].total * bp));   // COUNTRY_DARK line
+const bp = interpolate(clamp01(lt / BORDER_S), [0, 1], [0, 1], {
+  easing: Easing.bezier(0.645, 0.045, 0.355, 1),
+});
+map
+  .getSource(`trail-${c}`)
+  .setData(sliceBorder(DRAW[c], 0, DRAW[c].total * bp)); // COUNTRY_DARK line
 // 2) fill blooms in (opacity overshoots, then settles) after the border completes
 const fp = clamp01((lt - BORDER_S) / FILL_S);
-const fo = interpolate(fp, [0, 0.6, 1], [0, FILL_OPACITY * 1.25, FILL_OPACITY], { ...clamp, easing: Easing.bezier(0.3333333333333333, 1, 0.6666666666666666, 1) });
+const fo = interpolate(
+  fp,
+  [0, 0.6, 1],
+  [0, FILL_OPACITY * 1.25, FILL_OPACITY],
+  {
+    ...clamp,
+    easing: Easing.bezier(0.3333333333333333, 1, 0.6666666666666666, 1),
+  },
+);
 map.setPaintProperty(`fill-${c}`, "fill-opacity", fp <= 0 ? 0 : fo);
 // 3) label rises in after the fill
 const lp = clamp01((lt - BORDER_S - FILL_S) / LABEL_S);
@@ -94,12 +122,21 @@ MultiLineString, slicing each segment by cumulative length — no joins across g
 const sliceBorder = (d, fromKm, toKm) => {
   const out = [];
   for (let i = 0; i < d.segLines.length; i++) {
-    const start = d.cum[i], end = start + d.segLen[i];
-    const a = Math.max(fromKm, start), b = Math.min(toKm, end);
+    const start = d.cum[i],
+      end = start + d.segLen[i];
+    const a = Math.max(fromKm, start),
+      b = Math.min(toKm, end);
     if (b - a <= 0.0008) continue;
-    out.push(turf.lineSliceAlong(d.segLines[i], a - start, b - start).geometry.coordinates);
+    out.push(
+      turf.lineSliceAlong(d.segLines[i], a - start, b - start).geometry
+        .coordinates,
+    );
   }
-  return { type:"Feature", properties:{}, geometry:{ type:"MultiLineString", coordinates: out } };
+  return {
+    type: "Feature",
+    properties: {},
+    geometry: { type: "MultiLineString", coordinates: out },
+  };
 };
 ```
 
@@ -113,9 +150,9 @@ rise-and-fade treatment; select the typeface and final values in the production.
 Positioned by projecting the anchor to screen pixels **every frame**, stored in state:
 
 ```ts
-const p = map.project(META[c].anchor);   // lngLat → screen px (respects the live camera)
+const p = map.project(META[c].anchor); // lngLat → screen px (respects the live camera)
 pos[c] = { x: p.x, y: p.y, reveal: lp };
-setLabels(pos);                          // re-render the overlay; effect deps exclude `labels`
+setLabels(pos); // re-render the overlay; effect deps exclude `labels`
 ```
 
 `CountryLabel` shows the mechanics: uppercase region name, short accent divider, rise/fade entrance,

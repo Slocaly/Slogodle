@@ -12,8 +12,6 @@
 // at runtime, and the admin check in `session.server.ts` depends on being forced
 // to handle the missing case (it must fail closed).
 
-export {};
-
 interface AuthEnv {
   ADMIN_EMAIL?: string;
   GITHUB_CLIENT_ID?: string;

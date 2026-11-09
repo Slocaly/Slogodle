@@ -132,7 +132,7 @@ if (url.pathname.startsWith("/api/auth/")) {
 ### `/admin` protection
 
 Better Auth's default `emailAndPassword`/`socialProviders.github` config lets
-*anyone* create an account (via the sign-up endpoint or GitHub OAuth) — being
+_anyone_ create an account (via the sign-up endpoint or GitHub OAuth) — being
 authenticated is not the same as being the admin. Since this app has exactly
 one admin and no role system, authorization is a single email allowlist
 check: a new `ADMIN_EMAIL` env var, compared against the session's user

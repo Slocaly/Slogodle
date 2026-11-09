@@ -3,8 +3,8 @@ import { LegalPage } from "../components/LegalPage";
 import { m } from "../paraglide/messages.js";
 
 export const Route = createFileRoute("/confidentialite")({
-  ssr: false,
   component: ConfidentialitePage,
+  ssr: false,
 });
 
 function ConfidentialitePage() {

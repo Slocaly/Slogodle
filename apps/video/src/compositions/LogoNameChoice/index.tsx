@@ -63,7 +63,9 @@ export const LogoNameChoice: React.FC<LogoNameChoiceProps> = ({
 }) => {
   const target = resolveLogo(targetLogoName);
   // Deterministic (not Math.random) so the option order stays identical across frame renders.
-  const targetIndex = Math.floor(random(targetLogoName) * (decoyLogoNames.length + 1));
+  const targetIndex = Math.floor(
+    random(targetLogoName) * (decoyLogoNames.length + 1),
+  );
   const choices = [
     ...decoyLogoNames.slice(0, targetIndex),
     target.name,
@@ -83,8 +85,15 @@ export const LogoNameChoice: React.FC<LogoNameChoiceProps> = ({
         revealAtFrame={revealDelayInFrames}
         revealTransitionFrames={REVEAL_TRANSITION_FRAMES}
       />
-      <Sequence name="Guess" durationInFrames={revealDelayInFrames + REVEAL_SCENE_FRAMES}>
-        <GuessSceneWithFade logo={target} choices={choices} revealDelayInFrames={revealDelayInFrames} />
+      <Sequence
+        name="Guess"
+        durationInFrames={revealDelayInFrames + REVEAL_SCENE_FRAMES}
+      >
+        <GuessSceneWithFade
+          logo={target}
+          choices={choices}
+          revealDelayInFrames={revealDelayInFrames}
+        />
       </Sequence>
       <Sequence
         name="Outro"
@@ -106,7 +115,11 @@ function getTickFrames(revealDelayInFrames: number, fps: number): number[] {
   return frames;
 }
 
-type SceneProps = { logo: Logo; choices: string[]; revealDelayInFrames: number };
+type SceneProps = {
+  logo: Logo;
+  choices: string[];
+  revealDelayInFrames: number;
+};
 
 const GuessSceneWithFade: React.FC<SceneProps> = (props) => {
   const frame = useCurrentFrame();
@@ -125,15 +138,27 @@ const GuessSceneWithFade: React.FC<SceneProps> = (props) => {
   );
 };
 
-const GuessScene: React.FC<SceneProps> = ({ logo, choices, revealDelayInFrames }) => {
+const GuessScene: React.FC<SceneProps> = ({
+  logo,
+  choices,
+  revealDelayInFrames,
+}) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const revealed = frame >= revealDelayInFrames;
-  const secondsLeft = Math.max(1, Math.ceil((revealDelayInFrames - frame) / fps));
+  const secondsLeft = Math.max(
+    1,
+    Math.ceil((revealDelayInFrames - frame) / fps),
+  );
 
   // Settle only — title and logo are already fully visible at frame 0, this
   // just eases them in from a slightly smaller/lower resting position.
-  const settle = spring({ frame, fps, config: { damping: 14 }, durationInFrames: SETTLE_FRAMES });
+  const settle = spring({
+    frame,
+    fps,
+    config: { damping: 14 },
+    durationInFrames: SETTLE_FRAMES,
+  });
   const titleScale = 0.94 + settle * 0.06;
   const logoEntranceScale = 0.9 + settle * 0.1;
 
@@ -185,10 +210,15 @@ const GuessScene: React.FC<SceneProps> = ({ logo, choices, revealDelayInFrames }
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
   );
 
-  const drainProgress = interpolate(frame, [SETTLE_FRAMES, revealDelayInFrames], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const drainProgress = interpolate(
+    frame,
+    [SETTLE_FRAMES, revealDelayInFrames],
+    [0, 1],
+    {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    },
+  );
 
   const urgentColor = interpolateColors(
     drainProgress,

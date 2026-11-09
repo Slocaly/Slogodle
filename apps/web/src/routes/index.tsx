@@ -9,10 +9,8 @@ import { GameHeader } from "../components/GameHeader";
 import { GameFooter } from "../components/GameFooter";
 import { LoadingCard } from "../components/LoadingCard";
 import { ArchivePanel } from "../components/ArchivePanel";
-import {
-  PhysicsLogoPile,
-  type PhysicsLogoPileHandle,
-} from "../components/PhysicsLogoPile";
+import { PhysicsLogoPile } from "../components/PhysicsLogoPile";
+import type { PhysicsLogoPileHandle } from "../components/PhysicsLogoPile";
 import { LogoCard } from "../components/LogoCard";
 import { GuessForm } from "../components/GuessForm";
 import { RevealPanel } from "../components/RevealPanel";
@@ -23,17 +21,16 @@ import shared from "../styles/shared.module.css";
 import styles from "./index.module.css";
 
 export const Route = createFileRoute("/")({
-  ssr: false,
   component: Home,
+  ssr: false,
 });
 
 function Home() {
   const g = useGameState();
   const pileRef = useRef<PhysicsLogoPileHandle>(null);
   const footerBarRef = useRef<HTMLDivElement>(null);
-  const { playClick, playWrongGuess, playWin, playLose, playBubble } = useSoundEffects(
-    g.soundEnabled,
-  );
+  const { playClick, playWrongGuess, playWin, playLose, playBubble } =
+    useSoundEffects(g.soundEnabled);
 
   // Deep link from the history page: /?day=N jumps straight to that day,
   // then the param is cleared so it doesn't stick around in the URL.

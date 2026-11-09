@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import { m } from "../paraglide/messages.js";
@@ -18,12 +18,11 @@ function SignupPage() {
 
   const form = useForm({
     defaultValues: {
-      username: "",
+      confirmPassword: "",
       email: "",
       password: "",
-      confirmPassword: "",
+      username: "",
     },
-    validators: { onChange: signupSchema },
     onSubmit: async ({ value }) => {
       setError(null);
       const { error: signUpError } = await authClient.signUp.email({
@@ -37,13 +36,14 @@ function SignupPage() {
       }
       navigate({ to: "/" });
     },
+    validators: { onChange: signupSchema },
   });
 
   const handleGithub = async () => {
     setError(null);
     const { error: signInError } = await authClient.signIn.social({
-      provider: "github",
       callbackURL: "/",
+      provider: "github",
     });
     if (signInError) {
       setError(signInError.message ?? m.signup_generic_error());
@@ -91,9 +91,7 @@ function SignupPage() {
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {errorText && (
-                          <span className={styles.fieldError}>
-                            {errorText}
-                          </span>
+                          <span className={styles.fieldError}>{errorText}</span>
                         )}
                       </label>
                     );
@@ -118,9 +116,7 @@ function SignupPage() {
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {errorText && (
-                          <span className={styles.fieldError}>
-                            {errorText}
-                          </span>
+                          <span className={styles.fieldError}>{errorText}</span>
                         )}
                       </label>
                     );
@@ -145,9 +141,7 @@ function SignupPage() {
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {errorText && (
-                          <span className={styles.fieldError}>
-                            {errorText}
-                          </span>
+                          <span className={styles.fieldError}>{errorText}</span>
                         )}
                       </label>
                     );
@@ -172,9 +166,7 @@ function SignupPage() {
                           onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {errorText && (
-                          <span className={styles.fieldError}>
-                            {errorText}
-                          </span>
+                          <span className={styles.fieldError}>{errorText}</span>
                         )}
                       </label>
                     );
@@ -195,9 +187,7 @@ function SignupPage() {
               </button>
             )}
           </form.Subscribe>
-          {error && (
-            <p className={styles.error}>{m.signup_error({ error })}</p>
-          )}
+          {error && <p className={styles.error}>{m.signup_error({ error })}</p>}
         </form>
 
         <div className={styles.divider}>{m.signup_or()}</div>

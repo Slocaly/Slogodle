@@ -1,15 +1,15 @@
 export interface Logo {
-  name: string
-  industry: string
-  founded: number
-  description: string
-  funFact: string
+  name: string;
+  industry: string;
+  founded: number;
+  description: string;
+  funFact: string;
   /** Path to the logo's SVG file under public/. */
-  icon: string
+  icon: string;
   /** Intrinsic width/height ratio of the icon, used to size it in the physics pile. */
-  aspect: number
+  aspect: number;
   /** Link to the project's GitHub repository. */
-  gitLink: string
+  gitLink: string;
 }
 
 export const LOGOS: Logo[] = [
@@ -319,7 +319,8 @@ export const LOGOS: Logo[] = [
     founded: 2019,
     description:
       "Chakra UI is a React component library that provides accessible, reusable, and composable building blocks for web applications.",
-    funFact: "Chakra UI was created by Segun Adebayo and builds WAI-ARIA accessibility compliance into its components by default.",
+    funFact:
+      "Chakra UI was created by Segun Adebayo and builds WAI-ARIA accessibility compliance into its components by default.",
     icon: "/logos/chakra-ui.svg",
     aspect: 1,
     gitLink: "https://github.com/chakra-ui/chakra-ui",
@@ -330,7 +331,8 @@ export const LOGOS: Logo[] = [
     founded: 2010,
     description:
       "Socket.IO is a JavaScript library for real-time, bidirectional, event-based communication between browsers and servers.",
-    funFact: "Socket.IO was co-created by Guillermo Rauch, who later founded Vercel and created Next.js.",
+    funFact:
+      "Socket.IO was co-created by Guillermo Rauch, who later founded Vercel and created Next.js.",
     icon: "/logos/socket-io.svg",
     aspect: 1,
     gitLink: "https://github.com/socketio/socket.io",
@@ -389,7 +391,8 @@ export const LOGOS: Logo[] = [
     founded: 2011,
     description:
       "CircleCI is a continuous integration and delivery platform that automates building, testing, and deploying software from a version control repository.",
-    funFact: "CircleCI was one of the first hosted continuous integration services to support Docker-based build environments.",
+    funFact:
+      "CircleCI was one of the first hosted continuous integration services to support Docker-based build environments.",
     icon: "/logos/circleci.svg",
     aspect: 0.988,
     gitLink: "https://github.com/CircleCI-Public",
@@ -400,7 +403,8 @@ export const LOGOS: Logo[] = [
     founded: 1991,
     description:
       "Python is a high-level, general-purpose programming language known for its readable syntax and broad use across web, data, and automation.",
-    funFact: "Python is named after the British comedy show Monty Python's Flying Circus, not the snake.",
+    funFact:
+      "Python is named after the British comedy show Monty Python's Flying Circus, not the snake.",
     icon: "/logos/python.svg",
     aspect: 1.004,
     gitLink: "https://github.com/python/cpython",
@@ -483,7 +487,8 @@ export const LOGOS: Logo[] = [
     founded: 2006,
     description:
       "jQuery is a JavaScript library that simplifies HTML DOM manipulation, event handling, animation, and AJAX interactions across browsers.",
-    funFact: "John Resig introduced jQuery at BarCamp NYC in January 2006 under the tagline 'write less, do more'.",
+    funFact:
+      "John Resig introduced jQuery at BarCamp NYC in January 2006 under the tagline 'write less, do more'.",
     icon: "/logos/jquery.svg",
     aspect: 1,
     gitLink: "https://github.com/jquery/jquery",
@@ -554,7 +559,8 @@ export const LOGOS: Logo[] = [
     founded: 2022,
     description:
       "Bun is a fast, all-in-one JavaScript runtime, bundler, transpiler, and package manager built as a drop-in alternative to Node.js.",
-    funFact: "Bun is written in Zig and bundles a runtime, bundler, test runner, and package manager into a single fast binary.",
+    funFact:
+      "Bun is written in Zig and bundles a runtime, bundler, test runner, and package manager into a single fast binary.",
     icon: "/logos/bun.svg",
     aspect: 1,
     gitLink: "https://github.com/oven-sh/bun",
@@ -769,7 +775,8 @@ export const LOGOS: Logo[] = [
     founded: 2006,
     description:
       "Apache Hadoop is an open-source framework for distributed storage and processing of large datasets across clusters of computers.",
-    funFact: "Hadoop is named after co-creator Doug Cutting's son's stuffed yellow elephant toy.",
+    funFact:
+      "Hadoop is named after co-creator Doug Cutting's son's stuffed yellow elephant toy.",
     icon: "/logos/hadoop.svg",
     aspect: 1,
     gitLink: "https://github.com/apache/hadoop",
@@ -852,7 +859,8 @@ export const LOGOS: Logo[] = [
     founded: 2009,
     description:
       "Go is a statically typed, compiled programming language designed by Google for simplicity, fast compilation, and built-in concurrency.",
-    funFact: "Go was designed at Google specifically to speed up compile times on the company's massive codebases, ditching many features of C++.",
+    funFact:
+      "Go was designed at Google specifically to speed up compile times on the company's massive codebases, ditching many features of C++.",
     icon: "/logos/go.svg",
     aspect: 2.667,
     gitLink: "https://github.com/golang/go",
@@ -875,7 +883,8 @@ export const LOGOS: Logo[] = [
     founded: 2011,
     description:
       "D3.js is a JavaScript library for producing dynamic, data-driven visualizations in web browsers using web standards like SVG and Canvas.",
-    funFact: "D3 stands for Data-Driven Documents and was created by Mike Bostock as part of his PhD work at Stanford.",
+    funFact:
+      "D3 stands for Data-Driven Documents and was created by Mike Bostock as part of his PhD work at Stanford.",
     icon: "/logos/d3.svg",
     aspect: 1.053,
     gitLink: "https://github.com/d3/d3",
@@ -910,7 +919,8 @@ export const LOGOS: Logo[] = [
     founded: 2021,
     description:
       "Remix is a full-stack React framework focused on web standards, nested routing, and fast page loads through server rendering.",
-    funFact: "Remix was built by Ryan Florence and Michael Jackson, the same duo behind React Router, and was later acquired by Shopify.",
+    funFact:
+      "Remix was built by Ryan Florence and Michael Jackson, the same duo behind React Router, and was later acquired by Shopify.",
     icon: "/logos/remix.svg",
     aspect: 0.862,
     gitLink: "https://github.com/remix-run/remix",
@@ -981,7 +991,8 @@ export const LOGOS: Logo[] = [
     founded: 2016,
     description:
       "Nuxt is a full-stack framework built on Vue.js that adds server-side rendering, routing, and conventions for building web applications.",
-    funFact: "Nuxt was directly inspired by Next.js, bringing the same convention-driven server-rendering approach to the Vue ecosystem.",
+    funFact:
+      "Nuxt was directly inspired by Next.js, bringing the same convention-driven server-rendering approach to the Vue ecosystem.",
     icon: "/logos/nuxt.svg",
     aspect: 1.524,
     gitLink: "https://github.com/nuxt/nuxt",
@@ -1088,7 +1099,8 @@ export const LOGOS: Logo[] = [
     founded: 2020,
     description:
       "Playwright is a browser automation and end-to-end testing framework that supports Chromium, Firefox, and WebKit from a single API.",
-    funFact: "Playwright was built by many of the same engineers who created Puppeteer at Google, after they moved to Microsoft.",
+    funFact:
+      "Playwright was built by many of the same engineers who created Puppeteer at Google, after they moved to Microsoft.",
     icon: "/logos/playwright.svg",
     aspect: 1.333,
     gitLink: "https://github.com/microsoft/playwright",
@@ -1133,7 +1145,8 @@ export const LOGOS: Logo[] = [
     name: "Doctrine",
     industry: "PHP ORM",
     founded: 2006,
-    description: "Doctrine is an object-relational mapping library and set of database tools for PHP applications.",
+    description:
+      "Doctrine is an object-relational mapping library and set of database tools for PHP applications.",
     funFact:
       "Doctrine's object-relational mapper was inspired directly by Hibernate, bringing the same 'Data Mapper' pattern from Java into the PHP ecosystem.",
     icon: "/logos/doctrine.svg",
@@ -1146,7 +1159,8 @@ export const LOGOS: Logo[] = [
     founded: 2011,
     description:
       "Ember.js is a JavaScript framework for building ambitious web applications, with strong conventions and built-in routing.",
-    funFact: "Ember.js grew out of the earlier SproutCore project and was named by co-creator Yehuda Katz.",
+    funFact:
+      "Ember.js grew out of the earlier SproutCore project and was named by co-creator Yehuda Katz.",
     icon: "/logos/emberjs.svg",
     aspect: 1.002,
     gitLink: "https://github.com/emberjs/ember.js",
@@ -1229,7 +1243,8 @@ export const LOGOS: Logo[] = [
     founded: 2011,
     description:
       "Swagger is a set of tools for designing, building, and documenting REST APIs based on the OpenAPI Specification.",
-    funFact: "Swagger was created by Tony Tam while working at Wordnik, reportedly named after his dog.",
+    funFact:
+      "Swagger was created by Tony Tam while working at Wordnik, reportedly named after his dog.",
     icon: "/logos/swagger.svg",
     aspect: 1,
     gitLink: "https://github.com/swagger-api/swagger-ui",
@@ -1262,8 +1277,10 @@ export const LOGOS: Logo[] = [
     name: "MySQL",
     industry: "Relational database",
     founded: 1995,
-    description: "MySQL is an open-source relational database management system widely used for web applications.",
-    funFact: "MySQL is named after co-founder Michael Widenius's daughter, My, combined with the SQL query language.",
+    description:
+      "MySQL is an open-source relational database management system widely used for web applications.",
+    funFact:
+      "MySQL is named after co-founder Michael Widenius's daughter, My, combined with the SQL query language.",
     icon: "/logos/mysql.svg",
     aspect: 1.016,
     gitLink: "https://github.com/mysql/mysql-server",
@@ -1358,7 +1375,8 @@ export const LOGOS: Logo[] = [
     founded: 2017,
     description:
       "pnpm is a fast, disk-space-efficient package manager for JavaScript that uses a content-addressable store shared across projects.",
-    funFact: "pnpm was created by Zoltan Kochan and its name literally stands for 'performant npm'.",
+    funFact:
+      "pnpm was created by Zoltan Kochan and its name literally stands for 'performant npm'.",
     icon: "/logos/pnpm.svg",
     aspect: 1,
     gitLink: "https://github.com/pnpm/pnpm",
@@ -1451,7 +1469,8 @@ export const LOGOS: Logo[] = [
     name: "Flow",
     industry: "Static type checker",
     founded: 2014,
-    description: "Flow is a static type checker for JavaScript that catches type errors before code runs.",
+    description:
+      "Flow is a static type checker for JavaScript that catches type errors before code runs.",
     funFact:
       "Flow was built at Facebook to add static typing to JavaScript years before TypeScript became the dominant choice for typed React codebases.",
     icon: "/logos/flow.svg",
@@ -1462,7 +1481,8 @@ export const LOGOS: Logo[] = [
     name: "Markdown",
     industry: "Markup language",
     founded: 2004,
-    description: "Markdown is a lightweight markup language that converts plain-text formatting into HTML.",
+    description:
+      "Markdown is a lightweight markup language that converts plain-text formatting into HTML.",
     funFact:
       "Markdown was created in 2004 by John Gruber with help from Aaron Swartz, who had already built a similar plain-text markup language called atx and helped shape features like the '#' heading syntax.",
     icon: "/logos/markdown.svg",
@@ -1475,7 +1495,8 @@ export const LOGOS: Logo[] = [
     founded: 2014,
     description:
       "Crystal is a general-purpose, statically typed programming language with Ruby-like syntax that compiles to efficient native code.",
-    funFact: "Crystal compiles to native code but reads almost like Ruby, a deliberate design goal of its creators.",
+    funFact:
+      "Crystal compiles to native code but reads almost like Ruby, a deliberate design goal of its creators.",
     icon: "/logos/crystal.svg",
     aspect: 1,
     gitLink: "https://github.com/crystal-lang/crystal",
@@ -1484,8 +1505,10 @@ export const LOGOS: Logo[] = [
     name: "Marko",
     industry: "JavaScript framework",
     founded: 2014,
-    description: "Marko is a fast, HTML-based UI language and compiler optimized for server-side rendering.",
-    funFact: "Marko was built at eBay specifically to speed up server-side rendering for its own high-traffic commerce pages.",
+    description:
+      "Marko is a fast, HTML-based UI language and compiler optimized for server-side rendering.",
+    funFact:
+      "Marko was built at eBay specifically to speed up server-side rendering for its own high-traffic commerce pages.",
     icon: "/logos/marko.svg",
     aspect: 1.816,
     gitLink: "https://github.com/marko-js/marko",
@@ -1530,7 +1553,8 @@ export const LOGOS: Logo[] = [
     name: "MUI",
     industry: "UI component library",
     founded: 2014,
-    description: "MUI is a React component library that implements Google's Material Design guidelines.",
+    description:
+      "MUI is a React component library that implements Google's Material Design guidelines.",
     funFact:
       "MUI (originally Material-UI) began as one of the first React libraries to fully implement Google's then-new Material Design guidelines.",
     icon: "/logos/material-ui.svg",
@@ -1541,7 +1565,8 @@ export const LOGOS: Logo[] = [
     name: "Kibana",
     industry: "Data visualization",
     founded: 2013,
-    description: "Kibana is a data visualization and exploration tool for data stored in Elasticsearch.",
+    description:
+      "Kibana is a data visualization and exploration tool for data stored in Elasticsearch.",
     funFact:
       "Kibana was created as a side project to visualize logs stored in Elasticsearch before becoming an official part of Elastic's product line.",
     icon: "/logos/kibana.svg",
@@ -1564,7 +1589,8 @@ export const LOGOS: Logo[] = [
     name: "esbuild",
     industry: "JavaScript bundler",
     founded: 2020,
-    description: "esbuild is an extremely fast JavaScript and TypeScript bundler and minifier written in Go.",
+    description:
+      "esbuild is an extremely fast JavaScript and TypeScript bundler and minifier written in Go.",
     funFact:
       "esbuild was written from scratch in Go by Evan Wallace, co-founder of Figma, to prove that JavaScript bundlers could be orders of magnitude faster.",
     icon: "/logos/esbuild.svg",
@@ -1719,7 +1745,8 @@ export const LOGOS: Logo[] = [
     name: "Pinia",
     industry: "State management library",
     founded: 2019,
-    description: "Pinia is the official state management library for Vue, offering a simple, type-safe store API.",
+    description:
+      "Pinia is the official state management library for Vue, offering a simple, type-safe store API.",
     funFact:
       "Pinia started as an experiment testing what a Vue 3 store API could look like, and was later adopted as Vue's official replacement for Vuex.",
     icon: "/logos/pinia.svg",
@@ -1756,7 +1783,8 @@ export const LOGOS: Logo[] = [
     founded: 2005,
     description:
       "Symfony is a PHP web application framework and a set of reusable PHP components used across many other PHP projects.",
-    funFact: "Symfony's reusable components ended up powering large parts of other major PHP projects, including Laravel and Drupal.",
+    funFact:
+      "Symfony's reusable components ended up powering large parts of other major PHP projects, including Laravel and Drupal.",
     icon: "/logos/symfony.svg",
     aspect: 0.996,
     gitLink: "https://github.com/symfony/symfony",
@@ -1957,7 +1985,8 @@ export const LOGOS: Logo[] = [
     name: "Atomico",
     industry: "Web components library",
     founded: 2018,
-    description: "Atomico is a library for building native Web Components using hooks, JSX, and a virtual DOM.",
+    description:
+      "Atomico is a library for building native Web Components using hooks, JSX, and a virtual DOM.",
     funFact:
       "Atomico's name is Spanish for 'atomic', reflecting its goal of building interfaces from small, atomic functional components.",
     icon: "/logos/atomicojs.svg",
@@ -1982,7 +2011,8 @@ export const LOGOS: Logo[] = [
     founded: 2011,
     description:
       "Kotlin is a statically typed programming language that runs on the JVM and is fully interoperable with Java.",
-    funFact: "Kotlin is named after Kotlin Island near St. Petersburg, echoing Java's own naming after the island of Java.",
+    funFact:
+      "Kotlin is named after Kotlin Island near St. Petersburg, echoing Java's own naming after the island of Java.",
     icon: "/logos/kotlin.svg",
     aspect: 1,
     gitLink: "https://github.com/JetBrains/kotlin",
@@ -1991,8 +2021,10 @@ export const LOGOS: Logo[] = [
     name: "Vuetify",
     industry: "UI component library",
     founded: 2016,
-    description: "Vuetify is a Material Design component framework for Vue.js applications.",
-    funFact: "Vuetify was one of the first component frameworks to fully implement Google's Material Design spec for Vue.",
+    description:
+      "Vuetify is a Material Design component framework for Vue.js applications.",
+    funFact:
+      "Vuetify was one of the first component frameworks to fully implement Google's Material Design spec for Vue.",
     icon: "/logos/vuetifyjs.svg",
     aspect: 1.153,
     gitLink: "https://github.com/vuetifyjs/vuetify",
@@ -2063,7 +2095,8 @@ export const LOGOS: Logo[] = [
     founded: 1990,
     description:
       "Haskell is a purely functional programming language with strong static typing and lazy evaluation.",
-    funFact: "Haskell is named after the logician Haskell Curry, whose work also inspired the term 'currying'.",
+    funFact:
+      "Haskell is named after the logician Haskell Curry, whose work also inspired the term 'currying'.",
     icon: "/logos/haskell.svg",
     aspect: 1.414,
     gitLink: "https://github.com/ghc/ghc",
@@ -2084,8 +2117,10 @@ export const LOGOS: Logo[] = [
     name: "Babylon.js",
     industry: "3D graphics library",
     founded: 2013,
-    description: "Babylon.js is a real-time 3D graphics engine for the web, built on WebGL and WebGPU.",
-    funFact: "Babylon.js was created by Microsoft engineer David Catuhe as a real-time 3D engine built entirely on WebGL.",
+    description:
+      "Babylon.js is a real-time 3D graphics engine for the web, built on WebGL and WebGPU.",
+    funFact:
+      "Babylon.js was created by Microsoft engineer David Catuhe as a real-time 3D engine built entirely on WebGL.",
     icon: "/logos/babylonjs.svg",
     aspect: 1,
     gitLink: "https://github.com/BabylonJS/Babylon.js",
@@ -2190,7 +2225,8 @@ export const LOGOS: Logo[] = [
     name: "Postman",
     industry: "API development platform",
     founded: 2014,
-    description: "Postman is an API development platform for building, testing, and documenting APIs.",
+    description:
+      "Postman is an API development platform for building, testing, and documenting APIs.",
     funFact:
       "Postman began as a side-project Chrome extension built by Abhinav Asthana to make testing APIs easier than using raw curl commands.",
     icon: "/logos/postman.svg",
@@ -2273,7 +2309,8 @@ export const LOGOS: Logo[] = [
     name: "Neo4j",
     industry: "Graph database",
     founded: 2007,
-    description: "Neo4j is a native graph database that stores data as nodes and relationships instead of tables.",
+    description:
+      "Neo4j is a native graph database that stores data as nodes and relationships instead of tables.",
     funFact:
       "Neo4j's founders first sketched the idea for a graph database on the back of a napkin during a flight in 2000, but didn't found the company behind it until 2007.",
     icon: "/logos/neo4j.svg",
@@ -2286,7 +2323,8 @@ export const LOGOS: Logo[] = [
     founded: 2012,
     description:
       "Bower is a package manager for managing front-end web dependencies like JavaScript libraries and CSS frameworks.",
-    funFact: "Bower was created at Twitter to manage front-end dependencies before npm and Yarn made it largely obsolete.",
+    funFact:
+      "Bower was created at Twitter to manage front-end dependencies before npm and Yarn made it largely obsolete.",
     icon: "/logos/bower.svg",
     aspect: 1.138,
     gitLink: "https://github.com/bower/bower",
@@ -2379,7 +2417,8 @@ export const LOGOS: Logo[] = [
     name: "Flask",
     industry: "Python web framework",
     founded: 2010,
-    description: "Flask is a lightweight Python web framework built around simplicity and minimal boilerplate.",
+    description:
+      "Flask is a lightweight Python web framework built around simplicity and minimal boilerplate.",
     funFact:
       "Flask started as an April Fools' Day joke by creator Armin Ronacher, a lightweight wrapper around Werkzeug and Jinja2, before it became popular enough to develop seriously.",
     icon: "/logos/flask.svg",
@@ -2390,7 +2429,8 @@ export const LOGOS: Logo[] = [
     name: "Pug",
     industry: "Templating engine",
     founded: 2010,
-    description: "Pug is a templating engine for Node.js that compiles indentation-based syntax into HTML.",
+    description:
+      "Pug is a templating engine for Node.js that compiles indentation-based syntax into HTML.",
     funFact:
       "Pug was originally called Jade, but the project had to rename itself in 2016 after discovering 'Jade' was already a registered trademark.",
     icon: "/logos/pug.svg",
@@ -2487,7 +2527,8 @@ export const LOGOS: Logo[] = [
     founded: 2011,
     description:
       "Bootstrap is a front-end CSS framework for building responsive, mobile-first websites with prebuilt components.",
-    funFact: "Bootstrap was created at Twitter by Mark Otto and Jacob Thornton and was originally called Twitter Blueprint.",
+    funFact:
+      "Bootstrap was created at Twitter by Mark Otto and Jacob Thornton and was originally called Twitter Blueprint.",
     icon: "/logos/bootstrap.svg",
     aspect: 1,
     gitLink: "https://github.com/twbs/bootstrap",
@@ -2568,7 +2609,8 @@ export const LOGOS: Logo[] = [
     name: "Polymer",
     industry: "Web components library",
     founded: 2015,
-    description: "Polymer is a JavaScript library for building applications using Web Components.",
+    description:
+      "Polymer is a JavaScript library for building applications using Web Components.",
     funFact:
       "Polymer was Google's early effort to make Web Components practical to use, years before the standard had full native browser support.",
     icon: "/logos/polymer.svg",
@@ -2689,7 +2731,8 @@ export const LOGOS: Logo[] = [
     founded: 2015,
     description:
       "Preact is a fast, lightweight alternative to React with the same modern API in a much smaller package.",
-    funFact: "Preact reimplements the React API in about 3KB of JavaScript, roughly a tenth the size of React itself.",
+    funFact:
+      "Preact reimplements the React API in about 3KB of JavaScript, roughly a tenth the size of React itself.",
     icon: "/logos/preact.svg",
     aspect: 0.865,
     gitLink: "https://github.com/preactjs/preact",
@@ -2712,7 +2755,8 @@ export const LOGOS: Logo[] = [
     founded: 2017,
     description:
       "Docusaurus is a static site generator built for creating documentation websites, with versioning and Markdown support.",
-    funFact: "Docusaurus was built at Meta to power its own open-source documentation sites before being released for everyone to use.",
+    funFact:
+      "Docusaurus was built at Meta to power its own open-source documentation sites before being released for everyone to use.",
     icon: "/logos/docusaurus.svg",
     aspect: 1.174,
     gitLink: "https://github.com/facebook/docusaurus",
@@ -2829,8 +2873,10 @@ export const LOGOS: Logo[] = [
     name: "Ruby",
     industry: "Programming language",
     founded: 1995,
-    description: "Ruby is a dynamic, object-oriented programming language known for its clean, expressive syntax.",
-    funFact: "Ruby was designed to make programmers happy, a stated goal of creator Yukihiro Matsumoto from day one.",
+    description:
+      "Ruby is a dynamic, object-oriented programming language known for its clean, expressive syntax.",
+    funFact:
+      "Ruby was designed to make programmers happy, a stated goal of creator Yukihiro Matsumoto from day one.",
     icon: "/logos/ruby.svg",
     aspect: 1.004,
     gitLink: "https://github.com/ruby/ruby",
@@ -3225,7 +3271,8 @@ export const LOGOS: Logo[] = [
     founded: 2021,
     description:
       "Million is an optimizing compiler that speeds up React rendering by replacing parts of React's virtual DOM diffing with a faster algorithm.",
-    funFact: "Million was created by Aiden Bai as a personal research project when he was just 16 years old.",
+    funFact:
+      "Million was created by Aiden Bai as a personal research project when he was just 16 years old.",
     icon: "/logos/million.svg",
     aspect: 1.407,
     gitLink: "https://github.com/aidenybai/million",
@@ -3530,4 +3577,4 @@ export const LOGOS: Logo[] = [
     aspect: 1,
     gitLink: "https://github.com/WebAssembly/spec",
   },
-]
+];

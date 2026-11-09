@@ -10,10 +10,10 @@ import type { CSSProperties } from "react";
 // clients have poor/no oklch() support, so the palette can't reference the
 // site's CSS variables directly.
 const colors = {
-  pageBg: "#f6dffb",
   cardBg: "#fffdf6",
-  text: "#292440",
   muted: "#626079",
+  pageBg: "#f6dffb",
+  text: "#292440",
   yellow: "#efd369",
 };
 
@@ -27,63 +27,63 @@ const LOGO_HEIGHT = 56;
 
 const styles = {
   body: {
-    margin: 0,
-    padding: "32px 16px",
     backgroundColor: colors.pageBg,
     fontFamily:
       "'Trebuchet MS', 'Segoe UI', Verdana, Helvetica, Arial, sans-serif",
+    margin: 0,
+    padding: "32px 16px",
   } satisfies CSSProperties,
   card: {
-    width: "100%",
-    maxWidth: 420,
     backgroundColor: colors.cardBg,
     borderRadius: 24,
+    maxWidth: 420,
     padding: 32,
+    width: "100%",
   } satisfies CSSProperties,
   brandWrap: {
-    textAlign: "center",
     margin: "0 0 24px",
+    textAlign: "center",
   } satisfies CSSProperties,
   // Applied to the <img> itself: most clients ignore styles on an <img>'s
   // alt text, but Outlook.com and a few others do render them, so a blocked
   // image still reads as a Slogodle-branded label instead of broken art.
   brandImg: {
+    color: colors.text,
     fontFamily: "'Yang Bagus', 'Fredoka', sans-serif",
     fontSize: 20,
     fontWeight: 700,
-    color: colors.text,
   } satisfies CSSProperties,
   heading: {
-    margin: "0 0 12px",
+    color: colors.text,
     fontSize: 20,
     fontWeight: 700,
-    color: colors.text,
+    margin: "0 0 12px",
   } satisfies CSSProperties,
   paragraph: {
-    margin: "0 0 24px",
+    color: colors.muted,
     fontSize: 14,
     lineHeight: 1.5,
-    color: colors.muted,
+    margin: "0 0 24px",
   } satisfies CSSProperties,
   buttonWrap: {
-    textAlign: "center",
     margin: "0 0 24px",
+    textAlign: "center",
   } satisfies CSSProperties,
   button: {
-    display: "inline-block",
     backgroundColor: colors.yellow,
+    borderRadius: 999,
     color: colors.text,
+    display: "inline-block",
     fontSize: 14,
     fontWeight: 700,
-    textDecoration: "none",
-    borderRadius: 999,
     padding: "12px 28px",
+    textDecoration: "none",
   } satisfies CSSProperties,
   footnote: {
-    margin: 0,
+    color: colors.muted,
     fontSize: 12,
     lineHeight: 1.5,
-    color: colors.muted,
+    margin: 0,
   } satisfies CSSProperties,
   hr: {
     border: "none",
@@ -91,9 +91,9 @@ const styles = {
     margin: "24px 0",
   } satisfies CSSProperties,
   tagline: {
-    margin: 0,
-    fontSize: 11,
     color: colors.muted,
+    fontSize: 11,
+    margin: 0,
     textAlign: "center",
   } satisfies CSSProperties,
   preheader: {
@@ -122,21 +122,16 @@ export function ResetPasswordEmail({
   return (
     <html lang="en" dir="ltr">
       <head>
-        <meta charSet="UTF-8" />
+        <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Reset your Slogodle password</title>
       </head>
       <body style={styles.body}>
         <span style={styles.preheader}>
-          Reset the password for your Slogodle account. This link expires in
-          1 hour.
+          Reset the password for your Slogodle account. This link expires in 1
+          hour.
         </span>
-        <table
-          role="presentation"
-          width="100%"
-          cellPadding={0}
-          cellSpacing={0}
-        >
+        <table role="presentation" width="100%" cellPadding={0} cellSpacing={0}>
           <tbody>
             <tr>
               <td align="center">
@@ -161,9 +156,9 @@ export function ResetPasswordEmail({
                         </div>
                         <h1 style={styles.heading}>Reset your password</h1>
                         <p style={styles.paragraph}>
-                          We received a request to reset the password for
-                          your Slogodle account. Click the button below to
-                          choose a new one.
+                          We received a request to reset the password for your
+                          Slogodle account. Click the button below to choose a
+                          new one.
                         </p>
                         <div style={styles.buttonWrap}>
                           <a href={url} style={styles.button}>

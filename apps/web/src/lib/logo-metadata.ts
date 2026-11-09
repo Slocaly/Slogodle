@@ -4,8 +4,8 @@ import {
   upsertLogoMetadata,
   deleteLogoMetadata,
   reorderLogoMetadata as reorderLogoMetadataDb,
-  type UpsertLogoMetadataInput,
 } from "./logo-metadata.server";
+import type { UpsertLogoMetadataInput } from "./logo-metadata.server";
 import { deleteR2Logo } from "./r2-logos.server";
 import { requireAdmin } from "./session.server";
 
@@ -14,8 +14,8 @@ export type {
   UpsertLogoMetadataInput,
 } from "./logo-metadata.server";
 
-export const fetchLogoMetadata = createServerFn({ method: "GET" }).handler(
-  () => listLogoMetadata(),
+export const fetchLogoMetadata = createServerFn({ method: "GET" }).handler(() =>
+  listLogoMetadata(),
 );
 
 export const saveLogoMetadata = createServerFn({ method: "POST" })

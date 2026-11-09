@@ -21,12 +21,12 @@ npx remotion add @remotion/effects
 Effects are functions passed to the `effects` prop of canvas-based components such as `<Video>` from `@remotion/media`, `<Solid>`, `<CanvasImage>`, and `<HtmlInCanvas>`.
 
 ```tsx
-import {Video} from '@remotion/media';
-import {blur} from '@remotion/effects/blur';
+import { Video } from "@remotion/media";
+import { blur } from "@remotion/effects/blur";
 
 <Video
   src="https://remotion.media/video.mp4"
-  effects={[blur({radius: 8})]}
+  effects={[blur({ radius: 8 })]}
 />;
 ```
 
@@ -35,9 +35,9 @@ Use the effect docs for exact props and imports. Most `@remotion/effects` import
 These effects use WebGL2. During renders, enable WebGL with:
 
 ```ts
-import {Config} from '@remotion/cli/config';
+import { Config } from "@remotion/cli/config";
 
-Config.setChromiumOpenGlRenderer('angle');
+Config.setChromiumOpenGlRenderer("angle");
 ```
 
 ## Available effects
@@ -47,12 +47,9 @@ Config.setChromiumOpenGlRenderer('angle');
 Example:
 
 ```tsx
-import {brightness} from "@remotion/effects";
+import { brightness } from "@remotion/effects";
 
-<Video
-  src="https://remotion.media/video.mp4"
-  effects={[brightness({})]}
-/>;
+<Video src="https://remotion.media/video.mp4" effects={[brightness({})]} />;
 ```
 
 ## Custom effects
@@ -79,7 +76,7 @@ For quick project-specific effects, keep the effect next to the composition, for
 Use `backend: "2d"` for simple pixel, filter, drawImage, or image-data effects. Use WebGL2 only when shader math or GPU performance is needed; during renders, enable WebGL as shown above.
 
 ```ts
-import {createEffect, type InteractivitySchema} from 'remotion';
+import { createEffect, type InteractivitySchema } from "remotion";
 
 type MyEffectParams = {
   readonly amount?: number;
@@ -87,12 +84,12 @@ type MyEffectParams = {
 
 const myEffectSchema = {
   amount: {
-    type: 'number',
+    type: "number",
     min: 0,
     max: 1,
     step: 0.01,
     default: 1,
-    description: 'Amount',
+    description: "Amount",
   },
 } as const satisfies InteractivitySchema;
 
@@ -101,33 +98,38 @@ const resolve = (params: MyEffectParams) => ({
 });
 
 export const myEffect = createEffect<MyEffectParams, null>({
-  type: 'com.example.myEffect',
-  label: 'myEffect()',
+  type: "com.example.myEffect",
+  label: "myEffect()",
   documentationLink: null,
-  backend: '2d',
+  backend: "2d",
   calculateKey: (params) => {
-    const {amount} = resolve(params);
+    const { amount } = resolve(params);
     return `my-effect-${amount}`;
   },
   setup: () => null,
-  apply: ({source, target, width, height, params}) => {
-    const ctx = target.getContext('2d');
+  apply: ({ source, target, width, height, params }) => {
+    const ctx = target.getContext("2d");
     if (!ctx) {
-      throw new Error('Could not get a 2D context for myEffect().');
+      throw new Error("Could not get a 2D context for myEffect().");
     }
 
-    const {amount} = resolve(params);
+    const { amount } = resolve(params);
 
     ctx.clearRect(0, 0, width, height);
     ctx.filter = `opacity(${amount * 100}%)`;
     ctx.drawImage(source, 0, 0, width, height);
-    ctx.filter = 'none';
+    ctx.filter = "none";
   },
   cleanup: () => undefined,
   schema: myEffectSchema,
-  validateParams: ({amount = 1}) => {
-    if (typeof amount !== 'number' || !Number.isFinite(amount) || amount < 0 || amount > 1) {
-      throw new TypeError('amount must be a number between 0 and 1');
+  validateParams: ({ amount = 1 }) => {
+    if (
+      typeof amount !== "number" ||
+      !Number.isFinite(amount) ||
+      amount < 0 ||
+      amount > 1
+    ) {
+      throw new TypeError("amount must be a number between 0 and 1");
     }
   },
 });
@@ -136,7 +138,7 @@ export const myEffect = createEffect<MyEffectParams, null>({
 For a WebGL2 effect, compile/link shaders in `setup()`, keep the program, fullscreen quad, texture, and uniform locations in state, upload `source` in `apply()`, and free GPU resources in `cleanup()`. Minimal shape:
 
 ```ts
-import {createEffect, type InteractivitySchema} from 'remotion';
+import { createEffect, type InteractivitySchema } from "remotion";
 
 type RgbShiftParams = {
   readonly amount?: number;
@@ -154,29 +156,29 @@ type RgbShiftState = {
 
 const rgbShiftSchema = {
   amount: {
-    type: 'number',
+    type: "number",
     min: 0,
     max: 80,
     step: 1,
     default: 12,
-    description: 'Amount',
+    description: "Amount",
   },
 } as const satisfies InteractivitySchema;
 
 export const rgbShift = createEffect<RgbShiftParams, RgbShiftState>({
-  type: 'com.example.rgbShift',
-  label: 'rgbShift()',
+  type: "com.example.rgbShift",
+  label: "rgbShift()",
   documentationLink: null,
-  backend: 'webgl2',
-  calculateKey: ({amount = 12}) => `rgb-shift-${amount}`,
+  backend: "webgl2",
+  calculateKey: ({ amount = 12 }) => `rgb-shift-${amount}`,
   setup: (target) => {
-    const gl = target.getContext('webgl2', {
+    const gl = target.getContext("webgl2", {
       premultipliedAlpha: true,
       alpha: true,
       preserveDrawingBuffer: true,
     });
     if (!gl) {
-      throw new Error('Could not get a WebGL2 context for rgbShift().');
+      throw new Error("Could not get a WebGL2 context for rgbShift().");
     }
 
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
@@ -185,9 +187,9 @@ export const rgbShift = createEffect<RgbShiftParams, RgbShiftState>({
     // CLAMP_TO_EDGE RGBA texture, and get uSource/uOffset uniform locations.
     return createRgbShiftState(gl);
   },
-  apply: ({source, width, height, params, state, flipSourceY}) => {
+  apply: ({ source, width, height, params, state, flipSourceY }) => {
     const amount = params.amount ?? 12;
-    const {gl} = state;
+    const { gl } = state;
 
     gl.viewport(0, 0, width, height);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipSourceY);
@@ -209,16 +211,21 @@ export const rgbShift = createEffect<RgbShiftParams, RgbShiftState>({
     gl.bindVertexArray(state.vao);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   },
-  cleanup: ({gl, program, vao, vbo, texture}) => {
+  cleanup: ({ gl, program, vao, vbo, texture }) => {
     gl.deleteTexture(texture);
     gl.deleteBuffer(vbo);
     gl.deleteProgram(program);
     gl.deleteVertexArray(vao);
   },
   schema: rgbShiftSchema,
-  validateParams: ({amount = 12}) => {
-    if (typeof amount !== 'number' || !Number.isFinite(amount) || amount < 0 || amount > 80) {
-      throw new TypeError('amount must be a number between 0 and 80');
+  validateParams: ({ amount = 12 }) => {
+    if (
+      typeof amount !== "number" ||
+      !Number.isFinite(amount) ||
+      amount < 0 ||
+      amount > 80
+    ) {
+      throw new TypeError("amount must be a number between 0 and 80");
     }
   },
 });
@@ -229,14 +236,14 @@ For a complete 2D and WebGL2 pair, see `packages/example/src/EffectsTestbed/samp
 Use the returned factory in an `effects` array:
 
 ```tsx
-import {CanvasImage, staticFile} from 'remotion';
-import {myEffect} from './effects/my-effect';
+import { CanvasImage, staticFile } from "remotion";
+import { myEffect } from "./effects/my-effect";
 
 export const MyComp: React.FC = () => {
   return (
     <CanvasImage
-      src={staticFile('image.png')}
-      effects={[myEffect({amount: 0.8})]}
+      src={staticFile("image.png")}
+      effects={[myEffect({ amount: 0.8 })]}
     />
   );
 };

@@ -8,7 +8,11 @@
 // again within --window days of another video (as the answer, or as a decoy).
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { buildPublishSchedule, SERIES, type SeriesName } from "../src/lib/videoSeries";
+import {
+  buildPublishSchedule,
+  SERIES,
+  type SeriesName,
+} from "../src/lib/videoSeries";
 
 const { values } = parseArgs({
   options: {
@@ -34,11 +38,17 @@ const schedule = buildPublishSchedule();
 
 // Same numbering and slug as render-all.mts, so the paths match the rendered files.
 const pads = Object.fromEntries(
-  (Object.keys(SERIES) as SeriesName[]).map((name) => [name, String(SERIES[name]().episodes.length).length]),
+  (Object.keys(SERIES) as SeriesName[]).map((name) => [
+    name,
+    String(SERIES[name]().episodes.length).length,
+  ]),
 ) as Record<SeriesName, number>;
 
 function slugify(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }
 
 function localDate(date: Date) {
@@ -49,7 +59,10 @@ function localDate(date: Date) {
 function parisDueAt(date: Date) {
   const day = localDate(date);
   // Noon UTC is the same calendar day in Paris, so its offset is the one for that day.
-  const offset = new Intl.DateTimeFormat("en-US", { timeZone: TIME_ZONE, timeZoneName: "longOffset" })
+  const offset = new Intl.DateTimeFormat("en-US", {
+    timeZone: TIME_ZONE,
+    timeZoneName: "longOffset",
+  })
     .formatToParts(new Date(`${day}T12:00:00Z`))
     .find((part) => part.type === "timeZoneName")!
     .value.replace("GMT", "");
@@ -57,7 +70,9 @@ function parisDueAt(date: Date) {
 }
 
 function decoysOf(index: number): string[] {
-  const props = schedule[index].episode.inputProps as { decoyLogoNames?: string[] };
+  const props = schedule[index].episode.inputProps as {
+    decoyLogoNames?: string[];
+  };
   return props.decoyLogoNames ?? [];
 }
 
@@ -68,7 +83,10 @@ for (let day = fromDay; day < fromDay + count; day++) {
   const index = day - 1;
   const item = schedule[index];
   if (!item) {
-    warnings.push({ day, message: `No episode left for day #${day}: every series has run out.` });
+    warnings.push({
+      day,
+      message: `No episode left for day #${day}: every series has run out.`,
+    });
     break;
   }
 
@@ -84,7 +102,11 @@ for (let day = fromDay; day < fromDay + count; day++) {
     r2Key: `${item.series}-${fileName}`,
   });
 
-  for (let other = Math.max(0, index - window); other <= Math.min(schedule.length - 1, index + window); other++) {
+  for (
+    let other = Math.max(0, index - window);
+    other <= Math.min(schedule.length - 1, index + window);
+    other++
+  ) {
     if (other === index) continue;
     const otherItem = schedule[other];
     const gap = Math.abs(other - index);
@@ -108,7 +130,9 @@ for (let day = fromDay; day < fromDay + count; day++) {
 
 // Contiguous episode ranges per series, ready for `pnpm render:all <series> --from F --count C`.
 const renders = (Object.keys(SERIES) as SeriesName[]).flatMap((series) => {
-  const episodes = videos.filter((video) => video.series === series).map((video) => video.episodeNumber);
+  const episodes = videos
+    .filter((video) => video.series === series)
+    .map((video) => video.episodeNumber);
   if (episodes.length === 0) return [];
   const from = Math.min(...episodes);
   return [{ series, from, count: Math.max(...episodes) - from + 1 }];

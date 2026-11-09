@@ -1,12 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import { LOGOS } from "@slogodle/logos";
-import {
-  buildPublishSchedule,
-  type ScheduledVideo,
-  type SeriesName,
-} from "video/schedule";
+import { buildPublishSchedule } from "video/schedule";
+import type { ScheduledVideo, SeriesName } from "video/schedule";
 import { now } from "../lib/clock";
 import styles from "./admin.module.css";
 
@@ -21,14 +18,20 @@ export const Route = createFileRoute("/admin/videos")({
 });
 
 const SERIES_LABELS: Record<SeriesName, string> = {
-  "multiple-choice": "Multiple choice",
   guess: "Guess the logo",
+  "multiple-choice": "Multiple choice",
   "name-choice": "Name choice",
 };
 
-const SERIES_FILTERS = ["all", "multiple-choice", "guess", "name-choice"] as const;
+const SERIES_FILTERS = [
+  "all",
+  "multiple-choice",
+  "guess",
+  "name-choice",
+] as const;
 
-const seriesFilterParser = parseAsStringLiteral(SERIES_FILTERS).withDefault("all");
+const seriesFilterParser =
+  parseAsStringLiteral(SERIES_FILTERS).withDefault("all");
 
 const schedule = buildPublishSchedule();
 
@@ -40,9 +43,9 @@ function dayKey(date: Date): string {
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString("fr-FR", {
-    weekday: "short",
     day: "numeric",
     month: "long",
+    weekday: "short",
     year: "numeric",
   });
 }
@@ -91,19 +94,16 @@ function AdminVideosPage() {
   );
   const [selectedKey, setSelectedKey] = useQueryState(
     "day",
-    parseAsString.withDefault(
-      dayKey(schedule[Math.max(todayIndex, 0)].date),
-    ),
+    parseAsString.withDefault(dayKey(schedule[Math.max(todayIndex, 0)].date)),
   );
 
   const rows = schedule
-    .map((video) => ({ video, key: dayKey(video.date) }))
+    .map((video) => ({ key: dayKey(video.date), video }))
     .filter(
       ({ video }) => seriesFilter === "all" || video.series === seriesFilter,
     );
   const selected =
-    schedule.find((video) => dayKey(video.date) === selectedKey) ??
-    schedule[0];
+    schedule.find((video) => dayKey(video.date) === selectedKey) ?? schedule[0];
 
   return (
     <>

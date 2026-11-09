@@ -33,7 +33,10 @@ Common layer categories include `waterway`, `water`, `transportation`, `boundary
 `poi`; availability, fields, and zoom ranges vary by schema version.
 
 ```ts
-import {addMapTilerVectorElement, setVectorElementPaint} from "./MapTilerVectorElement";
+import {
+  addMapTilerVectorElement,
+  setVectorElementPaint,
+} from "./MapTilerVectorElement";
 
 addMapTilerVectorElement(map, process.env.REMOTION_MAPTILER_KEY!, {
   id: "story-river",
@@ -42,9 +45,13 @@ addMapTilerVectorElement(map, process.env.REMOTION_MAPTILER_KEY!, {
   filter: [
     "all",
     ["==", ["get", "class"], "river"],
-    ["==", ["coalesce", ["get", "name_en"], ["get", "name"]], "Yarlung Tsangpo"],
+    [
+      "==",
+      ["coalesce", ["get", "name_en"], ["get", "name"]],
+      "Yarlung Tsangpo",
+    ],
   ],
-  layout: {"line-cap": "round", "line-join": "round"},
+  layout: { "line-cap": "round", "line-join": "round" },
   paint: {
     "line-color": "#E8F7FF",
     "line-width": 3,

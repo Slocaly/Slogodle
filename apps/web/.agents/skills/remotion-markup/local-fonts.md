@@ -25,11 +25,7 @@ await loadFont({
 });
 
 export const MyComposition = () => {
-  return (
-    <div style={{ fontFamily: "MyFont" }}>
-      Hello World
-    </div>
-  );
+  return <div style={{ fontFamily: "MyFont" }}>Hello World</div>;
 };
 ```
 

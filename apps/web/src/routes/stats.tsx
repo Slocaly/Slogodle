@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useGameState } from "../hooks/useGameState";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import { GameHeader } from "../components/GameHeader";
@@ -11,8 +11,8 @@ import shared from "../styles/shared.module.css";
 import styles from "./stats.module.css";
 
 export const Route = createFileRoute("/stats")({
-  ssr: false,
   component: StatsPage,
+  ssr: false,
 });
 
 function bucketCounts(
@@ -24,8 +24,8 @@ function bucketCounts(
     "1 try": 0,
     "2 tries": 0,
     "3 tries": 0,
-    "Historic": 0,
     Failed: 0,
+    Historic: 0,
   };
   for (const [key, status] of Object.entries(history)) {
     if (status === "lost") {
@@ -82,9 +82,13 @@ function StatsPage() {
         ) : (
           <>
             <div className={styles.streakCard}>
-              <span className={styles.streakLabel}>{m.stats_best_streak_label()}</span>
+              <span className={styles.streakLabel}>
+                {m.stats_best_streak_label()}
+              </span>
               <span className={styles.streakValue}>{g.bestStreak}</span>
-              <span className={styles.streakUnit}>{m.stats_best_streak_unit()}</span>
+              <span className={styles.streakUnit}>
+                {m.stats_best_streak_unit()}
+              </span>
             </div>
 
             <div className={styles.chartCard}>

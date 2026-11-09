@@ -7,7 +7,7 @@ export const SPEED_LETTER_RE = /[\p{L}\p{N}]/u;
 
 /** Case, hyphens, dots and spaces don't matter: "react-router" = "React Router" = "reactrouter", "Next.js" = "nextjs". */
 export function normalizeAnswer(text: string): string {
-  return text.toLowerCase().replace(/[-.\s]+/g, "");
+  return text.toLowerCase().replaceAll(/[-.\s]+/g, "");
 }
 
 /**
@@ -35,7 +35,10 @@ export function formatTime(ms: number): string {
 }
 
 /** Fisher-Yates shuffle driven by `random` (defaults to Math.random). */
-export function shuffle<T>(items: T[], random: () => number = Math.random): T[] {
+export function shuffle<T>(
+  items: T[],
+  random: () => number = Math.random,
+): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(random() * (i + 1));
@@ -52,7 +55,7 @@ function seededRandom(seed: number): () => number {
     let t = a;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    return ((t ^ (t >>> 14)) >>> 0) / 4_294_967_296;
   };
 }
 
@@ -65,7 +68,10 @@ export function randomSpeedLogos<T extends Logo>(bank: T[]): T[] {
  * The daily series: same five logos, in the same order, for everyone on a
  * given day. Like the main game, it depends on the bank's content and order.
  */
-export function dailySpeedLogos<T extends Logo>(bank: T[], dayIndex: number): T[] {
+export function dailySpeedLogos<T extends Logo>(
+  bank: T[],
+  dayIndex: number,
+): T[] {
   const random = seededRandom(Math.imul(dayIndex + 1, 0x9e3779b1) ^ 0x51ed270b);
   return shuffle(bank, random).slice(0, SPEED_ROUND_SIZE);
 }
@@ -92,11 +98,14 @@ export interface SpeedResult {
   scoreMs: number;
 }
 
-export function speedScore(durationMs: number, wrongCount: number): SpeedResult {
+export function speedScore(
+  durationMs: number,
+  wrongCount: number,
+): SpeedResult {
   return {
     durationMs,
-    wrongCount,
     scoreMs: durationMs + wrongCount * SPEED_MISS_PENALTY_MS,
+    wrongCount,
   };
 }
 
@@ -106,15 +115,24 @@ export function speedScore(durationMs: number, wrongCount: number): SpeedResult 
  * list must end exactly on its first correct guess. The server runs this on the
  * submitted guesses, so the rules above are the single source of truth.
  */
-export function checkSpeedGuesses(logos: Logo[], guesses: unknown): number[] | null {
+export function checkSpeedGuesses(
+  logos: Logo[],
+  guesses: unknown,
+): number[] | null {
   if (!Array.isArray(guesses) || guesses.length !== logos.length) return null;
   const misses: number[] = [];
   for (let i = 0; i < logos.length; i++) {
     const list: unknown = guesses[i];
-    if (!Array.isArray(list) || list.length === 0 || list.length > MAX_GUESSES_PER_LOGO) {
+    if (
+      !Array.isArray(list) ||
+      list.length === 0 ||
+      list.length > MAX_GUESSES_PER_LOGO
+    ) {
       return null;
     }
-    if (list.some((g) => typeof g !== "string" || g.length > MAX_GUESS_LENGTH)) {
+    if (
+      list.some((g) => typeof g !== "string" || g.length > MAX_GUESS_LENGTH)
+    ) {
       return null;
     }
     const firstCorrect = (list as string[]).findIndex((g) =>

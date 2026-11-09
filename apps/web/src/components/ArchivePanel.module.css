@@ -11,7 +11,10 @@
   opacity: 0;
   transform: translateY(-6px);
   visibility: hidden;
-  transition: opacity 0.32s ease, transform 0.32s ease, visibility 0s linear 0.32s;
+  transition:
+    opacity 0.32s ease,
+    transform 0.32s ease,
+    visibility 0s linear 0.32s;
 }
 
 .archivePanelOpen {
@@ -19,7 +22,9 @@
   opacity: 1;
   transform: translateY(0);
   visibility: visible;
-  transition: opacity 0.32s ease, transform 0.32s ease;
+  transition:
+    opacity 0.32s ease,
+    transform 0.32s ease;
 }
 
 .archiveDays {
@@ -37,7 +42,9 @@
   font-size: 13px;
   color: var(--muted);
   text-decoration: none;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .archiveSeeMore:hover {

@@ -16,7 +16,12 @@ export type SpeedRunState =
   | { status: "running"; startedAt: number; serverNow: number }
   /** Left unfinished past SPEED_MAX_RUN_MS: a locked DNF, never ranked. */
   | { status: "expired"; startedAt: number; serverNow: number }
-  | { status: "finished"; startedAt: number; serverNow: number; result: SpeedResult };
+  | {
+      status: "finished";
+      startedAt: number;
+      serverNow: number;
+      result: SpeedResult;
+    };
 
 interface RunInput {
   anonId: string;

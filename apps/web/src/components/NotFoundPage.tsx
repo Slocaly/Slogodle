@@ -1,6 +1,6 @@
-import { Link } from '@tanstack/react-router'
-import { m } from '../paraglide/messages.js'
-import shared from '../styles/shared.module.css'
+import { Link } from "@tanstack/react-router";
+import { m } from "../paraglide/messages.js";
+import shared from "../styles/shared.module.css";
 
 export function NotFoundPage() {
   return (
@@ -18,5 +18,5 @@ export function NotFoundPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

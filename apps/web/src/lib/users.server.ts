@@ -44,13 +44,13 @@ export async function listAdminUsers(): Promise<AdminUser[]> {
   ).all<AdminUserRow>();
 
   return results.map((row) => ({
-    id: row.id,
-    name: row.name,
-    email: row.email,
     createdAt: row.created_at,
+    email: row.email,
+    gamesPlayed: row.games_played ?? 0,
+    id: row.id,
     lastPlayedAt: row.last_played_at,
     lastSeenAt: row.last_seen_at,
-    gamesPlayed: row.games_played ?? 0,
+    name: row.name,
   }));
 }
 
@@ -66,5 +66,5 @@ export async function getAdminUserCounts(): Promise<AdminUserCounts> {
        (SELECT COUNT(*) FROM user) AS registered,
        (SELECT COUNT(DISTINCT anon_id) FROM progress WHERE anon_id IS NOT NULL) AS anonymous`,
   ).first<{ registered: number; anonymous: number }>();
-  return { registered: row?.registered ?? 0, anonymous: row?.anonymous ?? 0 };
+  return { anonymous: row?.anonymous ?? 0, registered: row?.registered ?? 0 };
 }

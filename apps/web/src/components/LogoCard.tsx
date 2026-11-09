@@ -19,7 +19,7 @@ const MASK_CHARS = ["*", "x", "|"];
 
 function maskName(name: string): string {
   let i = 0;
-  return name.replace(
+  return name.replaceAll(
     /[A-Za-z0-9]/g,
     () => MASK_CHARS[i++ % MASK_CHARS.length],
   );

@@ -5,7 +5,8 @@ import { GameHeader } from "../components/GameHeader";
 import { GameFooter } from "../components/GameFooter";
 import { LoadingCard } from "../components/LoadingCard";
 import { SpeedLadder } from "../components/SpeedLadder";
-import { SpeedGame, type SpeedRemote } from "../components/SpeedGame";
+import { SpeedGame } from "../components/SpeedGame";
+import type { SpeedRemote } from "../components/SpeedGame";
 import { useGameState } from "../hooks/useGameState";
 import { markSpeedSeen } from "../hooks/useSpeedNew";
 import { useSoundEffects } from "../hooks/useSoundEffects";
@@ -18,8 +19,8 @@ import {
   fetchSpeedRun,
   finishSpeedRun,
   startSpeedRun,
-  type SpeedRunState,
 } from "../lib/speed-runs";
+import type { SpeedRunState } from "../lib/speed-runs";
 import styles from "./speed.module.css";
 
 export const Route = createFileRoute("/speed/")({
@@ -27,7 +28,9 @@ export const Route = createFileRoute("/speed/")({
   // `?day=N` replays the series of an earlier day (see /speed/history).
   validateSearch: (search: Record<string, unknown>): { day?: number } => {
     const day = Number(search.day);
-    return search.day !== undefined && Number.isInteger(day) && day >= 0 ? { day } : {};
+    return search.day !== undefined && Number.isInteger(day) && day >= 0
+      ? { day }
+      : {};
   },
   component: SpeedPage,
 });
@@ -46,22 +49,30 @@ function SpeedPage() {
   const dayIndex = replay ? requestedDay : today;
   const queryClient = useQueryClient();
   const runQuery = useQuery({
-    queryKey: ["speed-run", dayIndex, replay],
+    gcTime: 0,
     queryFn: async () => {
       const anonId = getAnonId();
       if (replay) {
         // A past day already played ranked shows that result, not a start button.
         const ranked = await fetchSpeedRun({ data: { anonId, dayIndex } });
         if (ranked.status === "finished") {
-          return { state: ranked, clockOffset: ranked.serverNow - Date.now(), viewingRanked: true };
+          return {
+            state: ranked,
+            clockOffset: ranked.serverNow - Date.now(),
+            viewingRanked: true,
+          };
         }
       }
       const state = await fetchSpeedRun({ data: { anonId, dayIndex, replay } });
-      return { state, clockOffset: state.serverNow - Date.now(), viewingRanked: false };
+      return {
+        state,
+        clockOffset: state.serverNow - Date.now(),
+        viewingRanked: false,
+      };
     },
-    staleTime: Infinity,
-    gcTime: 0,
+    queryKey: ["speed-run", dayIndex, replay],
     refetchOnWindowFocus: false,
+    staleTime: Infinity,
   });
   const logos = useMemo(
     () => (bank ? dailySpeedLogos(bank, dayIndex) : []),
@@ -98,11 +109,23 @@ function SpeedPage() {
           rightPanel={<SpeedLadder dayIndex={dayIndex} />}
           playBubble={playBubble}
           persistKey={`slogodle:speed:v2:${replay && !runQuery.data.viewingRanked ? "replay:" : ""}${dayIndex}`}
-          remote={toRemote(dayIndex, replay, runQuery.data.state, runQuery.data.clockOffset, () => {
-            void queryClient.invalidateQueries({ queryKey: ["speed-ladder", dayIndex] });
-            void queryClient.invalidateQueries({ queryKey: ["speed-standing", dayIndex] });
-            void queryClient.invalidateQueries({ queryKey: ["speed-history"] });
-          })}
+          remote={toRemote(
+            dayIndex,
+            replay,
+            runQuery.data.state,
+            runQuery.data.clockOffset,
+            () => {
+              void queryClient.invalidateQueries({
+                queryKey: ["speed-ladder", dayIndex],
+              });
+              void queryClient.invalidateQueries({
+                queryKey: ["speed-standing", dayIndex],
+              });
+              void queryClient.invalidateQueries({
+                queryKey: ["speed-history"],
+              });
+            },
+          )}
         />
       ) : (
         <div className={styles.loading}>
@@ -124,20 +147,25 @@ function toRemote(
   const anonId = getAnonId();
   const offsetFor = (serverNow: number) => serverNow - Date.now();
   return {
-    startedAt: state.status === "none" ? null : state.startedAt,
-    result: state.status === "finished" ? state.result : null,
-    expired: state.status === "expired",
     clockOffset,
-    onStart: async () => {
-      const run = await startSpeedRun({ data: { anonId, dayIndex, replay } });
-      if (run.status === "none") throw new Error("run not started");
-      return { startedAt: run.startedAt, clockOffset: offsetFor(run.serverNow) };
-    },
+    expired: state.status === "expired",
     onFinish: async (guesses) => {
-      const run = await finishSpeedRun({ data: { anonId, dayIndex, replay, guesses } });
+      const run = await finishSpeedRun({
+        data: { anonId, dayIndex, replay, guesses },
+      });
       if (run.status !== "finished") throw new Error("run not finished");
       onFinished();
       return run.result;
     },
+    onStart: async () => {
+      const run = await startSpeedRun({ data: { anonId, dayIndex, replay } });
+      if (run.status === "none") throw new Error("run not started");
+      return {
+        startedAt: run.startedAt,
+        clockOffset: offsetFor(run.serverNow),
+      };
+    },
+    result: state.status === "finished" ? state.result : null,
+    startedAt: state.status === "none" ? null : state.startedAt,
   };
 }

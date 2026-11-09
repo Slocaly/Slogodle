@@ -23,12 +23,12 @@ function requireEnv(name: string): string {
 }
 
 const r2Client = new S3Client({
-  region: "auto",
-  endpoint: `https://${requireEnv("CLOUDFLARE_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
   credentials: {
     accessKeyId: requireEnv("R2_ACCESS_KEY_ID"),
     secretAccessKey: requireEnv("R2_SECRET_ACCESS_KEY"),
   },
+  endpoint: `https://${requireEnv("CLOUDFLARE_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
+  region: "auto",
 });
 const r2Bucket = "logos";
 
@@ -46,20 +46,19 @@ async function d1Query<T>(sql: string, params: unknown[] = []): Promise<T[]> {
   const res = await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/d1/database/${d1DatabaseId}/query`,
     {
-      method: "POST",
+      body: JSON.stringify({ sql, params }),
       headers: {
         Authorization: `Bearer ${cfApiToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ sql, params }),
+      method: "POST",
     },
   );
 
   const body = (await res.json()) as D1ApiResponse<T>;
   if (!res.ok || !body.success) {
     const message =
-      body.errors?.map((error) => error.message).join(", ") ||
-      res.statusText;
+      body.errors?.map((error) => error.message).join(", ") || res.statusText;
     throw new Error(`D1 query failed: ${message}`);
   }
 
@@ -95,9 +94,7 @@ async function main() {
   const rows = await d1Query<LogoMetadataRow>(
     "SELECT id, r2_key, name FROM logo_metadata",
   );
-  console.log(
-    `${dryRun ? "[dry run] " : ""}Renaming ${rows.length} logos…`,
-  );
+  console.log(`${dryRun ? "[dry run] " : ""}Renaming ${rows.length} logos…`);
 
   for (const row of rows) {
     const newKey = generateR2Key();

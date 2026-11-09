@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useGameState } from "../hooks/useGameState";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import { GameHeader } from "../components/GameHeader";
@@ -12,15 +12,20 @@ import dayStyles from "../components/ArchiveDayButton.module.css";
 import shared from "../styles/shared.module.css";
 import styles from "./history.module.css";
 
+const NO_GUESSES: never[] = [];
+
 export const Route = createFileRoute("/history")({
-  ssr: false,
   component: HistoryPage,
+  ssr: false,
 });
 
 function HistoryPage() {
   const g = useGameState();
   const { playClick, playBubble } = useSoundEffects(g.soundEnabled);
-  const dayIndices = Array.from({ length: g.todayIndex }, (_, i) => g.todayIndex - 1 - i);
+  const dayIndices = Array.from(
+    { length: g.todayIndex },
+    (_, i) => g.todayIndex - 1 - i,
+  );
 
   return (
     <div className={shared.page}>
@@ -57,7 +62,8 @@ function HistoryPage() {
             {dayIndices.map((idx) => {
               const status = g.history[String(idx)];
               const isPlayed = status === "won" || status === "lost";
-              const { dotClass, label } = STATUS_META[isPlayed ? status : "unplayed"];
+              const { dotClass, label } =
+                STATUS_META[isPlayed ? status : "unplayed"];
               // A finished day (won or lost) reveals its logo; only a truly
               // unplayed day gets the blurred placeholder so the answer
               // stays hidden.
@@ -88,13 +94,19 @@ function HistoryPage() {
                   <a href={`/?day=${idx}`} className={styles.cardLink}>
                     <span className={styles.cardArt}>
                       {logo ? (
-                        <img className={styles.cardImg} src={logo.icon} alt={logo.name} />
+                        <img
+                          className={styles.cardImg}
+                          src={logo.icon}
+                          alt={logo.name}
+                        />
                       ) : (
                         <span className={styles.cardBlur} data-hue={idx % 3} />
                       )}
                     </span>
                     <span className={styles.cardDay}>#{idx + 1}</span>
-                    <span className={styles.cardName}>{logo ? logo.name : "???"}</span>
+                    <span className={styles.cardName}>
+                      {logo ? logo.name : "???"}
+                    </span>
                     <span
                       className={`${styles.cardMeta} ${logo ? "" : styles.cardMetaHidden}`}
                       title={logo ? logo.industry : undefined}
@@ -102,7 +114,7 @@ function HistoryPage() {
                       {logo ? logo.industry : " "}
                     </span>
                     <GuessDots
-                      guesses={logo ? g.dayGuesses[String(idx)] : []}
+                      guesses={logo ? g.dayGuesses[String(idx)] : NO_GUESSES}
                       maxTries={g.maxTries}
                       className={styles.cardDots}
                     />

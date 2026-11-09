@@ -104,7 +104,7 @@ export const MyComposition = () => {
         style={{ width: 100, height: 100 }}
       />
       <Video src="https://remotion.media/video.mp4" />
-      <AnimatedImage src={staticFile('nyancat.gif')} />
+      <AnimatedImage src={staticFile("nyancat.gif")} />
     </>
   );
 };
@@ -119,21 +119,21 @@ import {
   Interactive,
   interpolate,
   useCurrentFrame,
-  useVideoConfig
+  useVideoConfig,
 } from "remotion";
 
 export const Empty = () => {
-  const {fps} = useVideoConfig();
+  const { fps } = useVideoConfig();
   const frame = useCurrentFrame();
 
   return (
     <AbsoluteFill
       name="Scene"
       style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'white'
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "white",
       }}
     >
       <Interactive.Div
@@ -144,7 +144,7 @@ export const Empty = () => {
             extrapolateLeft: "clamp",
             easing: Easing.bezier(0.16, 1, 0.3, 1),
           }),
-          fontSize: 88
+          fontSize: 88,
         }}
       >
         Title
@@ -152,19 +152,28 @@ export const Empty = () => {
       <Interactive.Div
         name="Subtitle"
         style={{
-          opacity: interpolate(frame, [2 * fps, 3 * fps, 8 * fps, 10 * fps], [0, 1, 1, 0], {
-            extrapolateRight: "clamp",
-            extrapolateLeft: "clamp",
-            easing: [Easing.bezier(0.16, 1, 0.3, 1), Easing.linear, Easing.bezier(0.16, 1, 0.3, 1)],
-          }),
-          fontSize: 32
+          opacity: interpolate(
+            frame,
+            [2 * fps, 3 * fps, 8 * fps, 10 * fps],
+            [0, 1, 1, 0],
+            {
+              extrapolateRight: "clamp",
+              extrapolateLeft: "clamp",
+              easing: [
+                Easing.bezier(0.16, 1, 0.3, 1),
+                Easing.linear,
+                Easing.bezier(0.16, 1, 0.3, 1),
+              ],
+            },
+          ),
+          fontSize: 32,
         }}
       >
         Subtitle
       </Interactive.Div>
     </AbsoluteFill>
   );
-}
+};
 ```
 
 ## Delaying, trimming

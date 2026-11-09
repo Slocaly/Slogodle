@@ -33,9 +33,7 @@ export function AccountMenu() {
     <Menu.Root>
       <Menu.Trigger
         className={styles.trigger}
-        aria-label={
-          session ? m.account_menu_label() : m.account_login_label()
-        }
+        aria-label={session ? m.account_menu_label() : m.account_login_label()}
       >
         {session?.user.name ? (
           <span className={styles.initial}>
@@ -56,17 +54,11 @@ export function AccountMenu() {
               <>
                 <div className={styles.name}>{session.user.name}</div>
                 {isAdmin && (
-                  <Menu.Item
-                    className={styles.menuItem}
-                    onClick={handleAdmin}
-                  >
+                  <Menu.Item className={styles.menuItem} onClick={handleAdmin}>
                     {m.account_admin_label()}
                   </Menu.Item>
                 )}
-                <Menu.Item
-                  className={styles.menuItem}
-                  onClick={handleLogout}
-                >
+                <Menu.Item className={styles.menuItem} onClick={handleLogout}>
                   {m.account_logout()}
                 </Menu.Item>
               </>

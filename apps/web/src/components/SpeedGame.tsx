@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import type { Logo } from "@slogodle/logos";
 import { GuessHints } from "./GuessHints";
 import { loadJSON, saveJSON } from "../lib/storage";
@@ -11,8 +12,8 @@ import {
   isCorrectSpeedGuess,
   shuffle,
   speedScore,
-  type SpeedResult,
 } from "../lib/speed";
+import type { SpeedResult } from "../lib/speed";
 import { m } from "../paraglide/messages.js";
 import { GithubIcon } from "./icons/GithubIcon";
 import { ShareIcon } from "./icons/ShareIcon";
@@ -98,12 +99,13 @@ export function SpeedGame({
   const [initialRun] = useState<SavedRun>(() => {
     const cached = persistKey ? loadRun(persistKey, logos.length) : null;
     // A cached run only applies to the server run it was started under.
-    if (cached && (!remote || cached.startedAt === remote.startedAt)) return cached;
+    if (cached && (!remote || cached.startedAt === remote.startedAt))
+      return cached;
     return {
-      startedAt: remote?.startedAt ?? null,
+      finishedAt: null,
       guessLog: logos.map(() => []),
       solved: logos.map(() => false),
-      finishedAt: null,
+      startedAt: remote?.startedAt ?? null,
     };
   });
   const [current, setCurrent] = useState(() =>
@@ -117,7 +119,9 @@ export function SpeedGame({
   const [serverResult, setServerResult] = useState<SpeedResult | null>(
     remote?.result ?? null,
   );
-  const [saveState, setSaveState] = useState<"idle" | "saving" | "error">("idle");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "error">(
+    "idle",
+  );
   const [starting, setStarting] = useState(false);
   // Set when the server rejects a late submit as expired.
   const [submitExpired, setSubmitExpired] = useState(false);
@@ -129,8 +133,11 @@ export function SpeedGame({
 
   const started = startedAt !== null;
   const allSolved = solved.every(Boolean);
-  const finished = serverResult !== null || (!remote && localFinishedAt !== null);
-  const wrongCounts = guessLog.map((list, i) => list.length - (solved[i] ? 1 : 0));
+  const finished =
+    serverResult !== null || (!remote && localFinishedAt !== null);
+  const wrongCounts = guessLog.map(
+    (list, i) => list.length - (solved[i] ? 1 : 0),
+  );
   // Only server-timed runs can time out; the admin practice mode stays local.
   const timedOut =
     remote !== undefined &&
@@ -143,10 +150,10 @@ export function SpeedGame({
   useEffect(() => {
     if (!persistKey) return;
     saveJSON<SavedRun>(persistKey, {
-      startedAt,
+      finishedAt: localFinishedAt,
       guessLog,
       solved,
-      finishedAt: localFinishedAt,
+      startedAt,
     });
   }, [persistKey, startedAt, guessLog, solved, localFinishedAt]);
 
@@ -191,7 +198,10 @@ export function SpeedGame({
       setSaveState("idle");
     } catch {
       // A submit that lands after the cap is rejected for good: don't offer a retry.
-      if (startedAt !== null && Date.now() + clockOffset - startedAt > SPEED_MAX_RUN_MS) {
+      if (
+        startedAt !== null &&
+        Date.now() + clockOffset - startedAt > SPEED_MAX_RUN_MS
+      ) {
         setSubmitExpired(true);
       }
       setSaveState("error");
@@ -261,7 +271,9 @@ export function SpeedGame({
 
   function handleGuess(text: string) {
     if (!started || finished || solved[current]) return;
-    setGuessLog((log) => log.map((list, i) => (i === current ? [...list, text] : list)));
+    setGuessLog((log) =>
+      log.map((list, i) => (i === current ? [...list, text] : list)),
+    );
     if (isCorrectSpeedGuess(text, logo.name)) {
       playBubble();
       const nextSolved = solved.map((s, i) => s || i === current);
@@ -278,7 +290,7 @@ export function SpeedGame({
 
   // The guess input unmounts on finish; move focus to the result heading so keyboard and
   // screen-reader users land on the score (also when returning from a logo's detail panel).
-  const showingResult = finished && !!result && viewing === null;
+  const showingResult = finished && Boolean(result) && viewing === null;
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     if (showingResult) resultHeadingRef.current?.focus();
@@ -300,7 +312,9 @@ export function SpeedGame({
               <button
                 type="button"
                 className={styles.item}
-                data-active={showAnswers ? viewing === i : showLogo && i === current}
+                data-active={
+                  showAnswers ? viewing === i : showLogo && i === current
+                }
                 data-solved={solved[i] || showAnswers}
                 onClick={() => {
                   setCurrent(i);
@@ -312,7 +326,9 @@ export function SpeedGame({
                 <span className={styles.itemLabel}>
                   {solved[i] || showAnswers ? l.name : "???"}
                 </span>
-                {(solved[i] || showAnswers) && <span className={styles.check} aria-hidden />}
+                {(solved[i] || showAnswers) && (
+                  <span className={styles.check} aria-hidden />
+                )}
               </button>
             </li>
           ))}
@@ -358,11 +374,17 @@ export function SpeedGame({
             </div>
             <div className={styles.solvedInfo}>
               <h2 className={styles.solvedName}>{logos[viewing].name}</h2>
-              <p className={styles.solvedDescription}>{logos[viewing].description}</p>
+              <p className={styles.solvedDescription}>
+                {logos[viewing].description}
+              </p>
               <p className={styles.solvedFact}>{logos[viewing].funFact}</p>
               <GithubLink href={logos[viewing].gitLink} />
             </div>
-            <button type="button" className={styles.skip} onClick={() => setViewing(null)}>
+            <button
+              type="button"
+              className={styles.skip}
+              onClick={() => setViewing(null)}
+            >
               {m.speed_back_to_results()}
             </button>
           </div>
@@ -404,9 +426,13 @@ export function SpeedGame({
             </ul>
             <p className={styles.recapHint}>{m.speed_recap_hint()}</p>
             <p className={styles.breakdown}>
-              <span>{m.speed_solve_time({ time: formatTime(result.durationMs) })}</span>
+              <span>
+                {m.speed_solve_time({ time: formatTime(result.durationMs) })}
+              </span>
               {result.wrongCount === 0 ? (
-                <strong className={styles.flawless}>{m.speed_flawless()}</strong>
+                <strong className={styles.flawless}>
+                  {m.speed_flawless()}
+                </strong>
               ) : (
                 <>
                   <span aria-hidden="true">+</span>
@@ -422,7 +448,11 @@ export function SpeedGame({
               )}
             </p>
             {dayIndex !== undefined && (
-              <button type="button" className={styles.shareBtn} onClick={handleShare}>
+              <button
+                type="button"
+                className={styles.shareBtn}
+                onClick={handleShare}
+              >
                 <ShareIcon />
                 <span role="status" aria-live="polite">
                   {copied ? m.share_copied() : m.share_button()}
@@ -430,7 +460,11 @@ export function SpeedGame({
               </button>
             )}
             {onRestart ? (
-              <button type="button" className={styles.primary} onClick={onRestart}>
+              <button
+                type="button"
+                className={styles.primary}
+                onClick={onRestart}
+              >
                 {m.speed_play_again()}
               </button>
             ) : replay ? (
@@ -442,7 +476,10 @@ export function SpeedGame({
         ) : timedOut ? (
           <div className={styles.panel}>
             <div className={styles.scoreBlock}>
-              <h1 className={styles.scoreLabel} aria-describedby="speed-timeout-count">
+              <h1
+                className={styles.scoreLabel}
+                aria-describedby="speed-timeout-count"
+              >
                 {m.speed_timeout_title()}
               </h1>
               <div id="speed-timeout-count" className={styles.doneTime}>
@@ -452,7 +489,7 @@ export function SpeedGame({
             </div>
             <p className={styles.panelLead}>
               {m.speed_timeout_lead({
-                minutes: Math.max(1, Math.round(SPEED_MAX_RUN_MS / 60000)),
+                minutes: Math.max(1, Math.round(SPEED_MAX_RUN_MS / 60_000)),
               })}
             </p>
             <ul className={styles.recap}>
@@ -479,15 +516,16 @@ export function SpeedGame({
             </ul>
             <p className={styles.recapHint}>{m.speed_recap_hint()}</p>
             <p className={styles.note}>
-              {replay ? m.speed_replay_unranked() : m.speed_timeout_unranked()}
-              {" "}
+              {replay ? m.speed_replay_unranked() : m.speed_timeout_unranked()}{" "}
               {m.speed_come_back()}
             </p>
           </div>
         ) : allSolved ? (
           <div className={styles.panel}>
             <h1 className={styles.panelTitle}>
-              {saveState === "error" ? "Couldn't save your result" : "Saving your time"}
+              {saveState === "error"
+                ? "Couldn't save your result"
+                : "Saving your time"}
             </h1>
             {saveState === "error" && (
               <button type="button" className={styles.primary} onClick={submit}>
@@ -551,7 +589,11 @@ export function SpeedGame({
                   attemptCount={wrongCounts[current]}
                   onSubmit={handleGuess}
                 />
-                <button type="button" className={styles.skip} onClick={handleSkip}>
+                <button
+                  type="button"
+                  className={styles.skip}
+                  onClick={handleSkip}
+                >
                   Skip this one
                 </button>
               </>
@@ -567,7 +609,12 @@ export function SpeedGame({
 
 function GithubLink({ href }: { href: string }) {
   return (
-    <a className={styles.githubLink} href={href} target="_blank" rel="noreferrer noopener">
+    <a
+      className={styles.githubLink}
+      href={href}
+      target="_blank"
+      rel="noreferrer noopener"
+    >
       <GithubIcon />
       <span>{m.reveal_github_cta()}</span>
     </a>
@@ -637,11 +684,7 @@ interface NameMaskProps {
 function NameMask({ name, visible, revealed }: NameMaskProps) {
   const shown = new Set(revealed);
   return (
-    <div
-      className={styles.mask}
-      data-visible={visible}
-      aria-hidden={!visible}
-    >
+    <div className={styles.mask} data-visible={visible} aria-hidden={!visible}>
       {[...name].map((ch, i) => {
         if (!SPEED_LETTER_RE.test(ch)) {
           return (

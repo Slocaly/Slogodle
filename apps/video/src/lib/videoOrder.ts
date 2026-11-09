@@ -45,10 +45,18 @@ function seededShuffle<T>(items: T[], seed: string): T[] {
   return shuffled;
 }
 
-function buildChoiceEpisodes(logos: Logo[], decoyCount: number, seed: string, musicOffset: number) {
+function buildChoiceEpisodes(
+  logos: Logo[],
+  decoyCount: number,
+  seed: string,
+  musicOffset: number,
+) {
   return seededShuffle(logos, seed).map((target, index) => {
     const others = logos.filter((logo) => logo.name !== target.name);
-    const decoys = seededShuffle(others, `${seed}-${target.name}`).slice(0, decoyCount);
+    const decoys = seededShuffle(others, `${seed}-${target.name}`).slice(
+      0,
+      decoyCount,
+    );
     return {
       targetLogoName: target.name,
       decoyLogoNames: decoys.map((logo) => logo.name),
@@ -72,7 +80,12 @@ export function buildNameChoiceEpisodes(
   logos: Logo[] = LOGOS,
   decoyCount = 3,
 ): NameChoiceEpisode[] {
-  return buildChoiceEpisodes(logos, decoyCount, `${VIDEO_ORDER_SEED}-name-choice`, 1);
+  return buildChoiceEpisodes(
+    logos,
+    decoyCount,
+    `${VIDEO_ORDER_SEED}-name-choice`,
+    1,
+  );
 }
 
 // Manual tweaks to the shuffled order, as pairs of 1-based episode numbers to swap.
@@ -90,8 +103,13 @@ function applySwaps<T>(items: T[], swaps: [number, number][]): T[] {
   return swapped;
 }
 
-export function buildGuessTheLogoEpisodes(logos: Logo[] = LOGOS): GuessTheLogoEpisode[] {
-  const order = applySwaps(seededShuffle(logos, `${VIDEO_ORDER_SEED}-guess`), GUESS_EPISODE_SWAPS);
+export function buildGuessTheLogoEpisodes(
+  logos: Logo[] = LOGOS,
+): GuessTheLogoEpisode[] {
+  const order = applySwaps(
+    seededShuffle(logos, `${VIDEO_ORDER_SEED}-guess`),
+    GUESS_EPISODE_SWAPS,
+  );
   return order.map((logo, index) => ({
     logoName: logo.name,
     musicSrc: MUSIC_TRACKS[(index + 2) % MUSIC_TRACKS.length],

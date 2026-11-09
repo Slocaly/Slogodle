@@ -19,7 +19,8 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
   import { buildFrames, countdownToMidnight, renderCard } from "../scripts/demo";
-  import { startPile, type Pile } from "../scripts/pile";
+  import { startPile } from '../scripts/pile';
+import type { Pile } from '../scripts/pile';
 
   const hero = document.querySelector<HTMLElement>("[data-hero]")!;
   const pileEl = document.querySelector<HTMLElement>("[data-pile]")!;

@@ -7,7 +7,8 @@ export const SLOGODLE_LOGO: Logo = {
   founded: 2026,
   description:
     "Slogodle is a daily guessing game where you have three tries to name the tech logo of the day.",
-  funFact: "You just played a mini Slogodle round! A new logo drops every day at midnight.",
+  funFact:
+    "You just played a mini Slogodle round! A new logo drops every day at midnight.",
   icon: "/slogodle-mark.svg",
   aspect: 1,
   gitLink: "https://tech.slogodle.com",

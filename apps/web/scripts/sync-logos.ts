@@ -15,10 +15,11 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { LOGOS, type Logo } from "@slogodle/logos";
+import { LOGOS } from "@slogodle/logos";
+import type { Logo } from "@slogodle/logos";
 import { optimize } from "svgo";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = import.meta.dirname;
 const logosDir = join(__dirname, "../public/logos");
 
 function requireEnv(name: string): string {
@@ -28,12 +29,12 @@ function requireEnv(name: string): string {
 }
 
 const r2Client = new S3Client({
-  region: "auto",
-  endpoint: `https://${requireEnv("CLOUDFLARE_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
   credentials: {
     accessKeyId: requireEnv("R2_ACCESS_KEY_ID"),
     secretAccessKey: requireEnv("R2_SECRET_ACCESS_KEY"),
   },
+  endpoint: `https://${requireEnv("CLOUDFLARE_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
+  region: "auto",
 });
 const r2Bucket = "logos";
 
@@ -51,20 +52,19 @@ async function d1Query<T>(sql: string, params: unknown[] = []): Promise<T[]> {
   const res = await fetch(
     `https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/d1/database/${d1DatabaseId}/query`,
     {
-      method: "POST",
+      body: JSON.stringify({ sql, params }),
       headers: {
         Authorization: `Bearer ${cfApiToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ sql, params }),
+      method: "POST",
     },
   );
 
   const body = (await res.json()) as D1ApiResponse<T>;
   if (!res.ok || !body.success) {
     const message =
-      body.errors?.map((error) => error.message).join(", ") ||
-      res.statusText;
+      body.errors?.map((error) => error.message).join(", ") || res.statusText;
     throw new Error(`D1 query failed: ${message}`);
   }
 
@@ -128,19 +128,19 @@ async function uploadToR2(
   key: string,
   filePath: string,
 ): Promise<{ originalBytes: number; optimizedBytes: number }> {
-  const original = readFileSync(filePath, "utf-8");
+  const original = readFileSync(filePath, "utf8");
   const optimized = optimizeSvg(original);
   await r2Client.send(
     new PutObjectCommand({
-      Bucket: r2Bucket,
-      Key: key,
       Body: optimized,
+      Bucket: r2Bucket,
       ContentType: "image/svg+xml",
+      Key: key,
     }),
   );
   return {
-    originalBytes: Buffer.byteLength(original, "utf-8"),
     optimizedBytes: Buffer.byteLength(optimized, "utf-8"),
+    originalBytes: Buffer.byteLength(original, "utf-8"),
   };
 }
 
@@ -213,9 +213,7 @@ async function main() {
       uploaded++;
       originalBytesTotal += originalBytes;
       optimizedBytesTotal += optimizedBytes;
-      const savedPct = (100 * (1 - optimizedBytes / originalBytes)).toFixed(
-        0,
-      );
+      const savedPct = (100 * (1 - optimizedBytes / originalBytes)).toFixed(0);
       console.log(
         `  uploaded ${basename(logo.icon)} → ${r2Key} (${originalBytes}B → ${optimizedBytes}B, -${savedPct}%)`,
       );
@@ -235,9 +233,7 @@ async function main() {
   }
 
   console.log("\nDone.");
-  console.log(
-    `R2: ${uploaded} uploaded, ${uploadSkipped} already present.`,
-  );
+  console.log(`R2: ${uploaded} uploaded, ${uploadSkipped} already present.`);
   if (uploaded > 0) {
     const savedPct = (
       100 *

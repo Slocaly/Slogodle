@@ -1,24 +1,24 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
-const DARK_KEY = 'logodle_dark_v1'
+const DARK_KEY = "logodle_dark_v1";
 
 export function useDarkMode() {
   const [dark, setDark] = useState<boolean>(() => {
     try {
-      return localStorage.getItem(DARK_KEY) === '1'
-    } catch (e) {
-      return false
+      return localStorage.getItem(DARK_KEY) === "1";
+    } catch {
+      return false;
     }
-  })
+  });
 
   useEffect(() => {
-    document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
     try {
-      localStorage.setItem(DARK_KEY, dark ? '1' : '0')
-    } catch (e) {
+      localStorage.setItem(DARK_KEY, dark ? "1" : "0");
+    } catch {
       // best-effort, matches current behavior
     }
-  }, [dark])
+  }, [dark]);
 
-  return { dark, toggleDark: () => setDark((d) => !d) }
+  return { dark, toggleDark: () => setDark((d) => !d) };
 }

@@ -24,7 +24,15 @@ export function BurgerMenu({ streak }: BurgerMenuProps) {
 
   if (isPending) return null;
 
-  const go = (to: "/history" | "/speed/history" | "/stats" | "/login" | "/signup" | "/admin") => {
+  const go = (
+    to:
+      | "/history"
+      | "/speed/history"
+      | "/stats"
+      | "/login"
+      | "/signup"
+      | "/admin",
+  ) => {
     setOpen(false);
     navigate({ to });
   };
@@ -37,7 +45,10 @@ export function BurgerMenu({ streak }: BurgerMenuProps) {
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger className={styles.trigger} aria-label={m.burger_menu_label()}>
+      <Dialog.Trigger
+        className={styles.trigger}
+        aria-label={m.burger_menu_label()}
+      >
         <BurgerIcon />
       </Dialog.Trigger>
       <Dialog.Portal>
@@ -45,7 +56,10 @@ export function BurgerMenu({ streak }: BurgerMenuProps) {
         <Dialog.Popup className={styles.popup}>
           <div className={styles.popupHeader}>
             <span className={styles.popupTitle}>{m.burger_menu_label()}</span>
-            <Dialog.Close className={styles.closeButton} aria-label={m.burger_close_label()}>
+            <Dialog.Close
+              className={styles.closeButton}
+              aria-label={m.burger_close_label()}
+            >
               <CloseIcon />
             </Dialog.Close>
           </div>

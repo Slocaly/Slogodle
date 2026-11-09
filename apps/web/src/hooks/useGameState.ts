@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import type { Logo } from '@slogodle/logos'
-import { loadJSON, saveJSON } from '../lib/storage'
-import { now, subscribe as subscribeClock } from '../lib/clock'
+import { useEffect, useState } from "react";
+import type { Logo } from "@slogodle/logos";
+import { loadJSON, saveJSON } from "../lib/storage";
+import { now, subscribe as subscribeClock } from "../lib/clock";
 import {
   dayIndexFor,
   pickLogo,
@@ -10,56 +10,60 @@ import {
   resolveGuesses,
   rewardFor,
   MAX_TRIES,
-  type Guess,
-  type GameStatus,
-} from '../lib/game-logic'
-import { authClient } from '../lib/auth-client'
-import { enqueueSync } from '../lib/progress'
-import { useDarkMode } from './useDarkMode'
-import { useSoundSettings } from './useSoundSettings'
-import { useGameLogosQuery } from './useGameLogosQuery'
-import { useRemoteProgress } from './useRemoteProgress'
+} from "../lib/game-logic";
+import type { Guess, GameStatus } from "../lib/game-logic";
+import { authClient } from "../lib/auth-client";
+import { enqueueSync } from "../lib/progress";
+import { useDarkMode } from "./useDarkMode";
+import { useSoundSettings } from "./useSoundSettings";
+import { useGameLogosQuery } from "./useGameLogosQuery";
+import { useRemoteProgress } from "./useRemoteProgress";
 
-const OLD_TODAY_KEY = 'logodle_today_v1'
-const OLD_HISTORY_KEY = 'logodle_history_v1'
-const DAYS_KEY = 'logodle_days_v2'
+const OLD_TODAY_KEY = "logodle_today_v1";
+const OLD_HISTORY_KEY = "logodle_history_v1";
+const DAYS_KEY = "logodle_days_v2";
 
 interface DayRecord {
-  guesses: Guess[]
-  status: GameStatus
-  reward: number
+  guesses: Guess[];
+  status: GameStatus;
+  reward: number;
   // Whether this day was resolved on the day the puzzle was actually for, as
   // opposed to played later via the archive. Only fresh wins count toward a
   // streak. Legacy/migrated records predate this field and default to true
   // so existing streaks aren't retroactively punished — see the DB column's
   // matching default in migrations/0006_add_played_fresh_to_progress.sql.
-  playedFresh: boolean
+  playedFresh: boolean;
 }
 
-type DaysRecord = Record<string, DayRecord>
+type DaysRecord = Record<string, DayRecord>;
 
 interface OldSavedToday {
-  dayIndex: number
-  guesses: Guess[]
-  status: GameStatus
+  dayIndex: number;
+  guesses: Guess[];
+  status: GameStatus;
 }
 
-const EMPTY_DAY: DayRecord = { guesses: [], status: 'playing', reward: 0, playedFresh: true }
+const EMPTY_DAY: DayRecord = {
+  guesses: [],
+  playedFresh: true,
+  reward: 0,
+  status: "playing",
+};
 // A since-fixed devtools bug briefly wrote fake "won" records at day indices in this
 // range to simulate pile logos. Purge any that made it into a real browser's storage.
-const BOGUS_DAY_INDEX_THRESHOLD = -1_000_000
+const BOGUS_DAY_INDEX_THRESHOLD = -1_000_000;
 
 function stripBogusDays(days: DaysRecord): DaysRecord {
-  const clean: DaysRecord = {}
-  let removedAny = false
+  const clean: DaysRecord = {};
+  let removedAny = false;
   for (const [key, record] of Object.entries(days)) {
     if (Number(key) <= BOGUS_DAY_INDEX_THRESHOLD) {
-      removedAny = true
-      continue
+      removedAny = true;
+      continue;
     }
-    clean[key] = record
+    clean[key] = record;
   }
-  return removedAny ? clean : days
+  return removedAny ? clean : days;
 }
 
 // One-time migration from the old two-key storage format (today-only slot +
@@ -67,61 +71,63 @@ function stripBogusDays(days: DaysRecord): DaysRecord {
 // browser: after it saves DAYS_KEY, `loadJSON(DAYS_KEY, null)` will return a
 // non-null value (even `{}` for a fresh install) so this body never runs again.
 function loadDays(): DaysRecord {
-  const existing = loadJSON<DaysRecord | null>(DAYS_KEY, null)
+  const existing = loadJSON<DaysRecord | null>(DAYS_KEY, null);
   if (existing) {
-    const cleaned = stripBogusDays(existing)
-    if (cleaned !== existing) saveJSON(DAYS_KEY, cleaned)
-    return cleaned
+    const cleaned = stripBogusDays(existing);
+    if (cleaned !== existing) saveJSON(DAYS_KEY, cleaned);
+    return cleaned;
   }
 
-  const migrated: DaysRecord = {}
-  const oldHistory = loadJSON<Record<string, GameStatus>>(OLD_HISTORY_KEY, {})
+  const migrated: DaysRecord = {};
+  const oldHistory = loadJSON<Record<string, GameStatus>>(OLD_HISTORY_KEY, {});
   for (const [key, status] of Object.entries(oldHistory)) {
-    migrated[key] = { guesses: [], status, reward: 0, playedFresh: true }
+    migrated[key] = { guesses: [], playedFresh: true, reward: 0, status };
   }
-  const oldToday = loadJSON<OldSavedToday | null>(OLD_TODAY_KEY, null)
+  const oldToday = loadJSON<OldSavedToday | null>(OLD_TODAY_KEY, null);
   if (oldToday) {
     migrated[String(oldToday.dayIndex)] = {
       guesses: oldToday.guesses,
-      status: oldToday.status,
-      reward: 0,
       playedFresh: true,
-    }
+      reward: 0,
+      status: oldToday.status,
+    };
   }
-  saveJSON(DAYS_KEY, migrated)
-  return migrated
+  saveJSON(DAYS_KEY, migrated);
+  return migrated;
 }
 
 export function useGameState() {
-  const [todayIndex, setTodayIndex] = useState(() => dayIndexFor(now()))
-  const [activeDayIndex, setActiveDayIndex] = useState(() => dayIndexFor(now()))
-  const [pinnedToToday, setPinnedToToday] = useState(true)
-  const [days, setDays] = useState<DaysRecord>(loadDays)
-  const { dark, toggleDark } = useDarkMode()
-  const { soundEnabled, toggleSound } = useSoundSettings()
-  const [archiveOpen, setArchiveOpen] = useState(false)
+  const [todayIndex, setTodayIndex] = useState(() => dayIndexFor(now()));
+  const [activeDayIndex, setActiveDayIndex] = useState(() =>
+    dayIndexFor(now()),
+  );
+  const [pinnedToToday, setPinnedToToday] = useState(true);
+  const [days, setDays] = useState<DaysRecord>(loadDays);
+  const { dark, toggleDark } = useDarkMode();
+  const { soundEnabled, toggleSound } = useSoundSettings();
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
   // Fetch the logo bank from D1; the local LOGOS array no longer backs the
   // live game.
-  const bankQuery = useGameLogosQuery()
-  const bank = bankQuery.data ?? null
+  const bankQuery = useGameLogosQuery();
+  const bank = bankQuery.data ?? null;
   const bankError = bankQuery.error
     ? bankQuery.error instanceof Error
       ? bankQuery.error.message
       : String(bankQuery.error)
-    : null
+    : null;
 
-  const dayRecord = days[String(activeDayIndex)] ?? EMPTY_DAY
-  const isToday = activeDayIndex === todayIndex
+  const dayRecord = days[String(activeDayIndex)] ?? EMPTY_DAY;
+  const isToday = activeDayIndex === todayIndex;
 
   // Persist per-day state whenever it changes.
   useEffect(() => {
-    saveJSON(DAYS_KEY, days)
-  }, [days])
+    saveJSON(DAYS_KEY, days);
+  }, [days]);
 
-  const session = authClient.useSession()
-  const userId = session.data?.user.id
-  const { data: remoteProgress, syncProgress } = useRemoteProgress(userId)
+  const session = authClient.useSession();
+  const userId = session.data?.user.id;
+  const { data: remoteProgress, syncProgress } = useRemoteProgress(userId);
 
   // The moment a session exists (email/password sign-in, sign-up, or the
   // GitHub OAuth redirect landing back on this page), useRemoteProgress
@@ -130,16 +136,16 @@ export function useGameState() {
   // anything in localStorage that D1 doesn't independently corroborate is
   // discarded.
   useEffect(() => {
-    if (!remoteProgress) return
+    if (!remoteProgress) return;
     setDays((prev) => {
-      const next: DaysRecord = {}
+      const next: DaysRecord = {};
       for (const [key, value] of Object.entries(remoteProgress)) {
         next[key] = {
           guesses: value.guesses,
-          status: value.status,
-          reward: value.reward,
           playedFresh: value.playedFresh,
-        }
+          reward: value.reward,
+          status: value.status,
+        };
       }
       // D1 is authoritative for every day it has a row for. A day this
       // browser is still mid-guess on (status 'playing') has no D1 row
@@ -150,128 +156,145 @@ export function useGameState() {
       // an already-started day. Preserve exactly those local-only
       // in-progress records; everything else comes from D1.
       for (const [key, record] of Object.entries(prev)) {
-        if (record.status === 'playing' && !(key in next)) next[key] = record
+        if (record.status === "playing" && !(key in next)) next[key] = record;
       }
-      return next
-    })
-  }, [remoteProgress])
+      return next;
+    });
+  }, [remoteProgress]);
 
   // Check once a second whether the real day has rolled over; if it has and
   // we're pinned to today, follow it. If the user has navigated to a past
   // day (unpinned), leave them there through a rollover.
   useEffect(() => {
     const id = setInterval(() => {
-      const freshTodayIndex = dayIndexFor(now())
+      const freshTodayIndex = dayIndexFor(now());
       if (freshTodayIndex !== todayIndex) {
-        setTodayIndex(freshTodayIndex)
+        setTodayIndex(freshTodayIndex);
         if (pinnedToToday) {
-          setActiveDayIndex(freshTodayIndex)
+          setActiveDayIndex(freshTodayIndex);
         }
       }
-    }, 1000)
-    return () => clearInterval(id)
-  }, [todayIndex, pinnedToToday])
+    }, 1000);
+    return () => clearInterval(id);
+  }, [todayIndex, pinnedToToday]);
 
   // React to devtools clock changes immediately, not just on the next 1s tick.
   useEffect(
     () =>
       subscribeClock(() => {
-        const freshTodayIndex = dayIndexFor(now())
-        setTodayIndex(freshTodayIndex)
+        const freshTodayIndex = dayIndexFor(now());
+        setTodayIndex(freshTodayIndex);
         if (pinnedToToday) {
-          setActiveDayIndex(freshTodayIndex)
+          setActiveDayIndex(freshTodayIndex);
         }
       }),
     [pinnedToToday],
-  )
+  );
 
-  const logo = bank && bank.length > 0 ? pickLogo(bank, activeDayIndex) : null
+  const logo = bank && bank.length > 0 ? pickLogo(bank, activeDayIndex) : null;
 
-  const history: Record<string, GameStatus> = {}
+  const history: Record<string, GameStatus> = {};
   // A win only counts toward a streak if it was played on the day the puzzle
   // was for, not backfilled later via the archive — see DayRecord.playedFresh.
-  const streakHistory: Record<string, GameStatus> = {}
-  const dayGuesses: Record<string, Guess[]> = {}
-  const dayPlayedFresh: Record<string, boolean> = {}
-  const foundLogos: { dayIndex: number; logo: Logo; count: number }[] = []
+  const streakHistory: Record<string, GameStatus> = {};
+  const dayGuesses: Record<string, Guess[]> = {};
+  const dayPlayedFresh: Record<string, boolean> = {};
+  const foundLogos: { dayIndex: number; logo: Logo; count: number }[] = [];
   for (const [key, record] of Object.entries(days)) {
-    if (record.status !== 'playing') {
-      history[key] = record.status
-      dayGuesses[key] = record.guesses
-      const playedFresh = record.playedFresh ?? true
-      dayPlayedFresh[key] = playedFresh
-      streakHistory[key] = record.status === 'won' && !playedFresh ? 'lost' : record.status
+    if (record.status !== "playing") {
+      history[key] = record.status;
+      dayGuesses[key] = record.guesses;
+      const playedFresh = record.playedFresh ?? true;
+      dayPlayedFresh[key] = playedFresh;
+      streakHistory[key] =
+        record.status === "won" && !playedFresh ? "lost" : record.status;
     }
-    if (record.status === 'won' && bank) {
-      const dayIndex = Number(key)
-      foundLogos.push({ dayIndex, logo: pickLogo(bank, dayIndex), count: record.reward })
+    if (record.status === "won" && bank) {
+      const dayIndex = Number(key);
+      foundLogos.push({
+        count: record.reward,
+        dayIndex,
+        logo: pickLogo(bank, dayIndex),
+      });
     }
   }
-  const streak = computeStreak(streakHistory, todayIndex)
-  const bestStreak = computeBestStreak(streakHistory, todayIndex)
+  const streak = computeStreak(streakHistory, todayIndex);
+  const bestStreak = computeBestStreak(streakHistory, todayIndex);
 
   function submitGuess(text: string) {
-    if (!logo || dayRecord.status !== 'playing' || !text.trim()) return
-    const priorTexts = dayRecord.guesses.map((g) => g.text)
-    const { guesses, status } = resolveGuesses([...priorTexts, text.trim()], logo)
-    const reward = rewardFor(status, guesses, isToday)
+    if (!logo || dayRecord.status !== "playing" || !text.trim()) return;
+    const priorTexts = dayRecord.guesses.map((g) => g.text);
+    const { guesses, status } = resolveGuesses(
+      [...priorTexts, text.trim()],
+      logo,
+    );
+    const reward = rewardFor(status, guesses, isToday);
     setDays((prev) => ({
       ...prev,
-      [String(activeDayIndex)]: { guesses, status, reward, playedFresh: isToday },
-    }))
-    if (status !== 'playing') {
-      enqueueSync(activeDayIndex, guesses.map((g) => g.text))
-      syncProgress()
+      [String(activeDayIndex)]: {
+        guesses,
+        playedFresh: isToday,
+        reward,
+        status,
+      },
+    }));
+    if (status !== "playing") {
+      enqueueSync(
+        activeDayIndex,
+        guesses.map((g) => g.text),
+      );
+      syncProgress();
     }
-    return { status, attempts: guesses.length, reward }
+    return { attempts: guesses.length, reward, status };
   }
 
   function viewDay(dayIndex: number) {
-    setPinnedToToday(false)
-    setActiveDayIndex(dayIndex)
-    setArchiveOpen(false)
+    setPinnedToToday(false);
+    setActiveDayIndex(dayIndex);
+    setArchiveOpen(false);
   }
 
   function returnToToday() {
-    setPinnedToToday(true)
-    setActiveDayIndex(todayIndex)
+    setPinnedToToday(true);
+    setActiveDayIndex(todayIndex);
   }
 
   function resetDay() {
     setDays((prev) => {
-      const next = { ...prev }
-      delete next[String(activeDayIndex)]
-      return next
-    })
+      const removedKey = String(activeDayIndex);
+      return Object.fromEntries(
+        Object.entries(prev).filter(([key]) => key !== removedKey),
+      );
+    });
   }
 
   return {
-    dayIndex: activeDayIndex,
-    todayIndex,
-    isToday,
+    archiveOpen,
     bank: bank ?? [],
     bankError,
     bankLoading: bankQuery.isPending,
-    logo,
-    guesses: dayRecord.guesses,
-    status: dayRecord.status,
-    submitGuess,
-    viewDay,
-    returnToToday,
-    resetDay,
-    archiveOpen,
-    toggleArchive: () => setArchiveOpen((v) => !v),
+    bestStreak,
     dark,
-    toggleDark,
-    soundEnabled,
-    toggleSound,
-    history,
     dayGuesses,
+    dayIndex: activeDayIndex,
     dayPlayedFresh,
     foundLogos,
-    streak,
-    bestStreak,
-    maxTries: MAX_TRIES,
+    guesses: dayRecord.guesses,
+    history,
     isConnected: !!userId,
-  }
+    isToday,
+    logo,
+    maxTries: MAX_TRIES,
+    resetDay,
+    returnToToday,
+    soundEnabled,
+    status: dayRecord.status,
+    streak,
+    submitGuess,
+    todayIndex,
+    toggleArchive: () => setArchiveOpen((v) => !v),
+    toggleDark,
+    toggleSound,
+    viewDay,
+  };
 }

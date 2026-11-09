@@ -6,7 +6,12 @@ import { scaleLinear } from "@tanstack/charts/scales/linear";
 import { tooltip } from "@tanstack/charts/tooltip";
 import type { DailyFinishStat } from "../lib/stats";
 import styles from "./DailyFinishChart.module.css";
-import { BUCKET_ORDER, BUCKET_COLORS_DARK, BUCKET_COLORS_LIGHT, type Bucket } from "./chartBuckets";
+import {
+  BUCKET_ORDER,
+  BUCKET_COLORS_DARK,
+  BUCKET_COLORS_LIGHT,
+} from "./chartBuckets";
+import type { Bucket } from "./chartBuckets";
 
 interface FinishRow {
   label: string;
@@ -22,11 +27,14 @@ function toRows(stats: readonly DailyFinishStat[]): FinishRow[] {
   const rows: FinishRow[] = [];
   for (const stat of stats) {
     const label = labelFor(stat);
-    if (stat.tries1) rows.push({ label, bucket: "1 try", count: stat.tries1 });
-    if (stat.tries2) rows.push({ label, bucket: "2 tries", count: stat.tries2 });
-    if (stat.tries3) rows.push({ label, bucket: "3 tries", count: stat.tries3 });
-    if (stat.historic) rows.push({ label, bucket: "Historic", count: stat.historic });
-    if (stat.failed) rows.push({ label, bucket: "Failed", count: stat.failed });
+    if (stat.tries1) rows.push({ bucket: "1 try", count: stat.tries1, label });
+    if (stat.tries2)
+      rows.push({ bucket: "2 tries", count: stat.tries2, label });
+    if (stat.tries3)
+      rows.push({ bucket: "3 tries", count: stat.tries3, label });
+    if (stat.historic)
+      rows.push({ bucket: "Historic", count: stat.historic, label });
+    if (stat.failed) rows.push({ bucket: "Failed", count: stat.failed, label });
   }
   return rows;
 }
@@ -47,42 +55,40 @@ export function DailyFinishChart({
     return defineChart({
       marks: [
         barY(rows, {
-          x: "label",
-          y: "count",
           color: "bucket",
           layout: stack({ order: [...BUCKET_ORDER] }),
+          x: "label",
+          y: "count",
         }),
       ],
       scales: {
         x: {
-          scale: scaleBand<string>().domain(labels).padding(0.25),
           axis: {
-            ticks: { spacing: 24 },
             label: "Day of month",
+            ticks: { spacing: 24 },
           },
+          scale: scaleBand<string>().domain(labels).padding(0.25),
         },
         y: {
-          scale: scaleLinear,
-          nice: true,
-          grid: true,
           axis: { label: "Players" },
+          grid: true,
+          nice: true,
+          scale: scaleLinear,
         },
       },
 
       color: {
         domain: [...BUCKET_ORDER],
-        range: BUCKET_ORDER.map((bucket) => colors[bucket]),
         legend: colorLegend({ label: "Result" }),
+        range: BUCKET_ORDER.map((bucket) => colors[bucket]),
       },
 
       // One tooltip per bar: group every stacked segment sharing the same day.
       focus: "group-x",
       maxFocusDistance: Number.POSITIVE_INFINITY,
       tooltip: {
-        use: tooltip,
-        className: styles.tooltip,
         anchor: "group-center",
-        sort: "color-domain",
+        className: styles.tooltip,
         content: (points) => {
           const total = points.reduce((sum, p) => sum + p.datum.count, 0);
           return {
@@ -97,6 +103,8 @@ export function DailyFinishChart({
             ],
           };
         },
+        sort: "color-domain",
+        use: tooltip,
       },
     });
   }, [stats, dark]);

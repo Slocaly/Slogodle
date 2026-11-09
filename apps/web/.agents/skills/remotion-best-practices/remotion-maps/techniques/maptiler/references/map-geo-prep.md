@@ -53,18 +53,32 @@ don't use them.**
 
 ```js
 const pole = (poly) => {
-  const bb = turf.bbox(poly), edge = turf.polygonToLine(poly), N = 46;
-  let best = null, bestD = -1;
-  for (let i = 0; i <= N; i++) for (let j = 0; j <= N; j++) {
-    const p = turf.point([bb[0]+(bb[2]-bb[0])*i/N, bb[1]+(bb[3]-bb[1])*j/N]);
-    if (!turf.booleanPointInPolygon(p, poly)) continue;
-    const d = turf.pointToLineDistance(p, edge);
-    if (d > bestD) { bestD = d; best = p.geometry.coordinates; }
-  }
+  const bb = turf.bbox(poly),
+    edge = turf.polygonToLine(poly),
+    N = 46;
+  let best = null,
+    bestD = -1;
+  for (let i = 0; i <= N; i++)
+    for (let j = 0; j <= N; j++) {
+      const p = turf.point([
+        bb[0] + ((bb[2] - bb[0]) * i) / N,
+        bb[1] + ((bb[3] - bb[1]) * j) / N,
+      ]);
+      if (!turf.booleanPointInPolygon(p, poly)) continue;
+      const d = turf.pointToLineDistance(p, edge);
+      if (d > bestD) {
+        bestD = d;
+        best = p.geometry.coordinates;
+      }
+    }
   return best;
 };
-const ANCHOR_BBOX = { china:[82,27,96,32], india:[76,14,99,31], bangladesh:[86,20,93,27] };  // story regions
-const NUDGE = { china:[0,0.6], india:[-1.0,0], bangladesh:[0,-0.6] };                          // operator-directed
+const ANCHOR_BBOX = {
+  china: [82, 27, 96, 32],
+  india: [76, 14, 99, 31],
+  bangladesh: [86, 20, 93, 27],
+}; // story regions
+const NUDGE = { china: [0, 0.6], india: [-1.0, 0], bangladesh: [0, -0.6] }; // operator-directed
 ```
 
 ### `border` — complete source geometry

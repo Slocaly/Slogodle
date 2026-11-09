@@ -35,7 +35,9 @@ export function BackToTodayButton({
         aria-label={m.day_nav_previous()}
       >
         <ChevronIcon direction="left" />
-        {canGoPrev && <span className={styles.dayNumber}>#{prevDayNumber}</span>}
+        {canGoPrev && (
+          <span className={styles.dayNumber}>#{prevDayNumber}</span>
+        )}
       </button>
       <button type="button" className={styles.button} onClick={onBackToday}>
         {m.back_to_today()}
@@ -47,7 +49,9 @@ export function BackToTodayButton({
         disabled={!canGoNext}
         aria-label={m.day_nav_next()}
       >
-        {canGoNext && <span className={styles.dayNumber}>#{nextDayNumber}</span>}
+        {canGoNext && (
+          <span className={styles.dayNumber}>#{nextDayNumber}</span>
+        )}
         <ChevronIcon direction="right" />
       </button>
     </div>

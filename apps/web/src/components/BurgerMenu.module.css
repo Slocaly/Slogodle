@@ -10,7 +10,10 @@
   border: none;
   padding: 0;
   color: var(--muted);
-  transition: color 0.15s, background 0.15s, transform 0.2s;
+  transition:
+    color 0.15s,
+    background 0.15s,
+    transform 0.2s;
 }
 
 .trigger svg {
@@ -54,7 +57,9 @@
   padding-bottom: max(20px, env(safe-area-inset-bottom));
   outline: none;
   overflow-y: auto;
-  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+  transition:
+    transform 0.2s ease-out,
+    opacity 0.2s ease-out;
 }
 
 .popup[data-starting-style],

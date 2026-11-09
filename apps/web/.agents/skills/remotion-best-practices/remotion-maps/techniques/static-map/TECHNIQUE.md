@@ -17,18 +17,18 @@ most deterministic map technique.
 4. Add labels or markers as ordinary Remotion elements if they remain fixed.
 
 ```tsx
-import React from 'react';
-import {AbsoluteFill, CanvasImage, staticFile} from 'remotion';
+import React from "react";
+import { AbsoluteFill, CanvasImage, staticFile } from "remotion";
 
 export const StaticMap: React.FC = () => {
-	return (
-	  <>
-  		<CanvasImage
-  			src={staticFile('locator-map.png')}
-  			style={{width: '100%', height: '100%', objectFit: 'cover'}}
-  		/>
-		</>
-	);
+  return (
+    <>
+      <CanvasImage
+        src={staticFile("locator-map.png")}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      />
+    </>
+  );
 };
 ```
 

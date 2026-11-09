@@ -20,5 +20,5 @@ export function useAccountSession() {
     };
   }, [session]);
 
-  return { session, isPending, isAdmin };
+  return { isAdmin, isPending, session };
 }

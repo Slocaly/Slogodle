@@ -29,10 +29,6 @@ export const MyComponent = () => {
     });
   }, [scale]);
 
-  return (
-    <div ref={ref}>
-      Content to measure
-    </div>
-  );
+  return <div ref={ref}>Content to measure</div>;
 };
 ```

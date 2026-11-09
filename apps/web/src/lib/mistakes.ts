@@ -4,7 +4,9 @@ import { requireAdmin } from "./session.server";
 
 export type { LogoMistakeStat } from "./mistakes.server";
 
-export const fetchTopMistakes = createServerFn({ method: "GET" }).handler(async () => {
-  await requireAdmin();
-  return topMistakesByLogo();
-});
+export const fetchTopMistakes = createServerFn({ method: "GET" }).handler(
+  async () => {
+    await requireAdmin();
+    return topMistakesByLogo();
+  },
+);

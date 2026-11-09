@@ -15,14 +15,14 @@ interface CompleteLogoRow {
 
 function toLogo(row: CompleteLogoRow): Logo {
   return {
-    name: row.name,
-    industry: row.industry,
-    founded: row.founded,
-    description: row.description,
-    funFact: row.fun_fact,
-    icon: `/api/logos/${row.r2_key}`,
     aspect: row.aspect,
+    description: row.description,
+    founded: row.founded,
+    funFact: row.fun_fact,
     gitLink: row.git_link,
+    icon: `/api/logos/${row.r2_key}`,
+    industry: row.industry,
+    name: row.name,
   };
 }
 
@@ -58,7 +58,9 @@ export async function listGameLogos(): Promise<Logo[]> {
  * `progress.server.ts`'s `syncDay`), without leaking the internal id to the
  * client-facing `Logo` type.
  */
-export async function listGameLogosWithId(): Promise<(Logo & { id: number })[]> {
+export async function listGameLogosWithId(): Promise<
+  (Logo & { id: number })[]
+> {
   const rows = await fetchCompleteLogoRows();
   return rows.map((row) => ({ ...toLogo(row), id: row.id }));
 }

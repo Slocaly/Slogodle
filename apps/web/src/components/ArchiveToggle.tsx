@@ -23,7 +23,11 @@ export function ArchiveToggle({ onToggleArchive, to }: ArchiveToggleProps) {
     );
   }
   return (
-    <button type="button" className={styles.archiveToggle} onClick={onToggleArchive}>
+    <button
+      type="button"
+      className={styles.archiveToggle}
+      onClick={onToggleArchive}
+    >
       {content}
     </button>
   );

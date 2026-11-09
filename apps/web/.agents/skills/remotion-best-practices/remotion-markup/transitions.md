@@ -45,13 +45,13 @@ import { fade } from "@remotion/transitions/fade";
 Any React component can be used as an overlay. For a ready-made effect, see the **light-leaks** rule.
 
 ```tsx
-import {lightLeak} from '@remotion/effects/light-leak';
-import {TransitionSeries} from '@remotion/transitions';
-import {interpolate, Solid, useCurrentFrame, useVideoConfig} from 'remotion';
+import { lightLeak } from "@remotion/effects/light-leak";
+import { TransitionSeries } from "@remotion/transitions";
+import { interpolate, Solid, useCurrentFrame, useVideoConfig } from "remotion";
 
 const LightLeakOverlay: React.FC = () => {
   const frame = useCurrentFrame();
-  const {durationInFrames, height, width} = useVideoConfig();
+  const { durationInFrames, height, width } = useVideoConfig();
 
   return (
     <Solid
@@ -60,8 +60,8 @@ const LightLeakOverlay: React.FC = () => {
       effects={[
         lightLeak({
           progress: interpolate(frame, [0, durationInFrames - 1], [0, 1], {
-            extrapolateLeft: 'clamp',
-            extrapolateRight: 'clamp',
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
           }),
         }),
       ]}
@@ -87,14 +87,14 @@ const LightLeakOverlay: React.FC = () => {
 Transitions and overlays can coexist in the same `<TransitionSeries>`, but an overlay cannot be adjacent to a transition or another overlay.
 
 ```tsx
-import {lightLeak} from '@remotion/effects/light-leak';
-import {TransitionSeries, linearTiming} from '@remotion/transitions';
-import {fade} from '@remotion/transitions/fade';
-import {interpolate, Solid, useCurrentFrame, useVideoConfig} from 'remotion';
+import { lightLeak } from "@remotion/effects/light-leak";
+import { TransitionSeries, linearTiming } from "@remotion/transitions";
+import { fade } from "@remotion/transitions/fade";
+import { interpolate, Solid, useCurrentFrame, useVideoConfig } from "remotion";
 
 const LightLeakOverlay: React.FC = () => {
   const frame = useCurrentFrame();
-  const {durationInFrames, height, width} = useVideoConfig();
+  const { durationInFrames, height, width } = useVideoConfig();
 
   return (
     <Solid
@@ -103,8 +103,8 @@ const LightLeakOverlay: React.FC = () => {
       effects={[
         lightLeak({
           progress: interpolate(frame, [0, durationInFrames - 1], [0, 1], {
-            extrapolateLeft: 'clamp',
-            extrapolateRight: 'clamp',
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
           }),
         }),
       ]}

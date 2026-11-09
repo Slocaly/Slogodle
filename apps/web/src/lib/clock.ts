@@ -1,46 +1,46 @@
-type Listener = () => void
+type Listener = () => void;
 
-let offsetMs = 0
-const listeners = new Set<Listener>()
+let offsetMs = 0;
+const listeners = new Set<Listener>();
 
 function emitChange() {
-  for (const listener of listeners) listener()
+  for (const listener of listeners) listener();
 }
 
 export function subscribe(listener: Listener): () => void {
-  listeners.add(listener)
-  return () => listeners.delete(listener)
+  listeners.add(listener);
+  return () => listeners.delete(listener);
 }
 
 export function getSnapshot(): number {
-  return offsetMs
+  return offsetMs;
 }
 
 export function now(): Date {
-  return new Date(Date.now() + offsetMs)
+  return new Date(Date.now() + offsetMs);
 }
 
 export function isSimulated(): boolean {
-  return offsetMs !== 0
+  return offsetMs !== 0;
 }
 
 function applyOffset(targetDate: Date) {
-  offsetMs = targetDate.getTime() - Date.now()
-  emitChange()
+  offsetMs = targetDate.getTime() - Date.now();
+  emitChange();
 }
 
 export function setSimulatedDate(date: Date): void {
-  if (!import.meta.env.DEV) return
-  applyOffset(date)
+  if (!import.meta.env.DEV) return;
+  applyOffset(date);
 }
 
 export function nudgeDays(n: number): void {
-  if (!import.meta.env.DEV) return
-  applyOffset(new Date(now().getTime() + n * 86400000))
+  if (!import.meta.env.DEV) return;
+  applyOffset(new Date(now().getTime() + n * 86_400_000));
 }
 
 export function resetClock(): void {
-  if (!import.meta.env.DEV) return
-  offsetMs = 0
-  emitChange()
+  if (!import.meta.env.DEV) return;
+  offsetMs = 0;
+  emitChange();
 }

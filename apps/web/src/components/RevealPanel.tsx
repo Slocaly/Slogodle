@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { Logo } from "@slogodle/logos";
 import { Link } from "@tanstack/react-router";
-import { buildShareText, type GameStatus, type Guess } from "../lib/game-logic";
+import { buildShareText } from "../lib/game-logic";
+import type { GameStatus, Guess } from "../lib/game-logic";
 import { authClient } from "../lib/auth-client";
 import { useSpeedStanding } from "../hooks/useSpeedStanding";
 import { m } from "../paraglide/messages.js";
@@ -37,14 +38,14 @@ export function RevealPanel({
   async function handleShare() {
     playClick();
     const text = buildShareText({
-      intro: status === "won" ? m.share_intro_won() : m.share_intro_lost(),
-      title: m.site_title(),
       dayIndex,
       guesses,
-      status,
+      intro: status === "won" ? m.share_intro_won() : m.share_intro_lost(),
       maxTries,
-      streakLine: streak ? m.share_streak({ streak }) : undefined,
       origin: window.location.origin,
+      status,
+      streakLine: streak ? m.share_streak({ streak }) : undefined,
+      title: m.site_title(),
     });
     try {
       await navigator.clipboard.writeText(text);
@@ -70,7 +71,11 @@ export function RevealPanel({
             <GithubIcon />
             <span>{m.reveal_github_cta()}</span>
           </a>
-          <button type="button" className={styles.shareBtn} onClick={handleShare}>
+          <button
+            type="button"
+            className={styles.shareBtn}
+            onClick={handleShare}
+          >
             <ShareIcon />
             <span>{copied ? m.share_copied() : m.share_button()}</span>
           </button>

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 import * as v from "valibot";
@@ -9,13 +9,13 @@ import { fieldErrorText } from "../lib/form-errors";
 import styles from "./reset-password.module.css";
 
 const searchSchema = v.object({
-  token: v.optional(v.string()),
   error: v.optional(v.string()),
+  token: v.optional(v.string()),
 });
 
 export const Route = createFileRoute("/reset-password")({
-  validateSearch: searchSchema,
   component: ResetPasswordPage,
+  validateSearch: searchSchema,
 });
 
 function ResetPasswordPage() {
@@ -24,8 +24,7 @@ function ResetPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
 
   const form = useForm({
-    defaultValues: { newPassword: "", confirmPassword: "" },
-    validators: { onChange: resetPasswordSchema },
+    defaultValues: { confirmPassword: "", newPassword: "" },
     onSubmit: async ({ value }) => {
       if (!token) return;
       setError(null);
@@ -39,6 +38,7 @@ function ResetPasswordPage() {
       }
       setSubmitted(true);
     },
+    validators: { onChange: resetPasswordSchema },
   });
 
   const invalidLink = !token || Boolean(linkError);

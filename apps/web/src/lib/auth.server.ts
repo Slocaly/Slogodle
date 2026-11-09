@@ -19,6 +19,12 @@ let instance: ReturnType<typeof betterAuth> | undefined;
 export function getAuth() {
   if (!instance) {
     instance = betterAuth({
+      account: {
+        accountLinking: {
+          requireLocalEmailVerified: false,
+        },
+      },
+      baseURL: env.BETTER_AUTH_URL,
       database: drizzleAdapter(drizzle(env.DB, { schema }), {
         provider: "sqlite",
         schema,
@@ -70,11 +76,7 @@ export function getAuth() {
           }
         },
       },
-      account: {
-        accountLinking: {
-          requireLocalEmailVerified: false,
-        },
-      },
+      secret: env.BETTER_AUTH_SECRET,
       socialProviders: {
         github: {
           // Better Auth types `clientId` as a required `string` (unlike
@@ -85,8 +87,6 @@ export function getAuth() {
           clientSecret: env.GITHUB_CLIENT_SECRET,
         },
       },
-      secret: env.BETTER_AUTH_SECRET,
-      baseURL: env.BETTER_AUTH_URL,
     });
   }
   return instance;

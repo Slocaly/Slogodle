@@ -22,7 +22,7 @@ Do not add MapTiler. Hide the globe, then add:
 viewer.scene.globe.show = false;
 const tileset = await Cesium.Cesium3DTileset.fromUrl(
   `https://tile.googleapis.com/v1/3dtiles/root.json?key=${GOOGLE_KEY}`,
-  {showCreditsOnScreen: true, maximumScreenSpaceError: 4},
+  { showCreditsOnScreen: true, maximumScreenSpaceError: 4 },
 );
 viewer.scene.primitives.add(tileset);
 ```
@@ -77,14 +77,24 @@ Walk the path by **arc length** (precompute cumulative distances once). Every fr
 ```ts
 const setCamera = (C, viewer, prog) => {
   const dCam = Math.min(TRAVEL_KM, PATHKM - LOOK_AHEAD_KM * 2) * prog;
-  const cam  = alongPath(dCam);                    // arc-length point
-  const aim  = alongPath(dCam + LOOK_AHEAD_KM);     // heading target (real point on the path)
+  const cam = alongPath(dCam); // arc-length point
+  const aim = alongPath(dCam + LOOK_AHEAD_KM); // heading target (real point on the path)
   const aim2 = alongPath(dCam + LOOK_AHEAD_KM * 2); // turn-rate probe → bank
   const heading = bearing(cam, aim);
-  let dH = bearing(aim, aim2) - heading; while (dH > Math.PI) dH -= 2*Math.PI; while (dH < -Math.PI) dH += 2*Math.PI;
+  let dH = bearing(aim, aim2) - heading;
+  while (dH > Math.PI) dH -= 2 * Math.PI;
+  while (dH < -Math.PI) dH += 2 * Math.PI;
   viewer.camera.setView({
-    destination: C.Cartesian3.fromDegrees(cam[0], cam[1], lerp(ALT_START, ALT_END, prog)),
-    orientation: { heading, pitch: C.Math.toRadians(-(90 - PITCH_FROM_NADIR)), roll: clamp(dH * BANK_GAIN, -MAX_BANK, MAX_BANK) },
+    destination: C.Cartesian3.fromDegrees(
+      cam[0],
+      cam[1],
+      lerp(ALT_START, ALT_END, prog),
+    ),
+    orientation: {
+      heading,
+      pitch: C.Math.toRadians(-(90 - PITCH_FROM_NADIR)),
+      roll: clamp(dH * BANK_GAIN, -MAX_BANK, MAX_BANK),
+    },
   });
 };
 ```

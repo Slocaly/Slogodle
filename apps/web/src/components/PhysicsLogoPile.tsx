@@ -1,18 +1,10 @@
 // src/components/PhysicsLogoPile.tsx
-import {
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-  type Ref,
-  type RefObject,
-} from "react";
+import { useEffect, useImperativeHandle, useRef, useState } from "react";
+import type { Ref, RefObject } from "react";
 import { flushSync } from "react-dom";
 import type { Logo } from "@slogodle/logos";
-import {
-  createLogoPileSimulation,
-  type LogoPileSimulation,
-} from "../lib/physicsLogoPile";
+import { createLogoPileSimulation } from "../lib/physicsLogoPile";
+import type { LogoPileSimulation } from "../lib/physicsLogoPile";
 import { createTiltGravity } from "../lib/tiltGravity";
 import { getStickerIconSrc } from "../lib/stickerIcons";
 import styles from "./PhysicsLogoPile.module.css";
@@ -63,10 +55,10 @@ export function PhysicsLogoPile({
   const [initialSlots] = useState<PileSlot[]>(() =>
     foundLogos.flatMap((entry) =>
       Array.from({ length: entry.count }, (_, i) => ({
-        slotKey: `found-${entry.dayIndex}#${i}`,
-        name: entry.logo.name,
-        icon: entry.logo.icon,
         aspect: entry.logo.aspect,
+        icon: entry.logo.icon,
+        name: entry.logo.name,
+        slotKey: `found-${entry.dayIndex}#${i}`,
       })),
     ),
   );
@@ -80,13 +72,13 @@ export function PhysicsLogoPile({
     ).matches;
     const simulation = createLogoPileSimulation({
       container,
+      footerEl: footerRef?.current ?? null,
+      getElement: (key) => elementRefs.current.get(key) ?? null,
       logos: initialSlots.map((slot) => ({
         key: slot.slotKey,
         aspect: slot.aspect,
       })),
-      getElement: (key) => elementRefs.current.get(key) ?? null,
       reducedMotion,
-      footerEl: footerRef?.current ?? null,
     });
     simRef.current = simulation;
 
@@ -111,24 +103,6 @@ export function PhysicsLogoPile({
   useImperativeHandle(
     ref,
     () => ({
-      launchWin(count) {
-        const sim = simRef.current;
-        if (!sim) return;
-        const side: "left" | "right" = Math.random() < 0.5 ? "left" : "right";
-        const batchId = launchBatchRef.current++;
-        const newSlots: PileSlot[] = Array.from({ length: count }, (_, i) => ({
-          slotKey: `win-${batchId}-${i}`,
-          name: logo.name,
-          icon: logo.icon,
-          aspect: logo.aspect,
-        }));
-        // Elements must be mounted before the simulation can grab them.
-        flushSync(() => setLaunchSlots((prev) => [...prev, ...newSlots]));
-        sim.launchFromSide(
-          newSlots.map((s) => ({ key: s.slotKey, aspect: s.aspect })),
-          side,
-        );
-      },
       addRandomLogos(count) {
         const sim = simRef.current;
         if (!sim || bank.length === 0) return;
@@ -143,6 +117,24 @@ export function PhysicsLogoPile({
             aspect: random.aspect,
           };
         });
+        flushSync(() => setLaunchSlots((prev) => [...prev, ...newSlots]));
+        sim.launchFromSide(
+          newSlots.map((s) => ({ key: s.slotKey, aspect: s.aspect })),
+          side,
+        );
+      },
+      launchWin(count) {
+        const sim = simRef.current;
+        if (!sim) return;
+        const side: "left" | "right" = Math.random() < 0.5 ? "left" : "right";
+        const batchId = launchBatchRef.current++;
+        const newSlots: PileSlot[] = Array.from({ length: count }, (_, i) => ({
+          slotKey: `win-${batchId}-${i}`,
+          name: logo.name,
+          icon: logo.icon,
+          aspect: logo.aspect,
+        }));
+        // Elements must be mounted before the simulation can grab them.
         flushSync(() => setLaunchSlots((prev) => [...prev, ...newSlots]));
         sim.launchFromSide(
           newSlots.map((s) => ({ key: s.slotKey, aspect: s.aspect })),

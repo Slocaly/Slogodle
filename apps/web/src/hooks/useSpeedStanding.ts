@@ -8,10 +8,11 @@ import { fetchSpeedStanding } from "../lib/speed-runs";
 export function useSpeedStanding(enabled = true) {
   const dayIndex = dayIndexFor(now());
   return useQuery({
-    queryKey: ["speed-standing", dayIndex],
-    queryFn: () => fetchSpeedStanding({ data: { anonId: getAnonId(), dayIndex } }),
     enabled,
-    staleTime: 60_000,
+    queryFn: () =>
+      fetchSpeedStanding({ data: { anonId: getAnonId(), dayIndex } }),
+    queryKey: ["speed-standing", dayIndex],
     refetchOnWindowFocus: false,
+    staleTime: 60_000,
   });
 }

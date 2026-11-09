@@ -4,7 +4,7 @@
 
 **Goal:** Real auth for the single admin user — a `/login` page (email+password and GitHub OAuth via Better Auth), backed by Cloudflare D1, protecting `/admin` in place of its current `DEV`-only gate.
 
-**Architecture:** Better Auth mounted at `/api/auth/*` inside the existing Worker `fetch` handler (`src/server.ts`), storing its `user`/`session`/`account`/`verification` tables in the existing D1 binding via `@better-auth/drizzle-adapter` + `drizzle-orm/d1`. `/admin`'s `beforeLoad` calls a server function that checks for a session *and* that the session's email matches a single-admin allowlist (`ADMIN_EMAIL`), redirecting to `/login` otherwise.
+**Architecture:** Better Auth mounted at `/api/auth/*` inside the existing Worker `fetch` handler (`src/server.ts`), storing its `user`/`session`/`account`/`verification` tables in the existing D1 binding via `@better-auth/drizzle-adapter` + `drizzle-orm/d1`. `/admin`'s `beforeLoad` calls a server function that checks for a session _and_ that the session's email matches a single-admin allowlist (`ADMIN_EMAIL`), redirecting to `/login` otherwise.
 
 **Tech Stack:** Better Auth, `@better-auth/drizzle-adapter`, `drizzle-orm` (D1 dialect), TanStack Start server functions, Paraglide i18n.
 
@@ -26,10 +26,12 @@
 ### Task 1: D1 schema for Better Auth
 
 **Files:**
+
 - Modify: `apps/web/package.json`
 - Create: `apps/web/migrations/0003_create_auth_tables.sql`
 
 **Interfaces:**
+
 - Produces: D1 tables `user`, `session`, `account`, `verification`, matching Better Auth's default core schema. Task 2's `auth.server.ts` requires these to exist (once the migration is applied) for any auth call to succeed.
 
 - [ ] **Step 1: Add dependencies**
@@ -116,13 +118,17 @@ CREATE INDEX verification_identifier_idx ON verification (identifier);
 This migration is not applied as part of this task. Tell the project owner:
 
 > Run this yourself when ready (it touches the real production D1 database):
+>
 > ```bash
 > cd apps/web && pnpm exec wrangler d1 migrations apply slogodle --remote
 > ```
+>
 > Confirm it worked with:
+>
 > ```bash
 > pnpm exec wrangler d1 execute slogodle --remote --command "SELECT name FROM sqlite_master WHERE type='table'"
 > ```
+>
 > Expected: `user`, `session`, `account`, `verification` alongside the existing `logo_metadata`.
 
 Task 2's manual verification depends on this having been run.
@@ -132,11 +138,13 @@ Task 2's manual verification depends on this having been run.
 ### Task 2: Better Auth backend, mounted at `/api/auth/*`
 
 **Files:**
+
 - Create: `apps/web/src/lib/auth.server.ts`
 - Modify: `apps/web/src/server.ts`
 - Modify: `apps/web/.env.example`
 
 **Interfaces:**
+
 - Consumes: D1 tables from Task 1.
 - Produces: `getAuth()` from `src/lib/auth.server.ts` — `() => ReturnType<typeof betterAuth>`, a lazily-constructed singleton. Task 4's `session.ts` calls `getAuth().api.getSession(...)`.
 - Produces: `/api/auth/*` live on the Worker (sign-up, sign-in, OAuth callback, session, sign-out — Better Auth's full default route set).
@@ -177,73 +185,73 @@ The `if (!instance)` check inside the function body (never at module scope) is w
 Current file:
 
 ```ts
-import handler from '@tanstack/react-start/server-entry'
-import { env } from 'cloudflare:workers'
-import { paraglideMiddleware } from './paraglide/server.js'
+import handler from "@tanstack/react-start/server-entry";
+import { env } from "cloudflare:workers";
+import { paraglideMiddleware } from "./paraglide/server.js";
 
-const LOGO_KEY_PATTERN = /^\/api\/logos\/([^/]+)$/
+const LOGO_KEY_PATTERN = /^\/api\/logos\/([^/]+)$/;
 
 async function serveLogoIcon(key: string): Promise<Response> {
-  const object = await env.LOGO_BUCKET.get(key)
+  const object = await env.LOGO_BUCKET.get(key);
   if (!object) {
-    return new Response('Not found', { status: 404 })
+    return new Response("Not found", { status: 404 });
   }
   return new Response(object.body, {
     headers: {
-      'Content-Type': 'image/svg+xml',
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      "Content-Type": "image/svg+xml",
+      "Cache-Control": "public, max-age=31536000, immutable",
     },
-  })
+  });
 }
 
 export default {
   fetch(request: Request): Promise<Response> {
-    const url = new URL(request.url)
-    const match = url.pathname.match(LOGO_KEY_PATTERN)
+    const url = new URL(request.url);
+    const match = url.pathname.match(LOGO_KEY_PATTERN);
     if (match) {
-      return serveLogoIcon(match[1])
+      return serveLogoIcon(match[1]);
     }
-    return paraglideMiddleware(request, () => handler.fetch(request))
+    return paraglideMiddleware(request, () => handler.fetch(request));
   },
-}
+};
 ```
 
 Change the last block to add an `/api/auth/*` short-circuit, mirroring the existing `/api/logos/:key` one, and add the import:
 
 ```ts
-import handler from '@tanstack/react-start/server-entry'
-import { env } from 'cloudflare:workers'
-import { paraglideMiddleware } from './paraglide/server.js'
-import { getAuth } from './lib/auth.server'
+import handler from "@tanstack/react-start/server-entry";
+import { env } from "cloudflare:workers";
+import { paraglideMiddleware } from "./paraglide/server.js";
+import { getAuth } from "./lib/auth.server";
 
-const LOGO_KEY_PATTERN = /^\/api\/logos\/([^/]+)$/
+const LOGO_KEY_PATTERN = /^\/api\/logos\/([^/]+)$/;
 
 async function serveLogoIcon(key: string): Promise<Response> {
-  const object = await env.LOGO_BUCKET.get(key)
+  const object = await env.LOGO_BUCKET.get(key);
   if (!object) {
-    return new Response('Not found', { status: 404 })
+    return new Response("Not found", { status: 404 });
   }
   return new Response(object.body, {
     headers: {
-      'Content-Type': 'image/svg+xml',
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      "Content-Type": "image/svg+xml",
+      "Cache-Control": "public, max-age=31536000, immutable",
     },
-  })
+  });
 }
 
 export default {
   fetch(request: Request): Promise<Response> {
-    const url = new URL(request.url)
-    const match = url.pathname.match(LOGO_KEY_PATTERN)
+    const url = new URL(request.url);
+    const match = url.pathname.match(LOGO_KEY_PATTERN);
     if (match) {
-      return serveLogoIcon(match[1])
+      return serveLogoIcon(match[1]);
     }
-    if (url.pathname.startsWith('/api/auth/')) {
-      return getAuth().handler(request)
+    if (url.pathname.startsWith("/api/auth/")) {
+      return getAuth().handler(request);
     }
-    return paraglideMiddleware(request, () => handler.fetch(request))
+    return paraglideMiddleware(request, () => handler.fetch(request));
   },
-}
+};
 ```
 
 - [ ] **Step 3: Add env vars to `.env.example`**
@@ -262,17 +270,20 @@ GITHUB_CLIENT_SECRET=
 Prerequisite: Task 1's migration has been applied to the real D1 database.
 
 > In your local `.env`, set:
+>
 > - `BETTER_AUTH_SECRET` to a random string (e.g. `openssl rand -base64 32`)
 > - `BETTER_AUTH_URL` to `http://localhost:5173` (confirm the actual port from `pnpm dev`'s output)
 > - `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` can stay blank for now — GitHub sign-in just won't work until Task 3 and a registered OAuth App exist
 >
 > Run `pnpm dev`, then in another terminal:
+>
 > ```bash
 > curl -i -X POST http://localhost:5173/api/auth/sign-up/email \
 >   -H "Content-Type: application/json" \
 >   -d '{"email":"you@example.com","password":"a-real-password","name":"You"}'
 > ```
-> Expected: `200`, a `set-cookie` header, and a JSON body with your new user. This also *is* the one-off "create the admin account" step from the spec — use your real email, since Task 4 will only let that exact email into `/admin`.
+>
+> Expected: `200`, a `set-cookie` header, and a JSON body with your new user. This also _is_ the one-off "create the admin account" step from the spec — use your real email, since Task 4 will only let that exact email into `/admin`.
 >
 > If it instead fails with a D1 "no such table: user" error, Task 1's migration hasn't been applied yet.
 
@@ -281,12 +292,14 @@ Prerequisite: Task 1's migration has been applied to the real D1 database.
 ### Task 3: `/login` page
 
 **Files:**
+
 - Create: `apps/web/src/lib/auth-client.ts`
 - Create: `apps/web/src/routes/login.tsx`
 - Create: `apps/web/src/routes/login.module.css`
 - Modify: `apps/web/messages/en.json`
 
 **Interfaces:**
+
 - Consumes: `getAuth()`'s routes from Task 2 (via HTTP, not a direct import).
 - Produces: `authClient` from `src/lib/auth-client.ts`, reusable by any future page that needs client-side auth (e.g. a future logout button).
 
@@ -542,7 +555,11 @@ function LoginPage() {
 
         <div className={styles.divider}>{m.login_or()}</div>
 
-        <button type="button" className={styles.githubBtn} onClick={handleGithub}>
+        <button
+          type="button"
+          className={styles.githubBtn}
+          onClick={handleGithub}
+        >
           <GithubIcon className={styles.githubIcon} />
           {m.login_github()}
         </button>
@@ -555,6 +572,7 @@ function LoginPage() {
 - [ ] **Step 5: Manual verification (hand to the project owner)**
 
 > With `pnpm dev` running and Task 2's admin account created:
+>
 > - Visit `/login`. Both the form and the GitHub button should render.
 > - Submit the wrong password → an inline error appears, no navigation.
 > - Submit the correct email/password from Task 2 → you land on `/admin` (it still renders unconditionally in dev at this point — Task 4 wires up the actual protection).
@@ -565,11 +583,13 @@ function LoginPage() {
 ### Task 4: Protect `/admin` with a real session + admin-email check
 
 **Files:**
+
 - Create: `apps/web/src/lib/session.ts`
 - Modify: `apps/web/src/routes/admin.tsx`
 - Modify: `apps/web/.env.example`
 
 **Interfaces:**
+
 - Consumes: `getAuth()` from Task 2.
 - Produces: `fetchIsAdmin` from `src/lib/session.ts` — a `createServerFn` returning `Promise<boolean>`.
 

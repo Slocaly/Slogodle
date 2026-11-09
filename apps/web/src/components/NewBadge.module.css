@@ -13,10 +13,17 @@
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-pink) 55%, transparent); }
-  50% { box-shadow: 0 0 0 5px transparent; }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-pink) 55%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 5px transparent;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .badge { animation: none; }
+  .badge {
+    animation: none;
+  }
 }

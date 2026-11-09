@@ -15,7 +15,11 @@ export function ModeSwitch() {
       <Link to="/" className={styles.item} data-active={!onSpeed || undefined}>
         {m.mode_daily_label()}
       </Link>
-      <Link to="/speed" className={styles.item} data-active={onSpeed || undefined}>
+      <Link
+        to="/speed"
+        className={styles.item}
+        data-active={onSpeed || undefined}
+      >
         {m.mode_speed_label()}
         {speedIsNew && <NewBadge />}
       </Link>

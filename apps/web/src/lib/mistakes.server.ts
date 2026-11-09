@@ -1,6 +1,7 @@
 import { env } from "cloudflare:workers";
 import { listGameLogosWithId } from "./game-logos.server";
-import { pickLogo, type Guess } from "./game-logic";
+import { pickLogo } from "./game-logic";
+import type { Guess } from "./game-logic";
 
 export interface LogoMistakeStat {
   logoId: number;
@@ -35,7 +36,10 @@ export async function topMistakesByLogo(): Promise<LogoMistakeStat[]> {
   const countsByLogoId = new Map<number, Map<string, number>>();
 
   for (const row of results) {
-    const logo = row.logo_id != null ? byId.get(row.logo_id) : pickLogo(bank, row.day_index);
+    const logo =
+      row.logo_id != null
+        ? byId.get(row.logo_id)
+        : pickLogo(bank, row.day_index);
     if (!logo) continue;
 
     let guesses: Guess[];
@@ -56,9 +60,9 @@ export async function topMistakesByLogo(): Promise<LogoMistakeStat[]> {
   return bank.map((logo) => {
     const counts = countsByLogoId.get(logo.id) ?? new Map<string, number>();
     const mistakes = [...counts.entries()]
-      .map(([text, count]) => ({ text, count }))
+      .map(([text, count]) => ({ count, text }))
       .sort((a, b) => b.count - a.count)
       .slice(0, TOP_N);
-    return { logoId: logo.id, name: logo.name, icon: logo.icon, mistakes };
+    return { icon: logo.icon, logoId: logo.id, mistakes, name: logo.name };
   });
 }

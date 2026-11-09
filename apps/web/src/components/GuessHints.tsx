@@ -1,14 +1,21 @@
-import type { Logo } from '@slogodle/logos'
-import { m } from '../paraglide/messages.js'
-import styles from './GuessHints.module.css'
+import type { Logo } from "@slogodle/logos";
+import { m } from "../paraglide/messages.js";
+import styles from "./GuessHints.module.css";
 
-export function GuessHints({ logo, attemptCount }: { logo: Logo; attemptCount: number }) {
-  if (attemptCount === 0) return <div className={styles.hintPrompt}>{m.hint_wrong_guess()}</div>
+export function GuessHints({
+  logo,
+  attemptCount,
+}: {
+  logo: Logo;
+  attemptCount: number;
+}) {
+  if (attemptCount === 0)
+    return <div className={styles.hintPrompt}>{m.hint_wrong_guess()}</div>;
 
   const revealedHints = [
     m.hint_founded({ founded: logo.founded }),
     m.hint_industry({ industry: logo.industry }),
-  ].slice(0, attemptCount)
+  ].slice(0, attemptCount);
 
   return (
     <div className={styles.hints}>
@@ -19,5 +26,5 @@ export function GuessHints({ logo, attemptCount }: { logo: Logo; attemptCount: n
         </div>
       ))}
     </div>
-  )
+  );
 }

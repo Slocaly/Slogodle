@@ -23,7 +23,10 @@ export default function VideoPreview({
       fps={composition.fps}
       compositionWidth={composition.width}
       compositionHeight={composition.height}
-      style={{ width: "100%", aspectRatio: `${composition.width} / ${composition.height}` }}
+      style={{
+        aspectRatio: `${composition.width} / ${composition.height}`,
+        width: "100%",
+      }}
       controls
       clickToPlay
       // Default is 5; the choice videos stack music, tick, confirm and one click per option.

@@ -47,9 +47,7 @@ export const MyCompositionSchema = z.object({
 const MyComponent: React.FC<z.infer<typeof MyCompositionSchema>> = () => {
   return (
     <div>
-      <h1>
-        {props.title}
-      </h1>
+      <h1>{props.title}</h1>
     </div>
   );
 };

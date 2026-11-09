@@ -1,7 +1,12 @@
 import { env } from "cloudflare:workers";
 import { dayIndexFor } from "./game-logic";
 
-export type FinishBucket = "tries1" | "tries2" | "tries3" | "historic" | "failed";
+export type FinishBucket =
+  | "tries1"
+  | "tries2"
+  | "tries3"
+  | "historic"
+  | "failed";
 
 export interface DailyFinishStat {
   dayIndex: number;
@@ -27,7 +32,7 @@ type Counts = Pick<
 >;
 
 function emptyCounts(): Counts {
-  return { tries1: 0, tries2: 0, tries3: 0, historic: 0, failed: 0 };
+  return { failed: 0, historic: 0, tries1: 0, tries2: 0, tries3: 0 };
 }
 
 function isoDate(d: Date): string {
@@ -76,14 +81,14 @@ export async function dailyFinishStats(
 
   const stats: DailyFinishStat[] = [];
   for (
-    let d = new Date(monthStart);
+    const d = new Date(monthStart);
     d < nextMonthStart;
     d.setDate(d.getDate() + 1)
   ) {
     const dayIndex = dayIndexFor(d);
     stats.push({
-      dayIndex,
       date: isoDate(d),
+      dayIndex,
       ...(byDay.get(dayIndex) ?? emptyCounts()),
     });
   }

@@ -1,13 +1,13 @@
-import { useQuery } from '@tanstack/react-query'
-import { fetchMyProgress } from '../lib/progress'
+import { useQuery } from "@tanstack/react-query";
+import { fetchMyProgress } from "../lib/progress";
 
 // Never refetches on its own — only a successful claim or sync invalidates
-// it (see useClaimProgressMutation / useSyncProgressMutation).
+// the query (see useClaimProgressMutation / useSyncProgressMutation).
 export function useRemoteProgressQuery(userId: string | undefined) {
   return useQuery({
-    queryKey: ['my-progress', userId],
-    queryFn: () => fetchMyProgress(),
     enabled: !!userId,
+    queryFn: () => fetchMyProgress(),
+    queryKey: ["my-progress", userId],
     staleTime: Infinity,
-  })
+  });
 }

@@ -24,10 +24,12 @@
 ### Task 1: D1 schema — `day_order` column and `sync-logos.ts`
 
 **Files:**
+
 - Create: `apps/web/migrations/0002_add_day_order.sql`
 - Modify: `apps/web/scripts/sync-logos.ts:152-176` (the `upsertMetadata` function)
 
 **Interfaces:**
+
 - Produces: a `day_order INTEGER` column on `logo_metadata`, backfilled to match `id` for existing rows, with a unique index; new rows inserted by `sync-logos.ts` get the next available `day_order` automatically.
 - Consumes: nothing from other tasks.
 
@@ -128,6 +130,7 @@ Expected: rows come back with a non-null, sequential-looking `day_order` for eac
 ### Task 2: Cloudflare bindings infrastructure
 
 **Files:**
+
 - Modify: `apps/web/wrangler.jsonc`
 - Modify: `apps/web/package.json`
 - Modify: `apps/web/vite.config.ts`
@@ -135,6 +138,7 @@ Expected: rows come back with a non-null, sequential-looking `day_order` for eac
 - Modify: `apps/web/.gitignore` (create if it doesn't exist)
 
 **Interfaces:**
+
 - Produces: an `R2Bucket` binding named `LOGO_BUCKET` and a working `Env` type (`env.DB: D1Database`, `env.LOGO_BUCKET: R2Bucket`) usable via `import { env } from "cloudflare:workers"` anywhere in server-side code, in both `vite dev` and production.
 - Consumes: nothing from other tasks.
 
@@ -149,26 +153,26 @@ Modify `apps/web/wrangler.jsonc` — add `r2_buckets` alongside the existing `d1
   "compatibility_date": "2026-08-19",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "main": "dist/server/server.js",
   "assets": {
-    "directory": "dist/client"
+    "directory": "dist/client",
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "slogodle",
       "database_id": "d993c41e-9dc1-4065-aa03-7988fca0ff06",
-      "migrations_dir": "migrations"
-    }
+      "migrations_dir": "migrations",
+    },
   ],
   "r2_buckets": [
     {
       "binding": "LOGO_BUCKET",
-      "bucket_name": "logos"
-    }
-  ]
+      "bucket_name": "logos",
+    },
+  ],
 }
 ```
 
@@ -234,53 +238,53 @@ worker-configuration.d.ts
 Modify `apps/web/vite.config.ts` from:
 
 ```ts
-import { defineConfig } from 'vite'
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
-import babel from '@rolldown/plugin-babel'
-import tsConfigPaths from 'vite-tsconfig-paths'
-import { paraglideVitePlugin } from '@inlang/paraglide-js'
+import { defineConfig } from "vite";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react";
+import babel from "@rolldown/plugin-babel";
+import tsConfigPaths from "vite-tsconfig-paths";
+import { paraglideVitePlugin } from "@inlang/paraglide-js";
 
 export default defineConfig({
   plugins: [
-    tsConfigPaths({ projects: ['./tsconfig.json'] }),
+    tsConfigPaths({ projects: ["./tsconfig.json"] }),
     paraglideVitePlugin({
-      project: './project.inlang',
-      outdir: './src/paraglide',
-      strategy: ['cookie', 'preferredLanguage', 'baseLocale'],
+      project: "./project.inlang",
+      outdir: "./src/paraglide",
+      strategy: ["cookie", "preferredLanguage", "baseLocale"],
     }),
     tanstackStart(),
     viteReact(),
     babel({ presets: [reactCompilerPreset()] }),
   ],
-})
+});
 ```
 
 to:
 
 ```ts
-import { defineConfig } from 'vite'
-import { cloudflare } from '@cloudflare/vite-plugin'
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
-import babel from '@rolldown/plugin-babel'
-import tsConfigPaths from 'vite-tsconfig-paths'
-import { paraglideVitePlugin } from '@inlang/paraglide-js'
+import { defineConfig } from "vite";
+import { cloudflare } from "@cloudflare/vite-plugin";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react";
+import babel from "@rolldown/plugin-babel";
+import tsConfigPaths from "vite-tsconfig-paths";
+import { paraglideVitePlugin } from "@inlang/paraglide-js";
 
 export default defineConfig({
   plugins: [
-    cloudflare({ viteEnvironment: { name: 'ssr' } }),
-    tsConfigPaths({ projects: ['./tsconfig.json'] }),
+    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    tsConfigPaths({ projects: ["./tsconfig.json"] }),
     paraglideVitePlugin({
-      project: './project.inlang',
-      outdir: './src/paraglide',
-      strategy: ['cookie', 'preferredLanguage', 'baseLocale'],
+      project: "./project.inlang",
+      outdir: "./src/paraglide",
+      strategy: ["cookie", "preferredLanguage", "baseLocale"],
     }),
     tanstackStart(),
     viteReact(),
     babel({ presets: [reactCompilerPreset()] }),
   ],
-})
+});
 ```
 
 - [ ] **Step 7: Manual verification**
@@ -292,9 +296,11 @@ Tell the project owner to run `pnpm dev` from `apps/web` themselves and confirm 
 ### Task 3: Same-origin image route for R2-backed icons
 
 **Files:**
+
 - Modify: `apps/web/src/server.ts`
 
 **Interfaces:**
+
 - Consumes: `Env.LOGO_BUCKET` (from Task 2).
 - Produces: `GET /api/logos/:key` — serves the raw object body from R2 with `Content-Type: image/svg+xml` and long-lived caching, or a 404 `Response` if the key doesn't exist.
 
@@ -303,54 +309,54 @@ Tell the project owner to run `pnpm dev` from `apps/web` themselves and confirm 
 Change `apps/web/src/server.ts` from:
 
 ```ts
-import handler from '@tanstack/react-start/server-entry'
-import { paraglideMiddleware } from './paraglide/server.js'
+import handler from "@tanstack/react-start/server-entry";
+import { paraglideMiddleware } from "./paraglide/server.js";
 
 export default {
   fetch(request: Request): Promise<Response> {
     // TanStack Router handles URL rewriting itself, so we pass the original
     // `request` through untouched — paraglideMiddleware only needs it to
     // resolve the per-request locale (cookie -> Accept-Language -> baseLocale).
-    return paraglideMiddleware(request, () => handler.fetch(request))
+    return paraglideMiddleware(request, () => handler.fetch(request));
   },
-}
+};
 ```
 
 to:
 
 ```ts
-import handler from '@tanstack/react-start/server-entry'
-import { env } from 'cloudflare:workers'
-import { paraglideMiddleware } from './paraglide/server.js'
+import handler from "@tanstack/react-start/server-entry";
+import { env } from "cloudflare:workers";
+import { paraglideMiddleware } from "./paraglide/server.js";
 
-const LOGO_KEY_PATTERN = /^\/api\/logos\/([^/]+)$/
+const LOGO_KEY_PATTERN = /^\/api\/logos\/([^/]+)$/;
 
 async function serveLogoIcon(key: string): Promise<Response> {
-  const object = await env.LOGO_BUCKET.get(key)
+  const object = await env.LOGO_BUCKET.get(key);
   if (!object) {
-    return new Response('Not found', { status: 404 })
+    return new Response("Not found", { status: 404 });
   }
   return new Response(object.body, {
     headers: {
-      'Content-Type': 'image/svg+xml',
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      "Content-Type": "image/svg+xml",
+      "Cache-Control": "public, max-age=31536000, immutable",
     },
-  })
+  });
 }
 
 export default {
   fetch(request: Request): Promise<Response> {
-    const url = new URL(request.url)
-    const match = url.pathname.match(LOGO_KEY_PATTERN)
+    const url = new URL(request.url);
+    const match = url.pathname.match(LOGO_KEY_PATTERN);
     if (match) {
-      return serveLogoIcon(match[1])
+      return serveLogoIcon(match[1]);
     }
     // TanStack Router handles URL rewriting itself, so we pass the original
     // `request` through untouched — paraglideMiddleware only needs it to
     // resolve the per-request locale (cookie -> Accept-Language -> baseLocale).
-    return paraglideMiddleware(request, () => handler.fetch(request))
+    return paraglideMiddleware(request, () => handler.fetch(request));
   },
-}
+};
 ```
 
 - [ ] **Step 2: Manual verification**
@@ -362,10 +368,12 @@ Tell the project owner to run `pnpm dev` and, once at least one object exists in
 ### Task 4: D1-backed game logo bank (data layer)
 
 **Files:**
+
 - Create: `apps/web/src/lib/game-logos.server.ts`
 - Create: `apps/web/src/lib/game-logos.ts`
 
 **Interfaces:**
+
 - Consumes: `Env.DB` (from Task 2); the `Logo` type from `@slogodle/logos`.
 - Produces: `fetchGameLogos(): Promise<Logo[]>` (a `createServerFn`-wrapped function), the client-callable entry point Task 5 uses to load the bank. Each returned `Logo`'s `icon` is `/api/logos/{r2_key}` (served by Task 3).
 
@@ -441,6 +449,7 @@ This mirrors the existing pattern in `apps/web/src/lib/r2-logos.ts` / `apps/web/
 - [ ] **Step 3: Manual verification**
 
 This function isn't called from any route yet (that's Task 5), so there's nothing to click through. Instead, ask the project owner to confirm (or confirm yourself by reading, not running) that:
+
 - `logo_metadata` in their D1 database actually has rows with every one of `name`, `industry`, `founded`, `description`, `fun_fact`, `git_link`, `aspect`, `day_order` populated (i.e. `pnpm sync-logos` has been run against the real D1 at least once, and Task 1's migration has been applied with `--remote`) — otherwise `fetchGameLogos()` will return an empty array once wired up in Task 5, and the game will be stuck on its loading state. Flag this explicitly to the project owner rather than silently assuming it's done.
 
 ---
@@ -448,9 +457,11 @@ This function isn't called from any route yet (that's Task 5), so there's nothin
 ### Task 5: `useGameState` — fetch the bank, add a loading state
 
 **Files:**
+
 - Modify: `apps/web/src/hooks/useGameState.ts`
 
 **Interfaces:**
+
 - Consumes: `fetchGameLogos()` from Task 4; `pickLogo`, `dayIndexFor`, `isCorrectGuess`, `computeStreak` from `../lib/game-logic` (unchanged); `Guess`, `GameStatus` types (unchanged).
 - Produces: `useGameState()` returns the same shape as before, with two changes later tasks depend on:
   - `logo: Logo | null` (was `Logo`) — `null` while the bank is still loading or failed to load.
@@ -462,26 +473,40 @@ This function isn't called from any route yet (that's Task 5), so there's nothin
 Modify `apps/web/src/hooks/useGameState.ts`. Change the top of the file from:
 
 ```ts
-import { useEffect, useState } from 'react'
-import { LOGOS, type Logo } from '@slogodle/logos'
-import { loadJSON, saveJSON } from '../lib/storage'
-import { now, subscribe as subscribeClock } from '../lib/clock'
-import { dayIndexFor, pickLogo, isCorrectGuess, computeStreak, type Guess, type GameStatus } from '../lib/game-logic'
-import { useDarkMode } from './useDarkMode'
-import { useSoundSettings } from './useSoundSettings'
+import { useEffect, useState } from "react";
+import { LOGOS, type Logo } from "@slogodle/logos";
+import { loadJSON, saveJSON } from "../lib/storage";
+import { now, subscribe as subscribeClock } from "../lib/clock";
+import {
+  dayIndexFor,
+  pickLogo,
+  isCorrectGuess,
+  computeStreak,
+  type Guess,
+  type GameStatus,
+} from "../lib/game-logic";
+import { useDarkMode } from "./useDarkMode";
+import { useSoundSettings } from "./useSoundSettings";
 ```
 
 to:
 
 ```ts
-import { useEffect, useState } from 'react'
-import type { Logo } from '@slogodle/logos'
-import { fetchGameLogos } from '../lib/game-logos'
-import { loadJSON, saveJSON } from '../lib/storage'
-import { now, subscribe as subscribeClock } from '../lib/clock'
-import { dayIndexFor, pickLogo, isCorrectGuess, computeStreak, type Guess, type GameStatus } from '../lib/game-logic'
-import { useDarkMode } from './useDarkMode'
-import { useSoundSettings } from './useSoundSettings'
+import { useEffect, useState } from "react";
+import type { Logo } from "@slogodle/logos";
+import { fetchGameLogos } from "../lib/game-logos";
+import { loadJSON, saveJSON } from "../lib/storage";
+import { now, subscribe as subscribeClock } from "../lib/clock";
+import {
+  dayIndexFor,
+  pickLogo,
+  isCorrectGuess,
+  computeStreak,
+  type Guess,
+  type GameStatus,
+} from "../lib/game-logic";
+import { useDarkMode } from "./useDarkMode";
+import { useSoundSettings } from "./useSoundSettings";
 ```
 
 - [ ] **Step 2: Add bank state and a fetch effect, and gate the rest of the hook on it**
@@ -717,9 +742,11 @@ This hook has no consumer changes yet (Task 6 does that), so the app won't compi
 ### Task 6: `routes/index.tsx` — loading state and bank threading
 
 **Files:**
+
 - Modify: `apps/web/src/routes/index.tsx`
 
 **Interfaces:**
+
 - Consumes: `useGameState()`'s new return shape from Task 5 (`logo: Logo | null`, `bank: Logo[]`, `bankError: string | null`).
 - Produces: gates the entire game UI behind `g.logo !== null`; passes `bank={g.bank}` to `ArchivePanel` and `PhysicsLogoPile` (props added in Task 7's `ArchivePanel`/`PhysicsLogoPile` changes — do this task and Task 7 together if executing out of order causes a type error, since they're two ends of the same prop wiring).
 
@@ -867,28 +894,32 @@ function Home() {
 The rest of the function (the `<main>` block with `LogoCard`, `GuessTiles`, `GuessForm`, `RevealPanel`, `DevtoolsPanel`) is unchanged, except `GuessForm` needs one more prop — change:
 
 ```tsx
-              {isPlaying && (
-                <GuessForm
-                  key={g.dayIndex}
-                  onSubmit={handleGuess}
-                  logo={g.logo}
-                  attemptCount={g.guesses.length}
-                />
-              )}
+{
+  isPlaying && (
+    <GuessForm
+      key={g.dayIndex}
+      onSubmit={handleGuess}
+      logo={g.logo}
+      attemptCount={g.guesses.length}
+    />
+  );
+}
 ```
 
 to:
 
 ```tsx
-              {isPlaying && (
-                <GuessForm
-                  key={g.dayIndex}
-                  onSubmit={handleGuess}
-                  logo={g.logo}
-                  attemptCount={g.guesses.length}
-                  bank={g.bank}
-                />
-              )}
+{
+  isPlaying && (
+    <GuessForm
+      key={g.dayIndex}
+      onSubmit={handleGuess}
+      logo={g.logo}
+      attemptCount={g.guesses.length}
+      bank={g.bank}
+    />
+  );
+}
 ```
 
 - [ ] **Step 2: Manual verification**
@@ -900,11 +931,13 @@ Nothing compiles cleanly until Task 7 adds the `bank` prop to `ArchivePanel`, `P
 ### Task 7: Swap `LOGOS` imports for a `bank` prop in `GuessForm`, `ArchivePanel`, `PhysicsLogoPile`
 
 **Files:**
+
 - Modify: `apps/web/src/components/GuessForm.tsx`
 - Modify: `apps/web/src/components/ArchivePanel.tsx`
 - Modify: `apps/web/src/components/PhysicsLogoPile.tsx`
 
 **Interfaces:**
+
 - Consumes: `bank: Logo[]` passed from `index.tsx` (Task 6).
 - Produces: none of these components import `LOGOS` from `@slogodle/logos` anymore — only the `Logo` type.
 
@@ -1013,13 +1046,15 @@ export function ArchivePanel({ open, dayIndex, activeDayIndex, history, onSelect
 And further down in the same function, change:
 
 ```tsx
-    const name = result === 'won' || result === 'lost' ? pickLogo(LOGOS, idx).name : null
+const name =
+  result === "won" || result === "lost" ? pickLogo(LOGOS, idx).name : null;
 ```
 
 to:
 
 ```tsx
-    const name = result === 'won' || result === 'lost' ? pickLogo(bank, idx).name : null
+const name =
+  result === "won" || result === "lost" ? pickLogo(bank, idx).name : null;
 ```
 
 - [ ] **Step 3: `PhysicsLogoPile.tsx`**
@@ -1197,6 +1232,7 @@ to:
 - [ ] **Step 4: Manual verification**
 
 Run `pnpm dev` (or ask the project owner to) and walk through:
+
 1. The game loads (past the "Loading…" state) and shows today's puzzle with its real icon rendered via `/api/logos/...`.
 2. Type a guess — autocomplete suggestions appear and are drawn from the real bank (not the old local `LOGOS`).
 3. Guess correctly — the win animation launches copies of the correct icon into the physics pile; the sticker outline renders correctly (confirms same-origin image loading works for the canvas-based effect).

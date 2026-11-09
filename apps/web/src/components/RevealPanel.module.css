@@ -35,7 +35,10 @@
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: color 0.15s, background 0.15s, transform 0.1s;
+  transition:
+    color 0.15s,
+    background 0.15s,
+    transform 0.1s;
 }
 
 .githubLinkBtn:hover,
@@ -73,7 +76,9 @@
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
-  transition: filter 0.15s, transform 0.1s;
+  transition:
+    filter 0.15s,
+    transform 0.1s;
 }
 
 .loginCtaBtn:hover {
@@ -119,7 +124,9 @@
   font-weight: 700;
   color: var(--accent-pink);
   text-decoration: none;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .speedCtaBtn:hover {

@@ -13,10 +13,10 @@ function formatDateTime(timestamp: number | null): string {
   if (timestamp === null) return "—";
   return new Date(timestamp).toLocaleString("fr-FR", {
     day: "numeric",
-    month: "short",
-    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    month: "short",
+    year: "numeric",
   });
 }
 
@@ -35,13 +35,13 @@ function UsersSection() {
   const [search, setSearch] = useState("");
 
   const { data, isPending, error } = useQuery({
-    queryKey: ["admin-users"],
     queryFn: () => fetchAdminUsers(),
+    queryKey: ["admin-users"],
   });
 
   const { data: counts } = useQuery({
-    queryKey: ["admin-user-counts"],
     queryFn: () => fetchAdminUserCounts(),
+    queryKey: ["admin-user-counts"],
   });
 
   const query = search.trim().toLowerCase();

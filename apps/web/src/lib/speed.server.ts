@@ -31,12 +31,18 @@ interface Identity {
 }
 
 async function identify(anonId: unknown): Promise<Identity> {
-  const session = await getAuth().api.getSession({ headers: getRequestHeaders() });
-  if (session) return { userId: session.user.id, anonId: null };
-  if (typeof anonId !== "string" || anonId.length === 0 || anonId.length > 100) {
+  const session = await getAuth().api.getSession({
+    headers: getRequestHeaders(),
+  });
+  if (session) return { anonId: null, userId: session.user.id };
+  if (
+    typeof anonId !== "string" ||
+    anonId.length === 0 ||
+    anonId.length > 100
+  ) {
     throw new Error("missing anon id");
   }
-  return { userId: null, anonId };
+  return { anonId, userId: null };
 }
 
 /**
@@ -44,8 +50,11 @@ async function identify(anonId: unknown): Promise<Identity> {
  * (strictly before the server's today, so it can't be used as a free practice
  * run ahead of the ranked one).
  */
-function assertPlayableDay(dayIndex: unknown, isReplay: boolean): asserts dayIndex is number {
-  if (!Number.isInteger(dayIndex)) throw new Error("invalid day");
+function assertPlayableDay(
+  dayIndex: unknown,
+  isReplay: boolean,
+): asserts dayIndex is number {
+  if (!Number.isInteger(dayIndex)) throw new TypeError("invalid day");
   const today = dayIndexFor(new Date());
   if (isReplay) {
     if ((dayIndex as number) < 0 || (dayIndex as number) >= today) {
@@ -72,22 +81,22 @@ async function findRun(
 
 function toState(row: SpeedRunRow | null): SpeedRunState {
   const serverNow = Date.now();
-  if (!row) return { status: "none", serverNow };
+  if (!row) return { serverNow, status: "none" };
   if (row.finished_at === null) {
     if (serverNow - row.started_at > SPEED_MAX_RUN_MS) {
-      return { status: "expired", startedAt: row.started_at, serverNow };
+      return { serverNow, startedAt: row.started_at, status: "expired" };
     }
-    return { status: "running", startedAt: row.started_at, serverNow };
+    return { serverNow, startedAt: row.started_at, status: "running" };
   }
   return {
-    status: "finished",
-    startedAt: row.started_at,
-    serverNow,
     result: {
       durationMs: row.duration_ms ?? 0,
-      wrongCount: row.wrong_count ?? 0,
       scoreMs: row.score_ms ?? 0,
+      wrongCount: row.wrong_count ?? 0,
     },
+    serverNow,
+    startedAt: row.started_at,
+    status: "finished",
   };
 }
 
@@ -102,7 +111,10 @@ export async function getSpeedRun(input: RunInput) {
   const isReplay = input.replay === true;
   // Reading a ranked run is harmless for any past day (the history page shows
   // it); only starting or finishing one is limited to today.
-  if (isReplay || input.dayIndex > dayIndexFor(new Date()) + TIMEZONE_SLACK_DAYS) {
+  if (
+    isReplay ||
+    input.dayIndex > dayIndexFor(new Date()) + TIMEZONE_SLACK_DAYS
+  ) {
     assertPlayableDay(input.dayIndex, isReplay);
   } else if (!Number.isInteger(input.dayIndex) || input.dayIndex < 0) {
     throw new Error("invalid day");
@@ -124,7 +136,9 @@ export async function startSpeedRun(input: RunInput) {
   return toState(await findRun(who, input.dayIndex, isReplay));
 }
 
-export async function finishSpeedRun(input: RunInput & { guesses: string[][] }) {
+export async function finishSpeedRun(
+  input: RunInput & { guesses: string[][] },
+) {
   const isReplay = input.replay === true;
   assertPlayableDay(input.dayIndex, isReplay);
   const who = await identify(input.anonId);
@@ -149,7 +163,14 @@ export async function finishSpeedRun(input: RunInput & { guesses: string[][] }) 
      SET finished_at = ?, duration_ms = ?, wrong_count = ?, score_ms = ?, wrong_counts_json = ?
      WHERE id = ? AND finished_at IS NULL`,
   )
-    .bind(finishedAt, result.durationMs, wrongCount, result.scoreMs, JSON.stringify(misses), run.id)
+    .bind(
+      finishedAt,
+      result.durationMs,
+      wrongCount,
+      result.scoreMs,
+      JSON.stringify(misses),
+      run.id,
+    )
     .run();
 
   return toState(await findRun(who, input.dayIndex, isReplay));
@@ -167,8 +188,8 @@ export interface LadderEntry {
 function anonName(anonId: string): string {
   let h = 0x811c9dc5; // FNV-1a
   for (let i = 0; i < anonId.length; i++) {
-    h ^= anonId.charCodeAt(i);
-    h = Math.imul(h, 0x01000193) >>> 0;
+    h ^= anonId.codePointAt(i) ?? 0;
+    h = Math.imul(h, 0x01_00_01_93) >>> 0;
   }
   return `Anon #${(h & 0xffff).toString(16).toUpperCase().padStart(4, "0")}`;
 }
@@ -191,11 +212,16 @@ export async function getSpeedLadder(input: {
   dayIndex: number;
   anonId?: string;
 }): Promise<LadderEntry[] | null> {
-  if (!Number.isInteger(input.dayIndex)) throw new Error("invalid day");
-  const session = await getAuth().api.getSession({ headers: getRequestHeaders() });
+  if (!Number.isInteger(input.dayIndex)) throw new TypeError("invalid day");
+  const session = await getAuth().api.getSession({
+    headers: getRequestHeaders(),
+  });
   const meUser = session?.user?.id ?? "";
   const meAnon =
-    !session && typeof input.anonId === "string" && input.anonId.length > 0 && input.anonId.length <= 100
+    !session &&
+    typeof input.anonId === "string" &&
+    input.anonId.length > 0 &&
+    input.anonId.length <= 100
       ? input.anonId
       : "";
   if (input.dayIndex < dayIndexFor(new Date())) {
@@ -223,11 +249,11 @@ export async function getSpeedLadder(input: {
     .all<LadderRow>();
   // anon_id is a credential for that run: only a derived tag leaves the server.
   return results.map((r) => ({
-    name: r.name ?? anonName(r.anonId ?? ""),
     durationMs: r.durationMs,
-    wrongCount: r.wrongCount,
-    scoreMs: r.scoreMs,
     isMe: r.isMe === 1,
+    name: r.name ?? anonName(r.anonId ?? ""),
+    scoreMs: r.scoreMs,
+    wrongCount: r.wrongCount,
   }));
 }
 
@@ -253,7 +279,7 @@ export async function getSpeedStanding(input: {
   )
     .bind(input.dayIndex, run.score_ms, run.score_ms, run.finished_at)
     .first<{ n: number }>();
-  return { scoreMs: run.score_ms, rank: (ahead?.n ?? 0) + 1 };
+  return { rank: (ahead?.n ?? 0) + 1, scoreMs: run.score_ms };
 }
 
 export interface SpeedHistoryEntry {
@@ -279,7 +305,9 @@ interface HistoryRow {
 }
 
 /** Every finished or timed-out run (ranked and replay) of the caller, for the history page. */
-export async function getSpeedHistory(input: { anonId: string }): Promise<SpeedHistoryEntry[]> {
+export async function getSpeedHistory(input: {
+  anonId: string;
+}): Promise<SpeedHistoryEntry[]> {
   const who = await identify(input.anonId);
   const column = who.userId ? "user_id" : "anon_id";
   const { results } = await env.DB.prepare(
@@ -297,11 +325,11 @@ export async function getSpeedHistory(input: { anonId: string }): Promise<SpeedH
     .all<HistoryRow>();
   return results.map(({ finishedAt, ...r }) => ({
     dayIndex: r.dayIndex,
-    isReplay: r.isReplay === 1,
     dnf: finishedAt === null,
     durationMs: r.durationMs ?? 0,
-    wrongCount: r.wrongCount ?? 0,
-    scoreMs: r.scoreMs ?? 0,
+    isReplay: r.isReplay === 1,
     rank: r.rank,
+    scoreMs: r.scoreMs ?? 0,
+    wrongCount: r.wrongCount ?? 0,
   }));
 }

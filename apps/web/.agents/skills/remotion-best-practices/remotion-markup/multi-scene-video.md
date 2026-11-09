@@ -4,15 +4,15 @@ Create a new folder and put each scene in a separate file.
 ```tsx
 // SceneA.tsx
 export const SceneA: React.FC = () => {
- return // ...
-}
+  return; // ...
+};
 ```
 
 ```tsx
 // SceneB.tsx
 export const SceneB: React.FC = () => {
-  return // ...
-} 
+  return; // ...
+};
 ```
 
 Install `@remotion/transitions` if not yet available:
@@ -22,8 +22,9 @@ npx remotion add @remotion/transitions
 ```
 
 // MyVideo.tsx
+
 ```tsx
-import {TransitionSeries} from '@remotion/transitions';
+import { TransitionSeries } from "@remotion/transitions";
 
 const MyVideo: React.FC = () => {
   return (
@@ -35,8 +36,8 @@ const MyVideo: React.FC = () => {
         <SceneB />
       </TransitionSeries.Sequence>
     </TransitionSeries>
-  )
-}
+  );
+};
 ```
 
 It could also make sense to register each scene individually in the root file so it can be edited there.
@@ -62,7 +63,7 @@ export const Root: React.FC = () => {
           fps={30}
           width={1920}
           height={1080}
-        /> 
+        />
       </Folder>
       <Composition
         id="MyVideo"
@@ -71,10 +72,10 @@ export const Root: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
-      /> 
+      />
     </>
-  )
-}
+  );
+};
 ```
 
 This allows the user to trim the start and end of the durations visually and add [transitions](./transitions.md) later.

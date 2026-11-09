@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { GameHeader } from "../components/GameHeader";
 import { GameFooter } from "../components/GameFooter";
@@ -10,14 +10,15 @@ import { getAnonId } from "../lib/anon-id";
 import { now } from "../lib/clock";
 import { dayIndexFor } from "../lib/game-logic";
 import { dailySpeedLogos, formatTime } from "../lib/speed";
-import { fetchSpeedHistory, type SpeedHistoryEntry } from "../lib/speed-runs";
+import { fetchSpeedHistory } from "../lib/speed-runs";
+import type { SpeedHistoryEntry } from "../lib/speed-runs";
 import shared from "../styles/shared.module.css";
 import styles from "./history.module.css";
 import speedStyles from "./speed.history.module.css";
 
 export const Route = createFileRoute("/speed/history")({
-  ssr: false,
   component: SpeedHistoryPage,
+  ssr: false,
 });
 
 interface DayRuns {
@@ -33,8 +34,8 @@ function SpeedHistoryPage() {
   const dayIndices = Array.from({ length: today }, (_, i) => today - 1 - i);
 
   const historyQuery = useQuery({
-    queryKey: ["speed-history"],
     queryFn: () => fetchSpeedHistory({ data: { anonId: getAnonId() } }),
+    queryKey: ["speed-history"],
     refetchOnWindowFocus: false,
   });
   const runsByDay = useMemo(() => {
@@ -76,7 +77,9 @@ function SpeedHistoryPage() {
             </button>
           </p>
         ) : dayIndices.length === 0 ? (
-          <p className={styles.empty}>No earlier series yet. Come back tomorrow!</p>
+          <p className={styles.empty}>
+            No earlier series yet. Come back tomorrow!
+          </p>
         ) : (
           <div className={styles.grid}>
             {dayIndices.map((idx) => {
@@ -89,12 +92,22 @@ function SpeedHistoryPage() {
               // The logos stay hidden until the series has been played.
               const logos = shown ? dailySpeedLogos(bank, idx) : null;
               return (
-                <Link key={idx} to="/speed" search={{ day: idx }} className={speedStyles.card}>
+                <Link
+                  key={idx}
+                  to="/speed"
+                  search={{ day: idx }}
+                  className={speedStyles.card}
+                >
                   <span className={styles.cardDay}>#{idx + 1}</span>
                   <span className={speedStyles.strip}>
                     {logos
                       ? logos.map((l) => (
-                          <img key={l.name} className={speedStyles.stripImg} src={l.icon} alt={l.name} />
+                          <img
+                            key={l.name}
+                            className={speedStyles.stripImg}
+                            src={l.icon}
+                            alt={l.name}
+                          />
                         ))
                       : [0, 1, 2, 3, 4].map((i) => (
                           <span

@@ -6,8 +6,9 @@ import styles from "./SpeedLadder.module.css";
 
 export function SpeedLadder({ dayIndex }: { dayIndex: number }) {
   const { data } = useQuery({
+    queryFn: () =>
+      fetchSpeedLadder({ data: { dayIndex, anonId: getAnonId() } }),
     queryKey: ["speed-ladder", dayIndex],
-    queryFn: () => fetchSpeedLadder({ data: { dayIndex, anonId: getAnonId() } }),
     refetchOnWindowFocus: false,
   });
   if (data === undefined) return null;
@@ -16,13 +17,18 @@ export function SpeedLadder({ dayIndex }: { dayIndex: number }) {
     <aside className={styles.ladder} aria-label="Daily ladder">
       <h2 className={styles.title}>Daily ladder</h2>
       {data === null ? (
-        <p className={styles.empty}>Play this series to see how everyone did.</p>
+        <p className={styles.empty}>
+          Play this series to see how everyone did.
+        </p>
       ) : data.length === 0 ? (
         <p className={styles.empty}>Be the first to make a time!</p>
       ) : (
         <ol className={styles.list}>
           {data.map((entry, i) => (
-            <li key={i} className={entry.isMe ? `${styles.row} ${styles.me}` : styles.row}>
+            <li
+              key={i}
+              className={entry.isMe ? `${styles.row} ${styles.me}` : styles.row}
+            >
               <span className={styles.rank}>{i + 1}</span>
               <span className={styles.name}>{entry.name}</span>
               <span className={styles.time}>{formatTime(entry.scoreMs)}</span>

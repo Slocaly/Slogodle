@@ -10,10 +10,10 @@ export type LoginFormValues = v.InferInput<typeof loginSchema>;
 
 export const signupSchema = v.pipe(
   v.object({
-    username: v.pipe(v.string(), v.trim(), v.nonEmpty()),
+    confirmPassword: v.pipe(v.string(), v.nonEmpty()),
     email: v.pipe(v.string(), v.trim(), v.email()),
     password: v.pipe(v.string(), v.minLength(8)),
-    confirmPassword: v.pipe(v.string(), v.nonEmpty()),
+    username: v.pipe(v.string(), v.trim(), v.nonEmpty()),
   }),
   v.forward(
     v.partialCheck(
@@ -31,12 +31,14 @@ export const forgotPasswordSchema = v.object({
   email: v.pipe(v.string(), v.trim(), v.email()),
 });
 
-export type ForgotPasswordFormValues = v.InferInput<typeof forgotPasswordSchema>;
+export type ForgotPasswordFormValues = v.InferInput<
+  typeof forgotPasswordSchema
+>;
 
 export const resetPasswordSchema = v.pipe(
   v.object({
-    newPassword: v.pipe(v.string(), v.minLength(8)),
     confirmPassword: v.pipe(v.string(), v.nonEmpty()),
+    newPassword: v.pipe(v.string(), v.minLength(8)),
   }),
   v.forward(
     v.partialCheck(

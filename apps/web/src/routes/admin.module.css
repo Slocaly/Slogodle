@@ -262,7 +262,9 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--card-bg);
-  transition: border-color 0.1s ease, background 0.1s ease;
+  transition:
+    border-color 0.1s ease,
+    background 0.1s ease;
 }
 
 .r2Card[draggable="true"] {

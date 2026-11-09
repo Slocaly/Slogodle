@@ -1,101 +1,144 @@
 // src/lib/physicsLogoPile.ts
-import Matter from 'matter-js'
+import Matter from "matter-js";
 
-const WALL_THICKNESS = 60
-const BODY_SIZE_MIN = 64
-const BODY_SIZE_MAX = 104
-const MOBILE_BREAKPOINT = 640
-const BODY_SIZE_MIN_MOBILE = 36
-const BODY_SIZE_MAX_MOBILE = 60
-const RESIZE_DEBOUNCE_MS = 150
+const WALL_THICKNESS = 60;
+const BODY_SIZE_MIN = 64;
+const BODY_SIZE_MAX = 104;
+const MOBILE_BREAKPOINT = 640;
+const BODY_SIZE_MIN_MOBILE = 36;
+const BODY_SIZE_MAX_MOBILE = 60;
+const RESIZE_DEBOUNCE_MS = 150;
 // Logos spawn staggered above the viewport's top edge (behind the header, which sits
 // in front due to z-index) and fall the full page height into the band. The ceiling
 // must sit above every possible spawn point (with margin), or bodies land on top of
 // it instead of falling through.
-const SPAWN_STAGGER = 300
-const CEILING_MARGIN = 100
-const EXPLOSION_RADIUS = 425
-const EXPLOSION_STRENGTH = 82
+const SPAWN_STAGGER = 300;
+const CEILING_MARGIN = 100;
+const EXPLOSION_RADIUS = 425;
+const EXPLOSION_STRENGTH = 82;
 // The explosion scales with the pile size: full strength from this many logos up,
 // down to EXPLOSION_MIN_RATIO of it when there's only a handful.
-const EXPLOSION_FULL_STRENGTH_COUNT = 20
-const EXPLOSION_MIN_RATIO = 0.2
-const LAUNCH_STAGGER = 90
-const LAUNCH_SPEED = 42
-const LAUNCH_SPEED_VARIANCE = 12
-const LAUNCH_HEIGHT_LIFT_RATIO = 0.3
-const LAUNCH_UPWARD_SPEED = 15
-const LAUNCH_UPWARD_SPEED_VARIANCE = 12
+const EXPLOSION_FULL_STRENGTH_COUNT = 20;
+const EXPLOSION_MIN_RATIO = 0.2;
+const LAUNCH_STAGGER = 90;
+const LAUNCH_SPEED = 42;
+const LAUNCH_SPEED_VARIANCE = 12;
+const LAUNCH_HEIGHT_LIFT_RATIO = 0.3;
+const LAUNCH_UPWARD_SPEED = 15;
+const LAUNCH_UPWARD_SPEED_VARIANCE = 12;
 
 export interface PileLogo {
-  key: string
-  aspect: number
+  key: string;
+  aspect: number;
 }
 
 export interface CreateLogoPileSimulationOptions {
-  container: HTMLElement
-  logos: PileLogo[]
-  getElement: (key: string) => HTMLElement | null
-  reducedMotion: boolean
+  container: HTMLElement;
+  logos: PileLogo[];
+  getElement: (key: string) => HTMLElement | null;
+  reducedMotion: boolean;
   /** The actual footer bar element — pieces rest on top of it, only across its real width. */
-  footerEl?: HTMLElement | null
+  footerEl?: HTMLElement | null;
 }
 
 interface LedgeRect {
-  left: number
-  width: number
-  top: number
+  left: number;
+  width: number;
+  top: number;
 }
 
 export interface LogoPileSimulation {
-  destroy(): void
+  destroy(): void;
   /** Flings the given (already-mounted) entries in from a screen edge, staggered. */
-  launchFromSide(entries: PileLogo[], side: 'left' | 'right'): void
+  launchFromSide(entries: PileLogo[], side: "left" | "right"): void;
   /** Removes every body whose key isn't in `keepKeys`. */
-  removeAllExcept(keepKeys: string[]): void
+  removeAllExcept(keepKeys: string[]): void;
   /** Sets the gravity direction/strength (1 = default downward gravity). */
-  setGravity(x: number, y: number): void
+  setGravity(x: number, y: number): void;
 }
 
 // Sizes an element within the pile's body-size range, from its icon's intrinsic aspect
 // ratio. Shared by the initial top-down spawn and side launches. `containerWidth` scales
 // the range down on narrow (mobile) viewports so the pile doesn't feel oversized there.
-function sizeElement(el: HTMLElement, aspect: number, containerWidth: number): { width: number; height: number } {
+function sizeElement(
+  el: HTMLElement,
+  aspect: number,
+  containerWidth: number,
+): { width: number; height: number } {
   const [sizeMin, sizeMax] =
-    containerWidth < MOBILE_BREAKPOINT ? [BODY_SIZE_MIN_MOBILE, BODY_SIZE_MAX_MOBILE] : [BODY_SIZE_MIN, BODY_SIZE_MAX]
-  const longEdge = sizeMin + Math.random() * (sizeMax - sizeMin)
-  const width = aspect >= 1 ? longEdge : longEdge * aspect
-  const height = aspect >= 1 ? longEdge / aspect : longEdge
+    containerWidth < MOBILE_BREAKPOINT
+      ? [BODY_SIZE_MIN_MOBILE, BODY_SIZE_MAX_MOBILE]
+      : [BODY_SIZE_MIN, BODY_SIZE_MAX];
+  const longEdge = sizeMin + Math.random() * (sizeMax - sizeMin);
+  const width = aspect >= 1 ? longEdge : longEdge * aspect;
+  const height = aspect >= 1 ? longEdge / aspect : longEdge;
 
-  el.style.width = `${width}px`
-  el.style.height = `${height}px`
-  return { width, height }
+  el.style.width = `${width}px`;
+  el.style.height = `${height}px`;
+  return { height, width };
 }
 
-function createPileBody(x: number, y: number, width: number, height: number): Matter.Body {
+function createPileBody(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): Matter.Body {
   return Matter.Bodies.rectangle(x, y, width, height, {
+    angle: Math.random() * Math.PI * 2,
     chamfer: { radius: Math.min(width, height) * 0.18 },
-    restitution: 0.15,
     friction: 0.6,
     frictionAir: 0.02,
-    angle: Math.random() * Math.PI * 2,
-  })
+    restitution: 0.15,
+  });
 }
 
-function createBoundaries(width: number, height: number, ceilingY: number, ledge: LedgeRect | null) {
-  const options: Matter.IChamferableBodyDefinition = { isStatic: true, friction: 0.8 }
-  const spanTop = ceilingY
-  const spanHeight = height - spanTop
+function createBoundaries(
+  width: number,
+  height: number,
+  ceilingY: number,
+  ledge: LedgeRect | null,
+) {
+  const options: Matter.IChamferableBodyDefinition = {
+    friction: 0.8,
+    isStatic: true,
+  };
+  const spanTop = ceilingY;
+  const spanHeight = height - spanTop;
   const bodies = [
     // floor — spans the full width; the footer (if any) only raises a ledge above part of it
-    Matter.Bodies.rectangle(width / 2, height + WALL_THICKNESS / 2, width + WALL_THICKNESS * 2, WALL_THICKNESS, options),
+    Matter.Bodies.rectangle(
+      width / 2,
+      height + WALL_THICKNESS / 2,
+      width + WALL_THICKNESS * 2,
+      WALL_THICKNESS,
+      options,
+    ),
     // ceiling — positioned above every possible spawn point, see ceilingY above
-    Matter.Bodies.rectangle(width / 2, spanTop - WALL_THICKNESS / 2, width + WALL_THICKNESS * 2, WALL_THICKNESS, options),
+    Matter.Bodies.rectangle(
+      width / 2,
+      spanTop - WALL_THICKNESS / 2,
+      width + WALL_THICKNESS * 2,
+      WALL_THICKNESS,
+      options,
+    ),
     // left wall
-    Matter.Bodies.rectangle(-WALL_THICKNESS / 2, spanTop + spanHeight / 2, WALL_THICKNESS, spanHeight + WALL_THICKNESS * 2, options),
+    Matter.Bodies.rectangle(
+      -WALL_THICKNESS / 2,
+      spanTop + spanHeight / 2,
+      WALL_THICKNESS,
+      spanHeight + WALL_THICKNESS * 2,
+      options,
+    ),
     // right wall
-    Matter.Bodies.rectangle(width + WALL_THICKNESS / 2, spanTop + spanHeight / 2, WALL_THICKNESS, spanHeight + WALL_THICKNESS * 2, options),
-  ]
+    Matter.Bodies.rectangle(
+      width + WALL_THICKNESS / 2,
+      spanTop + spanHeight / 2,
+      WALL_THICKNESS,
+      spanHeight + WALL_THICKNESS * 2,
+      options,
+    ),
+  ];
   if (ledge && ledge.width > 0) {
     // A platform matching the footer's real on-screen rect, so pieces only rest above
     // it where the footer actually is — everywhere else they fall through to the floor.
@@ -107,221 +150,281 @@ function createBoundaries(width: number, height: number, ceilingY: number, ledge
         WALL_THICKNESS,
         options,
       ),
-    )
+    );
   }
-  return bodies
+  return bodies;
 }
 
-export function createLogoPileSimulation(options: CreateLogoPileSimulationOptions): LogoPileSimulation {
-  const { container, logos, getElement, reducedMotion, footerEl = null } = options
-  const engine = Matter.Engine.create()
+export function createLogoPileSimulation(
+  options: CreateLogoPileSimulationOptions,
+): LogoPileSimulation {
+  const {
+    container,
+    logos,
+    getElement,
+    reducedMotion,
+    footerEl = null,
+  } = options;
+  const engine = Matter.Engine.create();
 
   // The footer's real on-screen rect, converted into the container's local coordinates.
   function computeLedge(): LedgeRect | null {
-    if (!footerEl) return null
-    const containerRect = container.getBoundingClientRect()
-    const footerRect = footerEl.getBoundingClientRect()
+    if (!footerEl) return null;
+    const containerRect = container.getBoundingClientRect();
+    const footerRect = footerEl.getBoundingClientRect();
     return {
       left: footerRect.left - containerRect.left,
-      width: footerRect.width,
       top: footerRect.top - containerRect.top,
-    }
+      width: footerRect.width,
+    };
   }
 
-  let width = 0
-  let height = 0
-  let boundaries: Matter.Body[] = []
-  let pileBodies: { key: string; body: Matter.Body; el: HTMLElement; rotateEl: HTMLElement; width: number; height: number }[] =
-    []
-  let spawned = false
+  let width = 0;
+  let height = 0;
+  let boundaries: Matter.Body[] = [];
+  let pileBodies: {
+    key: string;
+    body: Matter.Body;
+    el: HTMLElement;
+    rotateEl: HTMLElement;
+    width: number;
+    height: number;
+  }[] = [];
+  let spawned = false;
 
   // Rotation lives on this inner element, separate from the outer element's position, so
   // that a tooltip anchored to the outer element never spins or flips with the logo.
   function getRotateEl(el: HTMLElement): HTMLElement {
-    return el.querySelector<HTMLElement>('[data-pile-rotate]') ?? el
+    return el.querySelector<HTMLElement>("[data-pile-rotate]") ?? el;
   }
 
   function sync() {
     for (const { body, el, rotateEl, width: w, height: h } of pileBodies) {
-      el.style.transform = `translate(${body.position.x - w / 2}px, ${body.position.y - h / 2}px)`
-      rotateEl.style.transform = `rotate(${body.angle}rad)`
+      el.style.transform = `translate(${body.position.x - w / 2}px, ${body.position.y - h / 2}px)`;
+      rotateEl.style.transform = `rotate(${body.angle}rad)`;
     }
   }
-  Matter.Events.on(engine, 'afterUpdate', sync)
+  Matter.Events.on(engine, "afterUpdate", sync);
 
-  const runner = Matter.Runner.create()
-  Matter.Runner.run(runner, engine)
+  const runner = Matter.Runner.create();
+  Matter.Runner.run(runner, engine);
 
   // A one-shot radial impulse on click/tap — everything nearby gets flung outward
   // at once, on top of whatever velocity it already had.
   function handlePointerDown(event: PointerEvent) {
-    const rect = container.getBoundingClientRect()
-    const cx = event.clientX - rect.left
-    const cy = event.clientY - rect.top
-    const ratio = Math.max(Math.min(pileBodies.length / EXPLOSION_FULL_STRENGTH_COUNT, 1), EXPLOSION_MIN_RATIO)
-    const strength = EXPLOSION_STRENGTH * ratio
+    const rect = container.getBoundingClientRect();
+    const cx = event.clientX - rect.left;
+    const cy = event.clientY - rect.top;
+    const ratio = Math.max(
+      Math.min(pileBodies.length / EXPLOSION_FULL_STRENGTH_COUNT, 1),
+      EXPLOSION_MIN_RATIO,
+    );
+    const strength = EXPLOSION_STRENGTH * ratio;
     for (const { body } of pileBodies) {
-      const dx = body.position.x - cx
-      const dy = body.position.y - cy
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1
-      if (dist > EXPLOSION_RADIUS) continue
-      const impulse = (1 - dist / EXPLOSION_RADIUS) * strength
+      const dx = body.position.x - cx;
+      const dy = body.position.y - cy;
+      const dist = Math.hypot(dx, dy) || 1;
+      if (dist > EXPLOSION_RADIUS) continue;
+      const impulse = (1 - dist / EXPLOSION_RADIUS) * strength;
       Matter.Body.setVelocity(body, {
         x: body.velocity.x + (dx / dist) * impulse,
         y: body.velocity.y + (dy / dist) * impulse,
-      })
-      Matter.Body.setAngularVelocity(body, body.angularVelocity + (Math.random() - 0.5) * 0.6)
+      });
+      Matter.Body.setAngularVelocity(
+        body,
+        body.angularVelocity + (Math.random() - 0.5) * 0.6,
+      );
     }
   }
-  container.addEventListener('pointerdown', handlePointerDown)
+  container.addEventListener("pointerdown", handlePointerDown);
 
   function applySize(w: number, h: number) {
-    width = w
-    height = h
+    width = w;
+    height = h;
 
     // Local y that corresponds to the viewport's own top edge (page y = 0), since the
     // container is pinned to the bottom of the viewport at height `height`.
-    const viewportTop = -(window.innerHeight - height)
-    const spawnTop = viewportTop - SPAWN_STAGGER
-    const ceilingY = spawnTop - CEILING_MARGIN
+    const viewportTop = -(window.innerHeight - height);
+    const spawnTop = viewportTop - SPAWN_STAGGER;
+    const ceilingY = spawnTop - CEILING_MARGIN;
 
-    if (boundaries.length) Matter.Composite.remove(engine.world, boundaries)
-    boundaries = createBoundaries(width, height, ceilingY, computeLedge())
-    Matter.Composite.add(engine.world, boundaries)
+    if (boundaries.length > 0)
+      Matter.Composite.remove(engine.world, boundaries);
+    boundaries = createBoundaries(width, height, ceilingY, computeLedge());
+    Matter.Composite.add(engine.world, boundaries);
 
-    if (spawned) return
-    spawned = true
+    if (spawned) return;
+    spawned = true;
 
     pileBodies = logos.flatMap((logo) => {
-      const el = getElement(logo.key)
-      if (!el) return []
+      const el = getElement(logo.key);
+      if (!el) return [];
 
-      const { width: bodyWidth, height: bodyHeight } = sizeElement(el, logo.aspect, width)
-      const x = bodyWidth / 2 + Math.random() * Math.max(width - bodyWidth, 1)
+      const { width: bodyWidth, height: bodyHeight } = sizeElement(
+        el,
+        logo.aspect,
+        width,
+      );
+      const x = bodyWidth / 2 + Math.random() * Math.max(width - bodyWidth, 1);
       const y = reducedMotion
         ? height - bodyHeight / 2 - Math.random() * 60
-        : viewportTop - bodyHeight - Math.random() * SPAWN_STAGGER
+        : viewportTop - bodyHeight - Math.random() * SPAWN_STAGGER;
 
-      const body = createPileBody(x, y, bodyWidth, bodyHeight)
+      const body = createPileBody(x, y, bodyWidth, bodyHeight);
 
       if (!reducedMotion) {
         // A strong sideways kick and spin on entry so the fall reads as tumbling
         // confetti rather than everything dropping straight down in lockstep.
-        Matter.Body.setVelocity(body, { x: (Math.random() - 0.5) * 60, y: Math.random() * 6 })
-        Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 1)
+        Matter.Body.setVelocity(body, {
+          x: (Math.random() - 0.5) * 60,
+          y: Math.random() * 6,
+        });
+        Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 1);
       }
 
-      return [{ key: logo.key, body, el, rotateEl: getRotateEl(el), width: bodyWidth, height: bodyHeight }]
-    })
-    Matter.Composite.add(engine.world, pileBodies.map((entry) => entry.body))
+      return [
+        {
+          body,
+          el,
+          height: bodyHeight,
+          key: logo.key,
+          rotateEl: getRotateEl(el),
+          width: bodyWidth,
+        },
+      ];
+    });
+    Matter.Composite.add(
+      engine.world,
+      pileBodies.map((entry) => entry.body),
+    );
   }
 
-  const launchTimers: ReturnType<typeof setTimeout>[] = []
+  const launchTimers: ReturnType<typeof setTimeout>[] = [];
 
-  function launchFromSide(entries: PileLogo[], side: 'left' | 'right') {
+  function launchFromSide(entries: PileLogo[], side: "left" | "right") {
     // Size and place every element at its spawn point synchronously, before the first
     // paint after mount. Otherwise the freshly-mounted (still unsized, untransformed)
     // element briefly shows at its CSS default — top-left of the pile container, at the
     // logo's raw intrinsic size — until its staggered timer below gets around to it.
     const prepared = entries.flatMap((entry) => {
-      const el = getElement(entry.key)
-      if (!el) return []
-      const { width: bodyWidth, height: bodyHeight } = sizeElement(el, entry.aspect, width)
+      const el = getElement(entry.key);
+      if (!el) return [];
+      const { width: bodyWidth, height: bodyHeight } = sizeElement(
+        el,
+        entry.aspect,
+        width,
+      );
 
       const x = reducedMotion
         ? bodyWidth / 2 + Math.random() * Math.max(width - bodyWidth, 1)
-        : side === 'left'
+        : side === "left"
           ? bodyWidth / 2 + 10
-          : width - bodyWidth / 2 - 10
+          : width - bodyWidth / 2 - 10;
       const y = reducedMotion
         ? height - bodyHeight / 2 - Math.random() * 60
-        : bodyHeight + Math.random() * Math.max(height - bodyHeight * 3, 1) - height * LAUNCH_HEIGHT_LIFT_RATIO
+        : bodyHeight +
+          Math.random() * Math.max(height - bodyHeight * 3, 1) -
+          height * LAUNCH_HEIGHT_LIFT_RATIO;
 
-      el.style.transform = `translate(${x - bodyWidth / 2}px, ${y - bodyHeight / 2}px)`
+      el.style.transform = `translate(${x - bodyWidth / 2}px, ${y - bodyHeight / 2}px)`;
 
-      return [{ key: entry.key, el, bodyWidth, bodyHeight, x, y }]
-    })
+      return [{ bodyHeight, bodyWidth, el, key: entry.key, x, y }];
+    });
 
     prepared.forEach(({ key, el, bodyWidth, bodyHeight, x, y }, i) => {
       const timer = setTimeout(() => {
-        const body = createPileBody(x, y, bodyWidth, bodyHeight)
+        const body = createPileBody(x, y, bodyWidth, bodyHeight);
 
         if (!reducedMotion) {
           // A strong horizontal kick from the chosen edge, angled upward, so it visibly
           // flies across and up the screen before gravity and the floor take over.
-          const speed = LAUNCH_SPEED + Math.random() * LAUNCH_SPEED_VARIANCE
-          const upwardSpeed = LAUNCH_UPWARD_SPEED + Math.random() * LAUNCH_UPWARD_SPEED_VARIANCE
-          Matter.Body.setVelocity(body, { x: side === 'left' ? speed : -speed, y: -upwardSpeed })
-          Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 1)
+          const speed = LAUNCH_SPEED + Math.random() * LAUNCH_SPEED_VARIANCE;
+          const upwardSpeed =
+            LAUNCH_UPWARD_SPEED + Math.random() * LAUNCH_UPWARD_SPEED_VARIANCE;
+          Matter.Body.setVelocity(body, {
+            x: side === "left" ? speed : -speed,
+            y: -upwardSpeed,
+          });
+          Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 1);
         }
 
-        pileBodies.push({ key, body, el, rotateEl: getRotateEl(el), width: bodyWidth, height: bodyHeight })
-        Matter.Composite.add(engine.world, body)
-      }, i * LAUNCH_STAGGER)
-      launchTimers.push(timer)
-    })
+        pileBodies.push({
+          body,
+          el,
+          height: bodyHeight,
+          key,
+          rotateEl: getRotateEl(el),
+          width: bodyWidth,
+        });
+        Matter.Composite.add(engine.world, body);
+      }, i * LAUNCH_STAGGER);
+      launchTimers.push(timer);
+    });
   }
 
   function removeAllExcept(keepKeys: string[]) {
-    const keepSet = new Set(keepKeys)
-    const toRemove = pileBodies.filter((entry) => !keepSet.has(entry.key))
-    if (!toRemove.length) return
+    const keepSet = new Set(keepKeys);
+    const toRemove = pileBodies.filter((entry) => !keepSet.has(entry.key));
+    if (toRemove.length === 0) return;
     Matter.Composite.remove(
       engine.world,
       toRemove.map((entry) => entry.body),
-    )
-    pileBodies = pileBodies.filter((entry) => keepSet.has(entry.key))
+    );
+    pileBodies = pileBodies.filter((entry) => keepSet.has(entry.key));
   }
 
-  let resizeTimer: ReturnType<typeof setTimeout> | undefined
+  let resizeTimer: ReturnType<typeof setTimeout> | undefined;
   const resizeObserver = new ResizeObserver((entries) => {
-    const entry = entries[0]
-    if (!entry) return
-    const { width: w, height: h } = entry.contentRect
-    if (w <= 0 || h <= 0) return
+    const entry = entries[0];
+    if (!entry) return;
+    const { width: w, height: h } = entry.contentRect;
+    if (w <= 0 || h <= 0) return;
 
     if (!spawned) {
       // First valid measurement: set up boundaries and spawn bodies immediately,
       // no debounce — nothing exists yet, so there's no flicker to guard against.
-      applySize(w, h)
-      return
+      applySize(w, h);
+      return;
     }
 
-    clearTimeout(resizeTimer)
-    resizeTimer = setTimeout(() => applySize(w, h), RESIZE_DEBOUNCE_MS)
-  })
-  resizeObserver.observe(container)
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => applySize(w, h), RESIZE_DEBOUNCE_MS);
+  });
+  resizeObserver.observe(container);
 
   // The footer can resize (e.g. its max-width breakpoint) independently of the
   // container's own box — recompute just the ledge, not a full respawn, when it does.
-  let footerResizeTimer: ReturnType<typeof setTimeout> | undefined
+  let footerResizeTimer: ReturnType<typeof setTimeout> | undefined;
   const footerResizeObserver = footerEl
     ? new ResizeObserver(() => {
-        if (!spawned) return
-        clearTimeout(footerResizeTimer)
-        footerResizeTimer = setTimeout(() => applySize(width, height), RESIZE_DEBOUNCE_MS)
+        if (!spawned) return;
+        clearTimeout(footerResizeTimer);
+        footerResizeTimer = setTimeout(
+          () => applySize(width, height),
+          RESIZE_DEBOUNCE_MS,
+        );
       })
-    : null
-  if (footerEl && footerResizeObserver) footerResizeObserver.observe(footerEl)
+    : null;
+  if (footerEl && footerResizeObserver) footerResizeObserver.observe(footerEl);
 
   return {
+    destroy() {
+      clearTimeout(resizeTimer);
+      clearTimeout(footerResizeTimer);
+      for (const timer of launchTimers) clearTimeout(timer);
+      resizeObserver.disconnect();
+      footerResizeObserver?.disconnect();
+      container.removeEventListener("pointerdown", handlePointerDown);
+      Matter.Events.off(engine, "afterUpdate", sync);
+      Matter.Runner.stop(runner);
+      Matter.Composite.clear(engine.world, false);
+      Matter.Engine.clear(engine);
+    },
     launchFromSide,
     removeAllExcept,
     setGravity(x, y) {
-      engine.gravity.x = x
-      engine.gravity.y = y
+      engine.gravity.x = x;
+      engine.gravity.y = y;
     },
-    destroy() {
-      clearTimeout(resizeTimer)
-      clearTimeout(footerResizeTimer)
-      for (const timer of launchTimers) clearTimeout(timer)
-      resizeObserver.disconnect()
-      footerResizeObserver?.disconnect()
-      container.removeEventListener('pointerdown', handlePointerDown)
-      Matter.Events.off(engine, 'afterUpdate', sync)
-      Matter.Runner.stop(runner)
-      Matter.Composite.clear(engine.world, false)
-      Matter.Engine.clear(engine)
-    },
-  }
+  };
 }

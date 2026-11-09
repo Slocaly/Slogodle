@@ -16,11 +16,7 @@ import { AnimatedImage, staticFile } from "remotion";
 
 export const MyComposition = () => {
   return (
-    <AnimatedImage
-      src={staticFile("animation.gif")}
-      width={500}
-      height={500}
-    />
+    <AnimatedImage src={staticFile("animation.gif")} width={500} height={500} />
   );
 };
 ```

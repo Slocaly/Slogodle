@@ -1,5 +1,5 @@
-import { useMutation } from '@tanstack/react-query'
-import { flushOutbox } from '../lib/progress'
+import { useMutation } from "@tanstack/react-query";
+import { flushOutbox } from "../lib/progress";
 
 // POST /api/progress/sync — flush whatever's queued in the local outbox
 // (offline, a dropped request, a day just finished). Pass onSuccess to react
@@ -8,5 +8,5 @@ export function useSyncProgressMutation(onSuccess: () => void) {
   return useMutation({
     mutationFn: flushOutbox,
     onSuccess,
-  })
+  });
 }

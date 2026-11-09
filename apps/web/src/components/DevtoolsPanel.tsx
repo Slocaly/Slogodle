@@ -1,14 +1,21 @@
-import { useEffect, useState } from 'react'
-import { Link } from '@tanstack/react-router'
-import { now, isSimulated, setSimulatedDate, nudgeDays, resetClock, subscribe as subscribeClock } from '../lib/clock'
-import { useClock } from '../hooks/useClock'
-import styles from './DevtoolsPanel.module.css'
+import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import {
+  isSimulated,
+  now,
+  nudgeDays,
+  resetClock,
+  setSimulatedDate,
+  subscribe as subscribeClock,
+} from "../lib/clock";
+import { useClock } from "../hooks/useClock";
+import styles from "./DevtoolsPanel.module.css";
 
 function formatDateInput(date: Date): string {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  return `${y}-${m}-${d}`
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 export function DevtoolsPanel({
@@ -17,23 +24,26 @@ export function DevtoolsPanel({
   onAddRandomLogos,
   onResetPileToFound,
 }: {
-  onResetDay: () => void
-  onFakeLaunch: () => void
-  onAddRandomLogos: () => void
-  onResetPileToFound: () => void
+  onResetDay: () => void;
+  onFakeLaunch: () => void;
+  onAddRandomLogos: () => void;
+  onResetPileToFound: () => void;
 }) {
-  useClock() // subscribes this component to clock-offset changes so it re-renders
-  const [open, setOpen] = useState(false)
-  const [dateInput, setDateInput] = useState(() => formatDateInput(now()))
+  useClock(); // subscribes this component to clock-offset changes so it re-renders
+  const [open, setOpen] = useState(false);
+  const [dateInput, setDateInput] = useState(() => formatDateInput(now()));
 
-  useEffect(() => subscribeClock(() => setDateInput(formatDateInput(now()))), [])
+  useEffect(
+    () => subscribeClock(() => setDateInput(formatDateInput(now()))),
+    [],
+  );
 
   function jump() {
-    const [y, m, d] = dateInput.split('-').map(Number)
-    if (!y || !m || !d) return
-    const target = now()
-    target.setFullYear(y, m - 1, d)
-    setSimulatedDate(target)
+    const [y, m, d] = dateInput.split("-").map(Number);
+    if (!y || !m || !d) return;
+    const target = now();
+    target.setFullYear(y, m - 1, d);
+    setSimulatedDate(target);
   }
 
   return (
@@ -49,7 +59,7 @@ export function DevtoolsPanel({
       {open && (
         <div className={styles.devtoolsPanel}>
           <div className={styles.devtoolsRow}>
-            {isSimulated() ? `Simulated: ${now().toDateString()}` : 'Real time'}
+            {isSimulated() ? `Simulated: ${now().toDateString()}` : "Real time"}
           </div>
           <div className={styles.devtoolsRow}>
             <input
@@ -97,5 +107,5 @@ export function DevtoolsPanel({
         </div>
       )}
     </div>
-  )
+  );
 }

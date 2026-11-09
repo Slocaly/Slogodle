@@ -1,31 +1,39 @@
-import { useEffect, useState } from 'react'
-import { now, subscribe as subscribeClock } from '../lib/clock'
-import { nextLocalMidnight, formatCountdown } from '../lib/game-logic'
-import { m } from '../paraglide/messages.js'
-import { ChevronIcon } from './icons/ChevronIcon'
-import styles from './CountdownTimer.module.css'
+import { useEffect, useState } from "react";
+import { now, subscribe as subscribeClock } from "../lib/clock";
+import { formatCountdown, nextLocalMidnight } from "../lib/game-logic";
+import { m } from "../paraglide/messages.js";
+import { ChevronIcon } from "./icons/ChevronIcon";
+import styles from "./CountdownTimer.module.css";
 
 interface CountdownTimerProps {
-  dayIndex?: number
-  onPrevDay?: () => void
+  dayIndex?: number;
+  onPrevDay?: () => void;
 }
 
-export function CountdownTimer({ dayIndex = 0, onPrevDay }: CountdownTimerProps) {
-  const [label, setLabel] = useState(() => formatCountdown(nextLocalMidnight(now()).getTime() - now().getTime()))
+export function CountdownTimer({
+  dayIndex = 0,
+  onPrevDay,
+}: CountdownTimerProps) {
+  const [label, setLabel] = useState(() =>
+    formatCountdown(nextLocalMidnight(now()).getTime() - now().getTime()),
+  );
 
   useEffect(() => {
-    const update = () => setLabel(formatCountdown(nextLocalMidnight(now()).getTime() - now().getTime()))
-    update()
-    const id = setInterval(update, 1000)
-    const unsubscribe = subscribeClock(update)
+    const update = () =>
+      setLabel(
+        formatCountdown(nextLocalMidnight(now()).getTime() - now().getTime()),
+      );
+    update();
+    const id = setInterval(update, 1000);
+    const unsubscribe = subscribeClock(update);
     return () => {
-      clearInterval(id)
-      unsubscribe()
-    }
-  }, [])
+      clearInterval(id);
+      unsubscribe();
+    };
+  }, []);
 
   // Display number is 1-based, matching the "#N" badge on the card.
-  const canGoPrev = onPrevDay != null && dayIndex > 0
+  const canGoPrev = onPrevDay != null && dayIndex > 0;
 
   return (
     <div className={styles.position}>
@@ -45,5 +53,5 @@ export function CountdownTimer({ dayIndex = 0, onPrevDay }: CountdownTimerProps)
         <span className={styles.value}>{label}</span>
       </div>
     </div>
-  )
+  );
 }

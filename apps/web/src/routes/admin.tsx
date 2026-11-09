@@ -1,4 +1,9 @@
-import { createFileRoute, Link, notFound, Outlet } from "@tanstack/react-router";
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  notFound,
+} from "@tanstack/react-router";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useSoundSettings } from "../hooks/useSoundSettings";
 import { useSoundEffects } from "../hooks/useSoundEffects";
@@ -8,7 +13,6 @@ import { fetchIsAdmin } from "../lib/session";
 import styles from "./admin.module.css";
 
 export const Route = createFileRoute("/admin")({
-  ssr: false,
   beforeLoad: async ({ context }) => {
     const isAdmin = await context.queryClient.ensureQueryData({
       queryKey: ["is-admin"],
@@ -19,14 +23,15 @@ export const Route = createFileRoute("/admin")({
     }
   },
   component: AdminLayout,
+  ssr: false,
 });
 
 const TABS = [
-  { to: "/admin", label: "Logos" },
-  { to: "/admin/stats", label: "Stats" },
-  { to: "/admin/videos", label: "Videos" },
-  { to: "/admin/users", label: "Users" },
-  { to: "/admin/speed", label: "Speed" },
+  { label: "Logos", to: "/admin" },
+  { label: "Stats", to: "/admin/stats" },
+  { label: "Videos", to: "/admin/videos" },
+  { label: "Users", to: "/admin/users" },
+  { label: "Speed", to: "/admin/speed" },
 ] as const;
 
 function AdminLayout() {
@@ -54,7 +59,10 @@ function AdminLayout() {
               preload="intent"
               className={styles.tab}
               activeProps={{ className: styles.tabActive }}
-              activeOptions={{ exact: tab.to === "/admin", includeSearch: false }}
+              activeOptions={{
+                exact: tab.to === "/admin",
+                includeSearch: false,
+              }}
             >
               {tab.label}
             </Link>

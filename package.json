@@ -11,7 +11,8 @@
     "build": "turbo run build",
     "start": "turbo run start --filter=web",
     "lint": "turbo run lint",
-    "render:landing": "pnpm --filter video render:landing"
+    "render:landing": "pnpm --filter video render:landing",
+    "test": "turbo run test --filter=web"
   },
   "devDependencies": {
     "oxfmt": "^0.78.0",

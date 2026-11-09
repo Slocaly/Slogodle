@@ -14,6 +14,7 @@ import {
   type SpeedResult,
 } from "../lib/speed";
 import { m } from "../paraglide/messages.js";
+import { GithubIcon } from "./icons/GithubIcon";
 import { ShareIcon } from "./icons/ShareIcon";
 import styles from "./SpeedGame.module.css";
 
@@ -126,6 +127,8 @@ export function SpeedGame({
   const [now, setNow] = useState(() => Date.now() + clockOffset);
   const [shaking, setShaking] = useState(false);
   const [copied, setCopied] = useState(false);
+  // Finished runs: the logo opened from the list (null shows the result panel).
+  const [viewing, setViewing] = useState<number | null>(null);
 
   const started = startedAt !== null;
   const allSolved = solved.every(Boolean);
@@ -292,10 +295,13 @@ export function SpeedGame({
               <button
                 type="button"
                 className={styles.item}
-                data-active={showLogo && i === current}
+                data-active={showAnswers ? viewing === i : showLogo && i === current}
                 data-solved={solved[i] || showAnswers}
-                onClick={() => setCurrent(i)}
-                disabled={!showLogo}
+                onClick={() => {
+                  setCurrent(i);
+                  if (showAnswers) setViewing(i);
+                }}
+                disabled={!showLogo && !showAnswers}
               >
                 <span className={styles.itemNumber}>{i + 1}</span>
                 <span className={styles.itemLabel}>
@@ -333,6 +339,26 @@ export function SpeedGame({
               disabled={starting}
             >
               Start the clock
+            </button>
+          </div>
+        ) : showAnswers && viewing !== null ? (
+          <div className={styles.panel}>
+            <div className={styles.logoTile}>
+              <img
+                key={logos[viewing].name}
+                className={styles.logo}
+                src={logos[viewing].icon}
+                alt={logos[viewing].name}
+              />
+            </div>
+            <div className={styles.solvedInfo}>
+              <h2 className={styles.solvedName}>{logos[viewing].name}</h2>
+              <p className={styles.solvedDescription}>{logos[viewing].description}</p>
+              <p className={styles.solvedFact}>{logos[viewing].funFact}</p>
+              <GithubLink href={logos[viewing].gitLink} />
+            </div>
+            <button type="button" className={styles.skip} onClick={() => setViewing(null)}>
+              Back to results
             </button>
           </div>
         ) : finished && result ? (
@@ -446,29 +472,49 @@ export function SpeedGame({
                 alt="Logo to guess"
               />
             </div>
-            <NameMask
-              name={logo.name}
-              visible={wrongCounts[current] >= SPEED_MASK_AFTER_MISSES}
-              revealed={revealOrders[current].slice(
-                0,
-                Math.max(0, wrongCounts[current] - SPEED_MASK_AFTER_MISSES),
-              )}
-            />
-            <PlainGuessForm
-              key={current}
-              logo={logo}
-              attemptCount={wrongCounts[current]}
-              onSubmit={handleGuess}
-            />
-            <button type="button" className={styles.skip} onClick={handleSkip}>
-              Skip this one
-            </button>
+            {solved[current] ? (
+              <div className={styles.solvedInfo}>
+                <h2 className={styles.solvedName}>{logo.name}</h2>
+                <p className={styles.solvedDescription}>{logo.description}</p>
+                <p className={styles.solvedFact}>{logo.funFact}</p>
+                <GithubLink href={logo.gitLink} />
+              </div>
+            ) : (
+              <>
+                <NameMask
+                  name={logo.name}
+                  visible={wrongCounts[current] >= SPEED_MASK_AFTER_MISSES}
+                  revealed={revealOrders[current].slice(
+                    0,
+                    Math.max(0, wrongCounts[current] - SPEED_MASK_AFTER_MISSES),
+                  )}
+                />
+                <PlainGuessForm
+                  key={current}
+                  logo={logo}
+                  attemptCount={wrongCounts[current]}
+                  onSubmit={handleGuess}
+                />
+                <button type="button" className={styles.skip} onClick={handleSkip}>
+                  Skip this one
+                </button>
+              </>
+            )}
           </div>
         )}
       </main>
 
       {rightPanel && <div className={styles.side}>{rightPanel}</div>}
     </div>
+  );
+}
+
+function GithubLink({ href }: { href: string }) {
+  return (
+    <a className={styles.githubLink} href={href} target="_blank" rel="noreferrer noopener">
+      <GithubIcon />
+      <span>{m.reveal_github_cta()}</span>
+    </a>
   );
 }
 

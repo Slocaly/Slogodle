@@ -12,14 +12,16 @@ export function normalizeAnswer(text: string): string {
 
 /**
  * Accepted answers for a logo: its full name, plus the name without a
- * ".js"/".ts" or fused "JS" suffix ("Next.js" -> "next", "SolidJS" -> "solid").
+ * ".js"/".ts", "UI" or "CSS" suffix, separated or fused ("Next.js" -> "next",
+ * "SolidJS" -> "solid", "Chakra UI" -> "chakra", "shadcn/ui" -> "shadcn", "PostCSS" -> "post").
  * A bare trailing "ts" is only stripped after a dot, so "Highcharts" is safe.
  */
 export function isCorrectSpeedGuess(text: string, name: string): boolean {
   const guess = normalizeAnswer(text);
   const stripped = name
     .replace(/\.(js|ts)$/i, "")
-    .replace(/(?<=\p{L}{2,})js$/iu, "");
+    .replace(/[\s/]+(ui|css)$/i, "")
+    .replace(/(?<=\p{L}{2,})(js|ui|css)$/iu, "");
   return guess === normalizeAnswer(name) || guess === normalizeAnswer(stripped);
 }
 

@@ -131,6 +131,7 @@ function toRemote(
   return {
     startedAt: state.status === "none" ? null : state.startedAt,
     result: state.status === "finished" ? state.result : null,
+    expired: state.status === "expired",
     clockOffset,
     onStart: async () => {
       const run = await startSpeedRun({ data: { anonId, dayIndex, replay } });

@@ -5,6 +5,7 @@ import { loadJSON, saveJSON } from "../lib/storage";
 import {
   SPEED_LETTER_RE,
   SPEED_MASK_AFTER_MISSES,
+  SPEED_MAX_RUN_MS,
   SPEED_MISS_PENALTY_MS,
   formatTime,
   isCorrectSpeedGuess,
@@ -45,6 +46,8 @@ function loadRun(key: string, size: number): SavedRun | null {
 export interface SpeedRemote {
   startedAt: number | null;
   result: SpeedResult | null;
+  /** The run was left unfinished past the time cap (locked, not ranked). */
+  expired: boolean;
   clockOffset: number;
   onStart: () => Promise<{ startedAt: number; clockOffset: number }>;
   onFinish: (guessLog: string[][]) => Promise<SpeedResult>;
@@ -118,6 +121,8 @@ export function SpeedGame({
   );
   const [saveState, setSaveState] = useState<"idle" | "saving" | "error">("idle");
   const [starting, setStarting] = useState(false);
+  // Set when the server rejects a late submit as expired.
+  const [submitExpired, setSubmitExpired] = useState(false);
   const [now, setNow] = useState(() => Date.now() + clockOffset);
   const [shaking, setShaking] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -126,6 +131,14 @@ export function SpeedGame({
   const allSolved = solved.every(Boolean);
   const finished = serverResult !== null || (!remote && localFinishedAt !== null);
   const wrongCounts = guessLog.map((list, i) => list.length - (solved[i] ? 1 : 0));
+  // Only server-timed runs can time out; the admin practice mode stays local.
+  const timedOut =
+    remote !== undefined &&
+    !finished &&
+    started &&
+    (remote.expired ||
+      submitExpired ||
+      (!allSolved && now - startedAt > SPEED_MAX_RUN_MS));
 
   useEffect(() => {
     if (!persistKey) return;
@@ -152,15 +165,15 @@ export function SpeedGame({
   }, [logos]);
 
   useEffect(() => {
-    if (!started || finished || allSolved) return;
+    if (!started || finished || allSolved || timedOut) return;
     const id = setInterval(() => setNow(Date.now() + clockOffset), 100);
     return () => clearInterval(id);
-  }, [started, finished, allSolved, clockOffset]);
+  }, [started, finished, allSolved, timedOut, clockOffset]);
 
   // Series complete: freeze the clock locally, and in daily mode send the
   // guesses so the server can validate them and stamp the result.
   useEffect(() => {
-    if (!started || !allSolved || finished) return;
+    if (!started || !allSolved || finished || timedOut) return;
     if (!remote) {
       setLocalFinishedAt(Date.now());
       return;
@@ -168,7 +181,7 @@ export function SpeedGame({
     if (saveState === "saving") return;
     void submit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [started, allSolved, finished]);
+  }, [started, allSolved, finished, timedOut]);
 
   async function submit() {
     if (!remote) return;
@@ -177,6 +190,10 @@ export function SpeedGame({
       setServerResult(await remote.onFinish(guessLog));
       setSaveState("idle");
     } catch {
+      // A submit that lands after the cap is rejected for good: don't offer a retry.
+      if (startedAt !== null && Date.now() + clockOffset - startedAt > SPEED_MAX_RUN_MS) {
+        setSubmitExpired(true);
+      }
       setSaveState("error");
     }
   }
@@ -259,8 +276,10 @@ export function SpeedGame({
     goToNextUnsolved(current, solved);
   }
 
-  const showLogo = started && !allSolved && !finished;
   const solvedCount = solved.filter(Boolean).length;
+  const showLogo = started && !allSolved && !finished && !timedOut;
+  // A timed-out replay shows its answers (it can't be retried); the ranked run keeps them hidden.
+  const showAnswers = finished || (timedOut && replay);
   const penaltySeconds = SPEED_MISS_PENALTY_MS / 1000;
 
   return (
@@ -274,15 +293,15 @@ export function SpeedGame({
                 type="button"
                 className={styles.item}
                 data-active={showLogo && i === current}
-                data-solved={solved[i] || finished}
+                data-solved={solved[i] || showAnswers}
                 onClick={() => setCurrent(i)}
                 disabled={!showLogo}
               >
                 <span className={styles.itemNumber}>{i + 1}</span>
                 <span className={styles.itemLabel}>
-                  {solved[i] || finished ? l.name : "???"}
+                  {solved[i] || showAnswers ? l.name : "???"}
                 </span>
-                {(solved[i] || finished) && <span className={styles.check} aria-hidden />}
+                {(solved[i] || showAnswers) && <span className={styles.check} aria-hidden />}
               </button>
             </li>
           ))}
@@ -368,6 +387,20 @@ export function SpeedGame({
             ) : (
               <p className={styles.note}>Come back tomorrow for a new series.</p>
             )}
+          </div>
+        ) : timedOut ? (
+          <div className={styles.panel}>
+            <h1 className={styles.panelTitle}>Time&apos;s up</h1>
+            <p className={styles.panelLead}>
+              This run was left unfinished for more than {SPEED_MAX_RUN_MS / 60000} minutes, so it
+              doesn&apos;t count.
+              {solvedCount > 0 &&
+                ` You had found ${solvedCount} of ${logos.length} logos.`}
+            </p>
+            <p className={styles.note}>
+              {replay ? "Replays aren't ranked." : "Timed-out runs aren't ranked."}
+            </p>
+            {footer ?? <p className={styles.note}>Come back tomorrow for a new series.</p>}
           </div>
         ) : allSolved ? (
           <div className={styles.panel}>

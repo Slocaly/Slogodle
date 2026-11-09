@@ -3,7 +3,13 @@ import { env } from "cloudflare:workers";
 import { getAuth } from "./auth.server";
 import { listGameLogos } from "./game-logos.server";
 import { dayIndexFor } from "./game-logic";
-import { checkSpeedGuesses, dailySpeedLogos, speedScore } from "./speed";
+import {
+  SPEED_FINISH_GRACE_MS,
+  SPEED_MAX_RUN_MS,
+  checkSpeedGuesses,
+  dailySpeedLogos,
+  speedScore,
+} from "./speed";
 import type { SpeedRunState } from "./speed-runs";
 
 // See progress.server.ts: the client's calendar day can legitimately differ
@@ -68,6 +74,9 @@ function toState(row: SpeedRunRow | null): SpeedRunState {
   const serverNow = Date.now();
   if (!row) return { status: "none", serverNow };
   if (row.finished_at === null) {
+    if (serverNow - row.started_at > SPEED_MAX_RUN_MS) {
+      return { status: "expired", startedAt: row.started_at, serverNow };
+    }
     return { status: "running", startedAt: row.started_at, serverNow };
   }
   return {
@@ -122,6 +131,9 @@ export async function finishSpeedRun(input: RunInput & { guesses: string[][] }) 
   const run = await findRun(who, input.dayIndex, isReplay);
   if (!run) throw new Error("run not started");
   if (run.finished_at !== null) return toState(run);
+  if (Date.now() - run.started_at > SPEED_MAX_RUN_MS + SPEED_FINISH_GRACE_MS) {
+    throw new Error("run expired");
+  }
 
   const bank = await listGameLogos();
   const logos = dailySpeedLogos(bank, input.dayIndex);
@@ -247,38 +259,49 @@ export async function getSpeedStanding(input: {
 export interface SpeedHistoryEntry {
   dayIndex: number;
   isReplay: boolean;
+  /** Left unfinished past the time cap: no score, never ranked. */
+  dnf: boolean;
   durationMs: number;
   wrongCount: number;
   scoreMs: number;
-  /** Ladder rank; null for a replay, which is never ranked. */
+  /** Ladder rank; null for a replay or a DNF, which are never ranked. */
   rank: number | null;
 }
 
 interface HistoryRow {
   dayIndex: number;
   isReplay: number;
-  durationMs: number;
-  wrongCount: number;
-  scoreMs: number;
+  finishedAt: number | null;
+  durationMs: number | null;
+  wrongCount: number | null;
+  scoreMs: number | null;
   rank: number | null;
 }
 
-/** Every finished run (ranked and replay) of the caller, for the history page. */
+/** Every finished or timed-out run (ranked and replay) of the caller, for the history page. */
 export async function getSpeedHistory(input: { anonId: string }): Promise<SpeedHistoryEntry[]> {
   const who = await identify(input.anonId);
   const column = who.userId ? "user_id" : "anon_id";
   const { results } = await env.DB.prepare(
-    `SELECT r.day_index AS dayIndex, r.is_replay AS isReplay, r.duration_ms AS durationMs,
-            r.wrong_count AS wrongCount, r.score_ms AS scoreMs,
-            CASE WHEN r.is_replay = 0 THEN
+    `SELECT r.day_index AS dayIndex, r.is_replay AS isReplay, r.finished_at AS finishedAt,
+            r.duration_ms AS durationMs, r.wrong_count AS wrongCount, r.score_ms AS scoreMs,
+            CASE WHEN r.is_replay = 0 AND r.finished_at IS NOT NULL THEN
               (SELECT COUNT(*) FROM speed_run o
                WHERE o.day_index = r.day_index AND o.is_replay = 0 AND o.finished_at IS NOT NULL
                  AND (o.score_ms < r.score_ms OR (o.score_ms = r.score_ms AND o.finished_at < r.finished_at))) + 1
             END AS rank
      FROM speed_run r
-     WHERE r.${column} = ? AND r.finished_at IS NOT NULL`,
+     WHERE r.${column} = ? AND (r.finished_at IS NOT NULL OR r.started_at < ?)`,
   )
-    .bind(who.userId ?? who.anonId)
+    .bind(who.userId ?? who.anonId, Date.now() - SPEED_MAX_RUN_MS)
     .all<HistoryRow>();
-  return results.map((r) => ({ ...r, isReplay: r.isReplay === 1 }));
+  return results.map(({ finishedAt, ...r }) => ({
+    dayIndex: r.dayIndex,
+    isReplay: r.isReplay === 1,
+    dnf: finishedAt === null,
+    durationMs: r.durationMs ?? 0,
+    wrongCount: r.wrongCount ?? 0,
+    scoreMs: r.scoreMs ?? 0,
+    rank: r.rank,
+  }));
 }

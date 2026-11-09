@@ -14,6 +14,8 @@ export type { LadderEntry, SpeedHistoryEntry } from "./speed.server";
 export type SpeedRunState =
   | { status: "none"; serverNow: number }
   | { status: "running"; startedAt: number; serverNow: number }
+  /** Left unfinished past SPEED_MAX_RUN_MS: a locked DNF, never ranked. */
+  | { status: "expired"; startedAt: number; serverNow: number }
   | { status: "finished"; startedAt: number; serverNow: number; result: SpeedResult };
 
 interface RunInput {

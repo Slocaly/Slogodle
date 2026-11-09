@@ -67,6 +67,16 @@ export function dailySpeedLogos<T extends Logo>(bank: T[], dayIndex: number): T[
   return shuffle(bank, random).slice(0, SPEED_ROUND_SIZE);
 }
 
+/**
+ * A run still unfinished after this long (elapsed time only, miss penalties
+ * excluded) counts as abandoned: it's locked as a DNF and never ranked. This
+ * stops a player who left the page from coming back to an absurd clock, and
+ * since the run can't be restarted, quitting to look up answers gains nothing.
+ */
+export const SPEED_MAX_RUN_MS = 15 * 60 * 1000;
+/** Server-side leeway so a final answer typed just before the cap still saves. */
+export const SPEED_FINISH_GRACE_MS = 5000;
+
 /** Each wrong guess adds this to the final score. */
 export const SPEED_MISS_PENALTY_MS = 1000;
 const MAX_GUESS_LENGTH = 100;

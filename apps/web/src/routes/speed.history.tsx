@@ -81,7 +81,11 @@ function SpeedHistoryPage() {
           <div className={styles.grid}>
             {dayIndices.map((idx) => {
               const runs = runsByDay.get(idx);
-              const shown = runs?.ranked ?? runs?.replay;
+              // A finished run beats a timed-out one (e.g. a replay after a ranked DNF).
+              const shown =
+                [runs?.ranked, runs?.replay].find((e) => e && !e.dnf) ??
+                runs?.ranked ??
+                runs?.replay;
               // The logos stay hidden until the series has been played.
               const logos = shown ? dailySpeedLogos(bank, idx) : null;
               return (
@@ -102,11 +106,15 @@ function SpeedHistoryPage() {
                   </span>
                   {shown ? (
                     <>
-                      <span className={speedStyles.score}>{formatTime(shown.scoreMs)}</span>
+                      <span className={speedStyles.score}>
+                        {shown.dnf ? "DNF" : formatTime(shown.scoreMs)}
+                      </span>
                       <span className={speedStyles.meta}>
-                        {runs?.ranked && shown.rank !== null
-                          ? `Rank #${shown.rank}`
-                          : "Replay · not ranked"}
+                        {shown.dnf
+                          ? `${shown.isReplay ? "Replay · " : ""}Timed out`
+                          : shown.rank !== null
+                            ? `Rank #${shown.rank}`
+                            : "Replay · not ranked"}
                       </span>
                     </>
                   ) : (

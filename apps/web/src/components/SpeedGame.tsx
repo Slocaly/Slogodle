@@ -276,10 +276,18 @@ export function SpeedGame({
     goToNextUnsolved(current, solved);
   }
 
+  // The guess input unmounts on finish; move focus to the result heading so keyboard and
+  // screen-reader users land on the score (also when returning from a logo's detail panel).
+  const showingResult = finished && !!result && viewing === null;
+  const resultHeadingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (showingResult) resultHeadingRef.current?.focus();
+  }, [showingResult]);
+
   const solvedCount = solved.filter(Boolean).length;
   const showLogo = started && !allSolved && !finished && !timedOut;
-  // A timed-out replay shows its answers (it can't be retried); the ranked run keeps them hidden.
-  const showAnswers = finished || (timedOut && replay);
+  // A timed-out run can't be retried, so its answers are shown for learning.
+  const showAnswers = finished || timedOut;
   const penaltySeconds = SPEED_MISS_PENALTY_MS / 1000;
 
   return (
@@ -355,16 +363,23 @@ export function SpeedGame({
               <GithubLink href={logos[viewing].gitLink} />
             </div>
             <button type="button" className={styles.skip} onClick={() => setViewing(null)}>
-              Back to results
+              {m.speed_back_to_results()}
             </button>
           </div>
         ) : finished && result ? (
           <div className={styles.panel}>
             <div className={styles.scoreBlock}>
-              <span className={styles.scoreLabel}>
-                {replay ? "Your replay score" : "Your score"}
-              </span>
-              <div className={styles.doneTime}>{formatTime(result.scoreMs)}</div>
+              <h1
+                ref={resultHeadingRef}
+                tabIndex={-1}
+                className={styles.scoreLabel}
+                aria-describedby="speed-score"
+              >
+                {replay ? m.speed_score_label_replay() : m.speed_score_label()}
+              </h1>
+              <div id="speed-score" className={styles.doneTime}>
+                {formatTime(result.scoreMs)}
+              </div>
             </div>
             <ul className={styles.recap}>
               {logos.map((l, i) => (
@@ -373,54 +388,101 @@ export function SpeedGame({
                   className={styles.recapItem}
                   style={{ "--i": i } as React.CSSProperties}
                 >
-                  <span className={styles.recapTile}>
-                    <img src={l.icon} alt="" className={styles.recapLogo} />
-                  </span>
-                  <span className={styles.recapName}>{l.name}</span>
+                  <button
+                    type="button"
+                    className={styles.recapButton}
+                    onClick={() => setViewing(i)}
+                    aria-label={m.speed_recap_details({ name: l.name })}
+                  >
+                    <span className={styles.recapTile}>
+                      <img src={l.icon} alt="" className={styles.recapLogo} />
+                    </span>
+                    <span className={styles.recapName}>{l.name}</span>
+                  </button>
                 </li>
               ))}
             </ul>
-            <dl className={styles.breakdown}>
-              <div>
-                <dt>Time</dt>
-                <dd>{formatTime(result.durationMs)}</dd>
-              </div>
-              <div>
-                <dt>
-                  {result.wrongCount} wrong {result.wrongCount === 1 ? "guess" : "guesses"}
-                </dt>
-                <dd>+{formatTime(result.wrongCount * SPEED_MISS_PENALTY_MS)}</dd>
-              </div>
-            </dl>
+            <p className={styles.recapHint}>{m.speed_recap_hint()}</p>
+            <p className={styles.breakdown}>
+              <span>{m.speed_solve_time({ time: formatTime(result.durationMs) })}</span>
+              {result.wrongCount === 0 ? (
+                <strong className={styles.flawless}>{m.speed_flawless()}</strong>
+              ) : (
+                <>
+                  <span aria-hidden="true">+</span>
+                  <span>
+                    {result.wrongCount === 1
+                      ? m.speed_wrong_one({ count: result.wrongCount })
+                      : m.speed_wrong_other({ count: result.wrongCount })}{" "}
+                    <strong className={styles.penalty}>
+                      (+{formatTime(result.wrongCount * SPEED_MISS_PENALTY_MS)})
+                    </strong>
+                  </span>
+                </>
+              )}
+            </p>
             {dayIndex !== undefined && (
               <button type="button" className={styles.shareBtn} onClick={handleShare}>
                 <ShareIcon />
-                <span>{copied ? m.share_copied() : m.share_button()}</span>
+                <span role="status" aria-live="polite">
+                  {copied ? m.share_copied() : m.share_button()}
+                </span>
               </button>
             )}
             {onRestart ? (
               <button type="button" className={styles.primary} onClick={onRestart}>
-                Play again
+                {m.speed_play_again()}
               </button>
             ) : replay ? (
-              <p className={styles.note}>Replays aren&apos;t ranked.</p>
+              <p className={styles.note}>{m.speed_replay_unranked()}</p>
             ) : (
-              <p className={styles.note}>Come back tomorrow for a new series.</p>
+              <p className={styles.note}>{m.speed_come_back()}</p>
             )}
           </div>
         ) : timedOut ? (
           <div className={styles.panel}>
-            <h1 className={styles.panelTitle}>Time&apos;s up</h1>
+            <div className={styles.scoreBlock}>
+              <h1 className={styles.scoreLabel} aria-describedby="speed-timeout-count">
+                {m.speed_timeout_title()}
+              </h1>
+              <div id="speed-timeout-count" className={styles.doneTime}>
+                {solvedCount}
+                <span className={styles.doneTotal}>/{logos.length}</span>
+              </div>
+            </div>
             <p className={styles.panelLead}>
-              This run was left unfinished for more than {SPEED_MAX_RUN_MS / 60000} minutes, so it
-              doesn&apos;t count.
-              {solvedCount > 0 &&
-                ` You had found ${solvedCount} of ${logos.length} logos.`}
+              {m.speed_timeout_lead({
+                minutes: Math.max(1, Math.round(SPEED_MAX_RUN_MS / 60000)),
+              })}
             </p>
+            <ul className={styles.recap}>
+              {logos.map((l, i) => (
+                <li
+                  key={l.name}
+                  className={styles.recapItem}
+                  data-found={solved[i]}
+                  style={{ "--i": i } as React.CSSProperties}
+                >
+                  <button
+                    type="button"
+                    className={styles.recapButton}
+                    onClick={() => setViewing(i)}
+                    aria-label={m.speed_recap_details({ name: l.name })}
+                  >
+                    <span className={styles.recapTile}>
+                      <img src={l.icon} alt="" className={styles.recapLogo} />
+                    </span>
+                    <span className={styles.recapName}>{l.name}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <p className={styles.recapHint}>{m.speed_recap_hint()}</p>
             <p className={styles.note}>
-              {replay ? "Replays aren't ranked." : "Timed-out runs aren't ranked."}
+              {replay ? m.speed_replay_unranked() : m.speed_timeout_unranked()}
+              {" "}
+              {m.speed_come_back()}
             </p>
-            <p className={styles.note}>Come back tomorrow for a new series.</p>
           </div>
         ) : allSolved ? (
           <div className={styles.panel}>

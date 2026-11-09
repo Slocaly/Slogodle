@@ -156,5 +156,20 @@
   "legal_confidentialite_hosting_heading": "Hosting",
   "legal_confidentialite_hosting_body": "Slogodle runs on Cloudflare's infrastructure, which may process technical data such as IP addresses to serve the site. No advertising or analytics trackers are used.",
   "legal_confidentialite_rights_heading": "Your rights",
-  "legal_confidentialite_rights_body": "You can request access to, or deletion of, your account data at any time through the contact details on slocaly.dev."
+  "legal_confidentialite_rights_body": "You can request access to, or deletion of, your account data at any time through the contact details on slocaly.dev.",
+  "speed_score_label": "Your score",
+  "speed_score_label_replay": "Your replay score",
+  "speed_recap_hint": "Tap a logo to read its story and find its repo.",
+  "speed_recap_details": "{name}: see details",
+  "speed_solve_time": "Solve time {time}",
+  "speed_flawless": "Flawless, no wrong guesses",
+  "speed_wrong_one": "{count} wrong guess",
+  "speed_wrong_other": "{count} wrong guesses",
+  "speed_back_to_results": "Back to results",
+  "speed_play_again": "Play again",
+  "speed_replay_unranked": "Replays aren't ranked.",
+  "speed_come_back": "Come back tomorrow for a new series.",
+  "speed_timeout_title": "Time's up",
+  "speed_timeout_lead": "This run was left unfinished for more than {minutes} min, so it doesn't count.",
+  "speed_timeout_unranked": "Timed-out runs aren't ranked."
 }

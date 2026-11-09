@@ -7,7 +7,7 @@ import styles from "./ModeSwitch.module.css";
 /** Desktop header pill to flip between Daily and Speed. */
 export function ModeSwitch() {
   const { pathname } = useLocation();
-  const onSpeed = pathname === "/speed";
+  const onSpeed = pathname.startsWith("/speed");
   const speedIsNew = useSpeedNew();
   if (pathname !== "/" && !onSpeed) return null;
   return (

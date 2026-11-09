@@ -10,12 +10,14 @@ export function SpeedLadder({ dayIndex }: { dayIndex: number }) {
     queryFn: () => fetchSpeedLadder({ data: { dayIndex, anonId: getAnonId() } }),
     refetchOnWindowFocus: false,
   });
-  if (!data) return null;
+  if (data === undefined) return null;
 
   return (
     <aside className={styles.ladder} aria-label="Daily ladder">
       <h2 className={styles.title}>Daily ladder</h2>
-      {data.length === 0 ? (
+      {data === null ? (
+        <p className={styles.empty}>Play this series to see how everyone did.</p>
+      ) : data.length === 0 ? (
         <p className={styles.empty}>Be the first to make a time!</p>
       ) : (
         <ol className={styles.list}>

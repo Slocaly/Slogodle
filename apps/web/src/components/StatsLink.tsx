@@ -6,7 +6,7 @@ import { FireIcon } from "./icons/FireIcon";
 import styles from "./StatsLink.module.css";
 
 interface StatsLinkProps {
-  to: "/admin/stats" | "/admin" | "/stats" | "/";
+  to: "/admin/stats" | "/admin" | "/stats" | "/" | "/speed";
   streak?: number;
 }
 
@@ -16,6 +16,7 @@ const BACK_LABELS: Record<StatsLinkProps["to"], (() => string) | undefined> = {
   "/stats": undefined,
   "/admin": m.admin_link_label,
   "/": m.game_link_label,
+  "/speed": m.speed_link_label,
 };
 
 export function StatsLink({ to, streak }: StatsLinkProps) {

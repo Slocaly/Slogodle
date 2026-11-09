@@ -16,7 +16,9 @@ const BUBBLE_PITCH_STEP = 0.1;
 
 interface GameHeaderProps {
   onToggleArchive?: () => void;
-  statsLinkTo?: "/admin/stats" | "/admin" | "/stats" | "/";
+  /** Shows the History pill as a link to this page instead of an archive toggle. */
+  historyLinkTo?: "/speed/history";
+  statsLinkTo?: "/admin/stats" | "/admin" | "/stats" | "/" | "/speed";
   streak?: number;
   dark: boolean;
   onToggleDark: () => void;
@@ -28,6 +30,7 @@ interface GameHeaderProps {
 
 export function GameHeader({
   onToggleArchive,
+  historyLinkTo,
   statsLinkTo,
   streak,
   dark,
@@ -110,6 +113,7 @@ export function GameHeader({
         <div className={styles.desktopActions}>
           <ModeSwitch />
           {onToggleArchive && <ArchiveToggle onToggleArchive={handleArchiveToggle} />}
+          {historyLinkTo && <ArchiveToggle to={historyLinkTo} />}
           {statsLinkTo && <StatsLink to={statsLinkTo} streak={streak} />}
         </div>
         <SoundToggle

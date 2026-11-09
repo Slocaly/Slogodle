@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
   finishSpeedRun as finishSpeedRunDb,
+  getSpeedHistory,
   getSpeedLadder,
   getSpeedRun as getSpeedRunDb,
   getSpeedStanding,
@@ -8,7 +9,7 @@ import {
 } from "./speed.server";
 import type { SpeedResult } from "./speed";
 
-export type { LadderEntry } from "./speed.server";
+export type { LadderEntry, SpeedHistoryEntry } from "./speed.server";
 
 export type SpeedRunState =
   | { status: "none"; serverNow: number }
@@ -18,6 +19,8 @@ export type SpeedRunState =
 interface RunInput {
   anonId: string;
   dayIndex: number;
+  /** True for a replay of a past series (stored, never ranked). */
+  replay?: boolean;
 }
 
 export const fetchSpeedRun = createServerFn({ method: "POST" })
@@ -39,3 +42,7 @@ export const fetchSpeedLadder = createServerFn({ method: "POST" })
 export const fetchSpeedStanding = createServerFn({ method: "POST" })
   .validator((input: RunInput) => input)
   .handler(({ data }) => getSpeedStanding(data));
+
+export const fetchSpeedHistory = createServerFn({ method: "POST" })
+  .validator((input: { anonId: string }) => input)
+  .handler(({ data }) => getSpeedHistory(data));

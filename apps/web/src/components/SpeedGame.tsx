@@ -63,6 +63,12 @@ interface SpeedGameProps {
   onRestart?: () => void;
   /** Daily series number (0-based); enables the share button on the result. */
   dayIndex?: number;
+  /** Heading of the series list; defaults to "Today's series". */
+  title?: string;
+  /** Replay of a past series: the result is kept but never ranked. */
+  replay?: boolean;
+  /** Shown instead of "come back tomorrow" once a past series is done. */
+  footer?: ReactNode;
 }
 
 export function SpeedGame({
@@ -73,6 +79,9 @@ export function SpeedGame({
   rightPanel,
   onRestart,
   dayIndex,
+  title = "Today's series",
+  replay = false,
+  footer,
 }: SpeedGameProps) {
   // Per logo: the order in which its letters get revealed (random, fixed for the round).
   const revealOrders = useMemo(
@@ -257,7 +266,7 @@ export function SpeedGame({
   return (
     <div className={styles.layout} data-ladder={rightPanel ? "true" : "false"}>
       <aside className={styles.aside} aria-label="Series">
-        <h2 className={styles.asideTitle}>Today&apos;s series</h2>
+        <h2 className={styles.asideTitle}>{title}</h2>
         <ol className={styles.list}>
           {logos.map((l, i) => (
             <li key={l.name}>
@@ -310,7 +319,9 @@ export function SpeedGame({
         ) : finished && result ? (
           <div className={styles.panel}>
             <div className={styles.scoreBlock}>
-              <span className={styles.scoreLabel}>Your score</span>
+              <span className={styles.scoreLabel}>
+                {replay ? "Your replay score" : "Your score"}
+              </span>
               <div className={styles.doneTime}>{formatTime(result.scoreMs)}</div>
             </div>
             <ul className={styles.recap}>
@@ -349,6 +360,11 @@ export function SpeedGame({
               <button type="button" className={styles.primary} onClick={onRestart}>
                 Play again
               </button>
+            ) : footer ? (
+              <>
+                {replay && <p className={styles.note}>Replays aren&apos;t ranked.</p>}
+                {footer}
+              </>
             ) : (
               <p className={styles.note}>Come back tomorrow for a new series.</p>
             )}

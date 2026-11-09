@@ -14,7 +14,7 @@ interface GameModeCardsProps {
 
 export function GameModeCards({ streak, onNavigate }: GameModeCardsProps) {
   const { pathname } = useLocation();
-  const onSpeed = pathname === "/speed";
+  const onSpeed = pathname.startsWith("/speed");
   const isGamePage = pathname === "/" || onSpeed;
   const speedIsNew = useSpeedNew();
   const { data: standing } = useSpeedStanding(isGamePage);

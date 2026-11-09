@@ -108,7 +108,7 @@ export async function claimAnon(headers: Headers, anonId: string): Promise<{ ok:
   try {
     await env.DB.batch([
       env.DB.prepare(
-        `DELETE FROM speed_run WHERE anon_id = ? AND day_index IN (SELECT day_index FROM speed_run WHERE user_id = ?)`,
+        `DELETE FROM speed_run WHERE anon_id = ? AND (day_index, is_replay) IN (SELECT day_index, is_replay FROM speed_run WHERE user_id = ?)`,
       ).bind(anonId, userId),
       env.DB.prepare(`UPDATE speed_run SET user_id = ?, anon_id = NULL WHERE anon_id = ?`).bind(userId, anonId),
     ])

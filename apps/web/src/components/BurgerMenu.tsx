@@ -17,14 +17,14 @@ interface BurgerMenuProps {
 
 export function BurgerMenu({ streak }: BurgerMenuProps) {
   const navigate = useNavigate();
-  // Speed has no history or stats yet.
-  const showDailyLinks = useLocation().pathname !== "/speed";
+  // Speed has a history page but no stats yet.
+  const onSpeed = useLocation().pathname.startsWith("/speed");
   const { session, isPending, isAdmin } = useAccountSession();
   const [open, setOpen] = useState(false);
 
   if (isPending) return null;
 
-  const go = (to: "/history" | "/stats" | "/login" | "/signup" | "/admin") => {
+  const go = (to: "/history" | "/speed/history" | "/stats" | "/login" | "/signup" | "/admin") => {
     setOpen(false);
     navigate({ to });
   };
@@ -52,7 +52,16 @@ export function BurgerMenu({ streak }: BurgerMenuProps) {
 
           <GameModeCards streak={streak} onNavigate={() => setOpen(false)} />
 
-          {showDailyLinks && (
+          {onSpeed ? (
+            <button
+              type="button"
+              className={styles.menuItem}
+              onClick={() => go("/speed/history")}
+            >
+              <ArchiveIcon />
+              {m.burger_history_label()}
+            </button>
+          ) : (
             <>
               <button
                 type="button"

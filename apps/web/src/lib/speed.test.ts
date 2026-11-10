@@ -59,7 +59,7 @@ describe("shuffle", () => {
   it("keeps the same items without mutating the input", () => {
     const input = [1, 2, 3, 4, 5];
     const out = shuffle(input);
-    expect(out.toSorted()).toEqual(input);
+    expect([...out].sort((a, b) => a - b)).toEqual(input);
     expect(input).toEqual([1, 2, 3, 4, 5]);
   });
   it("is deterministic for a given random source", () => {

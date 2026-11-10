@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "react-component-testing": {
+      "source": "Slocaly/Skills",
+      "sourceType": "github",
+      "skillPath": "skills/testing/react-component-testing/SKILL.md",
+      "computedHash": "361de7f09f002a3a227f64ddbdac9cc618bc940afd03b2bfd55ca3e05cbb1944"
+    },
     "remotion-best-practices": {
       "source": "remotion-dev/skills",
       "sourceType": "github",
@@ -54,6 +60,12 @@
       "sourceType": "github",
       "skillPath": "skills/remotion-upgrade/SKILL.md",
       "computedHash": "1c9bb61fac6deb58cca81524c5dc7a76e84b20beb7eceb147167eb131522b669"
+    },
+    "tanstack-query": {
+      "source": "Slocaly/Skills",
+      "sourceType": "github",
+      "skillPath": "skills/librairies/tanstack-query/SKILL.md",
+      "computedHash": "12a017a3a2e6a320e243097d2223086a48727487d76b497918944391add6f4d5"
     }
   }
 }

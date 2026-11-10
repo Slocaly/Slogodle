@@ -160,6 +160,26 @@
       "rules": {
         "unicorn/prefer-global-this": "off"
       }
+    },
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "apps/web/src/test/**"],
+      "rules": {
+        "vitest/require-test-timeout": "off",
+        "vitest/prefer-expect-assertions": "off",
+        "vitest/require-mock-type-parameters": "off",
+        "vitest/prefer-importing-vitest-globals": "off",
+        "vitest/prefer-lowercase-title": "off",
+        "vitest/prefer-describe-function-title": "off",
+        "vitest/prefer-called-times": "off",
+        "vitest/prefer-expect-resolves": "off",
+        "vitest/prefer-import-in-mock": "off",
+        "vitest/no-hooks": "off",
+        "vitest/prefer-strict-equal": "off",
+        "vitest/require-top-level-describe": "off",
+        "vitest/max-expects": "off",
+        "vitest/no-importing-vitest-globals": "off",
+        "react-perf/jsx-no-new-array-as-prop": "off"
+      }
     }
   ]
 }

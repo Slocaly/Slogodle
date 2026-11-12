@@ -43,6 +43,7 @@ describe("isCorrectSpeedGuess", () => {
     expect(isCorrectSpeedGuess("highchar", "Highcharts")).toBe(false);
     expect(isCorrectSpeedGuess("highcharts", "Highcharts")).toBe(true);
   });
+
   it("rejects wrong answers", () => {
     expect(isCorrectSpeedGuess("vue", "React")).toBe(false);
   });
@@ -62,6 +63,7 @@ describe("shuffle", () => {
     expect([...out].sort((a, b) => a - b)).toEqual(input);
     expect(input).toEqual([1, 2, 3, 4, 5]);
   });
+
   it("is deterministic for a given random source", () => {
     expect(shuffle([1, 2, 3, 4], () => 0)).toEqual(
       shuffle([1, 2, 3, 4], () => 0),
@@ -75,6 +77,7 @@ describe("series", () => {
     expect(s).toHaveLength(SPEED_ROUND_SIZE);
     expect(new Set(s).size).toBe(SPEED_ROUND_SIZE);
   });
+
   it("daily series is stable per day and varies across days", () => {
     expect(dailySpeedLogos(bank, 7)).toEqual(dailySpeedLogos(bank, 7));
     expect(dailySpeedLogos(bank, 7)).not.toEqual(dailySpeedLogos(bank, 8));
@@ -99,14 +102,17 @@ describe("checkSpeedGuesses", () => {
       2, 0,
     ]);
   });
+
   it("rejects a non-array or wrong length", () => {
     expect(checkSpeedGuesses(logos, "nope")).toBeNull();
     expect(checkSpeedGuesses(logos, [["react"]])).toBeNull();
   });
+
   it("rejects lists not ending on the first correct guess", () => {
     expect(checkSpeedGuesses(logos, [["react", "x"], ["vue"]])).toBeNull();
     expect(checkSpeedGuesses(logos, [["x"], ["vue"]])).toBeNull();
   });
+
   it("rejects empty lists, non-strings and oversized guesses", () => {
     expect(checkSpeedGuesses(logos, [[], ["vue"]])).toBeNull();
     expect(checkSpeedGuesses(logos, [[1], ["vue"]])).toBeNull();

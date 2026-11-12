@@ -57,6 +57,8 @@
     "node/no-sync": "off",
     "node/no-top-level-await": "off",
     "vitest/require-hook": "off",
+    "vitest/prefer-to-be-truthy": "off",
+    "vitest/prefer-to-be-falsy": "off",
     "react/jsx-filename-extension": "off",
     "oxc/no-async-await": "off",
     "oxc/no-optional-chaining": "off",

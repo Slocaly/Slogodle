@@ -11,6 +11,7 @@ import Title from "./Title.astro";
   <header class="header">
     <Title class="header-title" />
     <nav class="nav">
+      <a href="#modes" class="nav-link">Modes</a>
       <a href="#how" class="nav-link">How to play</a>
       <a href="#videos" class="nav-link">Videos</a>
       <a href="#faq" class="nav-link">FAQ</a>
@@ -22,10 +23,10 @@ import Title from "./Title.astro";
   <div class="content">
     <div class="intro">
       <Title as="h1" class="hero-title" />
-      <p class="tagline">Name the tech logo of the day in three tries. A new one appears every midnight.</p>
+      <p class="tagline">Name the tech logo of the day in three tries, or race the clock in speed mode.</p>
       <div class="actions">
         <a href={gameUrl()} class="btn btn-primary">Play today's logo</a>
-        <a href="#how" class="btn btn-secondary">How to play</a>
+        <a href={gameUrl("/speed")} class="btn btn-secondary">Try speed mode</a>
       </div>
     </div>
     <div class="demo">

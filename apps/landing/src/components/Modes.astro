@@ -1,0 +1,151 @@
+---
+import { gameUrl } from "../config";
+
+const modes = [
+  {
+    badge: false,
+    copy: "One tech logo, a new one every midnight. Three guesses, with a hint after each miss, to keep your streak alive.",
+    cta: "Play today's logo",
+    href: gameUrl(),
+    id: "daily",
+    stats: ["1 logo", "3 tries", "Streak"],
+    title: "Daily",
+  },
+  {
+    badge: true,
+    copy: "Five logos, one clock. Name them as fast as you can. Every wrong guess adds a second, and the daily ladder ranks everyone's time.",
+    cta: "Play speed mode",
+    href: gameUrl("/speed"),
+    id: "speed",
+    stats: ["5 logos", "+1s per miss", "Daily ladder"],
+    title: "Speed",
+  },
+];
+---
+
+<section id="modes" class="modes">
+  <div class="head">
+    <span class="pill">TWO WAYS TO PLAY</span>
+    <h2>Take it slow, or race the clock.</h2>
+  </div>
+  <div class="grid">
+    {
+      modes.map((mode) => (
+        <article class="card" data-mode={mode.id}>
+          <h3>
+            {mode.title}
+            {mode.badge && <span class="badge">New</span>}
+          </h3>
+          <p>{mode.copy}</p>
+          <ul class="stats">
+            {mode.stats.map((s) => (
+              <li>{s}</li>
+            ))}
+          </ul>
+          <a href={mode.href} class="btn btn-primary">
+            {mode.cta}
+          </a>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .modes {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 96px clamp(20px, 5vw, 56px) 0;
+  }
+
+  .head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 40px;
+  }
+
+  h2 {
+    margin: 16px 0 0;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: 28px;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 32px;
+    border-radius: 32px;
+    background: var(--surface);
+    box-shadow: var(--elevation);
+  }
+
+  h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .badge {
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--accent);
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 46ch;
+  }
+
+  .stats {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .stats li {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--violet);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .btn {
+    margin-top: auto;
+  }
+
+  @media (max-width: 860px) {
+    .modes {
+      padding-top: 64px;
+    }
+
+    .card {
+      padding: 24px;
+    }
+  }
+</style>

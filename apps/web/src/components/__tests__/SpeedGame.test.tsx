@@ -21,6 +21,11 @@ const logos = [
   createTestingLogo({ name: "Next.js" }),
 ];
 
+const ambience = vi.hoisted(() => ({ start: vi.fn(), stop: vi.fn() }));
+vi.mock("../../lib/speed-ambience", () => ({
+  createSpeedAmbience: () => ambience,
+}));
+
 const START = new Date(2026, 5, 10, 12, 0, 0);
 const RUN_CAP_MS = 15 * 60 * 1000;
 
@@ -29,8 +34,17 @@ const renderSpeedGame = async (
 ) => {
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
   const playBubble = vi.fn();
+  const playWrongGuess = vi.fn();
   const rendered = await act(() =>
-    render(<SpeedGame logos={logos} playBubble={playBubble} {...props} />),
+    render(
+      <SpeedGame
+        logos={logos}
+        playBubble={playBubble}
+        playWrongGuess={playWrongGuess}
+        soundEnabled={false}
+        {...props}
+      />,
+    ),
   );
   const guess = async (text: string) => {
     await user.type(screen.getByRole("textbox", { name: "Logo name" }), text);
@@ -38,7 +52,7 @@ const renderSpeedGame = async (
   };
   const start = () =>
     user.click(screen.getByRole("button", { name: "Start the clock" }));
-  return { ...rendered, guess, playBubble, start, user };
+  return { ...rendered, guess, playBubble, playWrongGuess, start, user };
 };
 
 const seriesList = () =>
@@ -69,10 +83,51 @@ describe("SpeedGame", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(START);
+    ambience.start.mockClear();
+    ambience.stop.mockClear();
   });
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  describe("sound", () => {
+    it("plays the error sound on a wrong guess only", async () => {
+      const { guess, playWrongGuess, start } = await renderSpeedGame();
+      await start();
+
+      await guess("wrong");
+      expect(playWrongGuess).toHaveBeenCalledOnce();
+
+      await guess("react");
+      expect(playWrongGuess).toHaveBeenCalledOnce();
+    });
+
+    it("keeps the ambient bed silent until the clock starts", async () => {
+      const { start } = await renderSpeedGame({ soundEnabled: true });
+      expect(ambience.start).not.toHaveBeenCalled();
+
+      await start();
+
+      expect(ambience.start).toHaveBeenCalledOnce();
+    });
+
+    it("stops the ambient bed once the series is solved", async () => {
+      const { guess, start } = await renderSpeedGame({ soundEnabled: true });
+      await start();
+
+      await solveAll(guess);
+
+      expect(ambience.stop).toHaveBeenCalledOnce();
+    });
+
+    it("keeps the ambient bed silent when sound is off", async () => {
+      const { start } = await renderSpeedGame({ soundEnabled: false });
+
+      await start();
+
+      expect(ambience.start).not.toHaveBeenCalled();
+    });
   });
 
   describe("before the run starts", () => {
@@ -545,13 +600,11 @@ describe("SpeedGame", () => {
     });
 
     it("sends every guess to the server once the series is solved and shows its result", async () => {
-      const onFinish = vi
-        .fn()
-        .mockResolvedValue({
-          durationMs: 9000,
-          scoreMs: 10_000,
-          wrongCount: 1,
-        });
+      const onFinish = vi.fn().mockResolvedValue({
+        durationMs: 9000,
+        scoreMs: 10_000,
+        wrongCount: 1,
+      });
       const { guess } = await renderSpeedGame({
         remote: remoteRun({ onFinish }),
       });

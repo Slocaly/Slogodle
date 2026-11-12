@@ -40,7 +40,9 @@ function SpeedPage() {
     markSpeedSeen();
   }, []);
   const g = useGameState();
-  const { playClick, playBubble } = useSoundEffects(g.soundEnabled);
+  const { playClick, playBubble, playWrongGuess } = useSoundEffects(
+    g.soundEnabled,
+  );
   const { data: bank } = useGameLogosQuery();
   const today = dayIndexFor(now());
   const requestedDay = Route.useSearch().day;
@@ -108,6 +110,8 @@ function SpeedPage() {
           logos={logos}
           rightPanel={<SpeedLadder dayIndex={dayIndex} />}
           playBubble={playBubble}
+          playWrongGuess={playWrongGuess}
+          soundEnabled={g.soundEnabled}
           persistKey={`slogodle:speed:v2:${replay && !runQuery.data.viewingRanked ? "replay:" : ""}${dayIndex}`}
           remote={toRemote(
             dayIndex,

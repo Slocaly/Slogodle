@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { Logo } from "@slogodle/logos";
 import { GuessHints } from "./GuessHints";
+import { useSpeedAmbience } from "../hooks/useSpeedAmbience";
 import { loadJSON, saveJSON } from "../lib/storage";
 import {
   SPEED_LETTER_RE,
@@ -58,6 +59,10 @@ export interface SpeedRemote {
 interface SpeedGameProps {
   logos: Logo[];
   playBubble: () => void;
+  /** Played on a wrong guess. */
+  playWrongGuess: () => void;
+  /** Gates the ambient bed (the effects above are gated by their own hook). */
+  soundEnabled: boolean;
   /** Saves the run under this localStorage key so a reload resumes it. */
   persistKey?: string;
   /** Daily mode: the server owns the clock and the result; no replay. */
@@ -77,6 +82,8 @@ interface SpeedGameProps {
 export function SpeedGame({
   logos,
   playBubble,
+  playWrongGuess,
+  soundEnabled,
   persistKey,
   remote,
   rightPanel,
@@ -170,6 +177,11 @@ export function SpeedGame({
       images.length = 0;
     };
   }, [logos]);
+
+  useSpeedAmbience(
+    started && !finished && !allSolved && !timedOut,
+    soundEnabled,
+  );
 
   useEffect(() => {
     if (!started || finished || allSolved || timedOut) return;
@@ -280,6 +292,7 @@ export function SpeedGame({
       setSolved(nextSolved);
       goToNextUnsolved(current, nextSolved);
     } else {
+      playWrongGuess();
       setShaking(true);
     }
   }

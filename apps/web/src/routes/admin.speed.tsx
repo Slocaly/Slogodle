@@ -16,7 +16,7 @@ export const Route = createFileRoute("/admin/speed")({
  */
 function AdminSpeedPage() {
   const { soundEnabled } = useSoundSettings();
-  const { playBubble } = useSoundEffects(soundEnabled);
+  const { playBubble, playWrongGuess } = useSoundEffects(soundEnabled);
   const { data: bank } = useGameLogosQuery();
   const [round, setRound] = useState(0);
   // `round` is a deliberate re-roll trigger, not a value used in the callback.
@@ -33,6 +33,8 @@ function AdminSpeedPage() {
       key={round}
       logos={logos}
       playBubble={playBubble}
+      playWrongGuess={playWrongGuess}
+      soundEnabled={soundEnabled}
       onRestart={() => setRound((r) => r + 1)}
     />
   );

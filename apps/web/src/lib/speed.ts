@@ -88,6 +88,10 @@ export const SPEED_FINISH_GRACE_MS = 5000;
 
 /** Each wrong guess adds this to the final score. */
 export const SPEED_MISS_PENALTY_MS = 1000;
+/** Passing a logo adds this to the timer and moves on without solving it. */
+export const SPEED_PASS_PENALTY_MS = 15_000;
+/** Final entry of a logo's guess list when the player passed on it. */
+export const SPEED_PASS = "\u0000pass";
 const MAX_GUESS_LENGTH = 100;
 const MAX_GUESSES_PER_LOGO = 200;
 
@@ -111,16 +115,18 @@ export function speedScore(
 
 /**
  * Validates the guesses typed for each logo (in order, one list per logo) and
- * returns the number of misses per logo, or null when they don't add up: every
- * list must end exactly on its first correct guess. The server runs this on the
- * submitted guesses, so the rules above are the single source of truth.
+ * returns the misses per logo plus the number of passed logos, or null when
+ * they don't add up: every list must end exactly on its first correct guess,
+ * or on a pass preceded only by misses. The server runs this on the submitted
+ * guesses, so the rules above are the single source of truth.
  */
 export function checkSpeedGuesses(
   logos: Logo[],
   guesses: unknown,
-): number[] | null {
+): { misses: number[]; passCount: number } | null {
   if (!Array.isArray(guesses) || guesses.length !== logos.length) return null;
   const misses: number[] = [];
+  let passCount = 0;
   for (let i = 0; i < logos.length; i++) {
     const list: unknown = guesses[i];
     if (
@@ -131,15 +137,28 @@ export function checkSpeedGuesses(
       return null;
     }
     if (
-      list.some((g) => typeof g !== "string" || g.length > MAX_GUESS_LENGTH)
+      list.some(
+        (g) =>
+          typeof g !== "string" ||
+          (g !== SPEED_PASS && g.length > MAX_GUESS_LENGTH),
+      )
     ) {
       return null;
     }
-    const firstCorrect = (list as string[]).findIndex((g) =>
+    const passed = list.at(-1) === SPEED_PASS;
+    const typed = (passed ? list.slice(0, -1) : list) as string[];
+    const firstCorrect = typed.findIndex((g) =>
       isCorrectSpeedGuess(g, logos[i].name),
     );
-    if (firstCorrect !== list.length - 1) return null;
-    misses.push(firstCorrect);
+    if (typed.includes(SPEED_PASS)) return null;
+    if (passed) {
+      if (firstCorrect !== -1) return null;
+      passCount++;
+      misses.push(typed.length);
+    } else {
+      if (firstCorrect !== list.length - 1) return null;
+      misses.push(firstCorrect);
+    }
   }
-  return misses;
+  return { misses, passCount };
 }

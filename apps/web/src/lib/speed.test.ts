@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Logo } from "@slogodle/logos";
 import {
   SPEED_MISS_PENALTY_MS,
+  SPEED_PASS,
   SPEED_ROUND_SIZE,
   checkSpeedGuesses,
   dailySpeedLogos,
@@ -98,9 +99,26 @@ describe("checkSpeedGuesses", () => {
   const logos = [{ name: "React" }, { name: "Vue" }] as Logo[];
 
   it("returns misses per logo for valid guesses", () => {
-    expect(checkSpeedGuesses(logos, [["x", "y", "react"], ["vue"]])).toEqual([
-      2, 0,
-    ]);
+    expect(checkSpeedGuesses(logos, [["x", "y", "react"], ["vue"]])).toEqual({
+      misses: [2, 0],
+      passCount: 0,
+    });
+  });
+
+  it("accepts a pass after misses and counts it", () => {
+    expect(checkSpeedGuesses(logos, [["x", SPEED_PASS], ["vue"]])).toEqual({
+      misses: [1, 0],
+      passCount: 1,
+    });
+  });
+
+  it("rejects a pass after the correct answer or in the middle", () => {
+    expect(
+      checkSpeedGuesses(logos, [["react", SPEED_PASS], ["vue"]]),
+    ).toBeNull();
+    expect(
+      checkSpeedGuesses(logos, [[SPEED_PASS, "react"], ["vue"]]),
+    ).toBeNull();
   });
 
   it("rejects a non-array or wrong length", () => {

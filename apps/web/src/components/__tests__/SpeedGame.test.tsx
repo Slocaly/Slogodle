@@ -215,26 +215,6 @@ describe("SpeedGame", () => {
       expect(playBubble).toHaveBeenCalledOnce();
     });
 
-    it("shows the solved logo's story and moves on once the next logo is picked", async () => {
-      const { guess, start, user } = await renderSpeedGame();
-      await start();
-      await guess("react");
-
-      // The game jumped to the next unsolved logo; the solved one can be revisited.
-      expect(
-        screen.queryByText("React is a UI library."),
-      ).not.toBeInTheDocument();
-      await user.click(screen.getByRole("button", { name: /React/ }));
-
-      expect(screen.getByRole("heading", { name: "React" })).toBeVisible();
-      expect(screen.getByText("React is a UI library.")).toBeVisible();
-      expect(screen.getByText("React came out of a news feed.")).toBeVisible();
-      expect(screen.getByRole("link", { name: "Learn more" })).toHaveAttribute(
-        "href",
-        "https://github.com/example/react",
-      );
-    });
-
     it("accepts the name without its .js suffix", async () => {
       const { guess, start } = await renderSpeedGame();
       await start();
@@ -288,25 +268,40 @@ describe("SpeedGame", () => {
       expect(revealedLetters()).toHaveLength(2);
     });
 
-    it("skips to the next logo", async () => {
+    it("passes to the next logo and adds 15 seconds to the timer", async () => {
       const { guess, start, user } = await renderSpeedGame();
       await start();
 
-      await user.click(screen.getByRole("button", { name: "Skip this one" }));
+      expect(
+        screen.queryByRole("button", { name: "Skip this one" }),
+      ).toBeNull();
+      await user.click(screen.getByRole("button", { name: "Pass (+15s)" }));
       await guess("vue");
 
-      expect(screen.getByRole("button", { name: /Vue/ })).toBeVisible();
-      expect(screen.getByRole("button", { name: /1\s*\?\?\?/ })).toBeVisible();
+      expect(screen.getByRole("button", { name: /1\s*React/ })).toBeVisible();
+      expect(screen.getByRole("button", { name: /2\s*Vue/ })).toBeVisible();
+      expect(screen.getByText("00:15.0")).toBeVisible();
     });
 
-    it("jumps to any logo from the series list", async () => {
+    it("marks a passed logo in the series list and drops the flawless message", async () => {
       const { guess, start, user } = await renderSpeedGame();
       await start();
 
-      await user.click(screen.getByRole("button", { name: /3\s*\?\?\?/ }));
+      await user.click(screen.getByRole("button", { name: "Pass (+15s)" }));
+      expect(seriesList().getByText("Passed")).toBeVisible();
+
+      await guess("vue");
       await guess("nextjs");
 
-      expect(screen.getByRole("button", { name: /Next\.js/ })).toBeVisible();
+      expect(screen.queryByText(/Flawless/)).not.toBeInTheDocument();
+      expect(screen.getByText(/1 pass/)).toBeVisible();
+    });
+
+    it("does not let the series list change the current logo", async () => {
+      const { start } = await renderSpeedGame();
+      await start();
+
+      expect(screen.getByRole("button", { name: /3\s*\?\?\?/ })).toBeDisabled();
     });
 
     it("does not count a guess against another logo", async () => {

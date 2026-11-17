@@ -6,6 +6,7 @@ import { dayIndexFor } from "./game-logic";
 import {
   SPEED_FINISH_GRACE_MS,
   SPEED_MAX_RUN_MS,
+  SPEED_PASS_PENALTY_MS,
   checkSpeedGuesses,
   dailySpeedLogos,
   speedScore,
@@ -151,12 +152,16 @@ export async function finishSpeedRun(
 
   const bank = await listGameLogos();
   const logos = dailySpeedLogos(bank, input.dayIndex);
-  const misses = checkSpeedGuesses(logos, input.guesses);
-  if (!misses) throw new Error("guesses do not solve the series");
+  const checked = checkSpeedGuesses(logos, input.guesses);
+  if (!checked) throw new Error("guesses do not solve the series");
+  const { misses, passCount } = checked;
 
   const finishedAt = Date.now();
   const wrongCount = misses.reduce((sum, n) => sum + n, 0);
-  const result = speedScore(finishedAt - run.started_at, wrongCount);
+  const result = speedScore(
+    finishedAt - run.started_at + passCount * SPEED_PASS_PENALTY_MS,
+    wrongCount,
+  );
 
   await env.DB.prepare(
     `UPDATE speed_run

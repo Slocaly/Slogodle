@@ -9,6 +9,8 @@ import {
   SPEED_MASK_AFTER_MISSES,
   SPEED_MAX_RUN_MS,
   SPEED_MISS_PENALTY_MS,
+  SPEED_PASS,
+  SPEED_PASS_PENALTY_MS,
   formatTime,
   isCorrectSpeedGuess,
   shuffle,
@@ -145,6 +147,11 @@ export function SpeedGame({
   const wrongCounts = guessLog.map(
     (list, i) => list.length - (solved[i] ? 1 : 0),
   );
+  const passCount = guessLog.filter(
+    (list) => list.at(-1) === SPEED_PASS,
+  ).length;
+  const isPassed = (i: number) => guessLog[i].at(-1) === SPEED_PASS;
+  const passBonusMs = passCount * SPEED_PASS_PENALTY_MS;
   // Only server-timed runs can time out; the admin practice mode stays local.
   const timedOut =
     remote !== undefined &&
@@ -223,15 +230,15 @@ export function SpeedGame({
   const localResult = useMemo<SpeedResult | null>(() => {
     if (remote || localFinishedAt === null || startedAt === null) return null;
     const misses = guessLog.reduce((sum, list) => sum + list.length - 1, 0);
-    return speedScore(localFinishedAt - startedAt, misses);
-  }, [remote, localFinishedAt, startedAt, guessLog]);
+    return speedScore(localFinishedAt - startedAt + passBonusMs, misses);
+  }, [remote, localFinishedAt, startedAt, guessLog, passBonusMs]);
   const result = serverResult ?? localResult;
 
   const elapsed = result
     ? result.durationMs
     : startedAt === null
       ? 0
-      : Math.max(0, now - startedAt);
+      : Math.max(0, now - startedAt) + passBonusMs;
   const logo = logos[current];
 
   async function handleStart() {
@@ -282,7 +289,7 @@ export function SpeedGame({
   }
 
   function handleGuess(text: string) {
-    if (!started || finished || solved[current]) return;
+    if (!started || finished || solved[current] || text === SPEED_PASS) return;
     setGuessLog((log) =>
       log.map((list, i) => (i === current ? [...list, text] : list)),
     );
@@ -297,8 +304,15 @@ export function SpeedGame({
     }
   }
 
-  function handleSkip() {
-    goToNextUnsolved(current, solved);
+  function handlePass() {
+    if (!started || finished || solved[current]) return;
+    playBubble();
+    setGuessLog((log) =>
+      log.map((list, i) => (i === current ? [...list, SPEED_PASS] : list)),
+    );
+    const nextSolved = solved.map((s, i) => s || i === current);
+    setSolved(nextSolved);
+    goToNextUnsolved(current, nextSolved);
   }
 
   // The guess input unmounts on finish; move focus to the result heading so keyboard and
@@ -328,19 +342,24 @@ export function SpeedGame({
                 data-active={
                   showAnswers ? viewing === i : showLogo && i === current
                 }
-                data-solved={solved[i] || showAnswers}
+                data-solved={(solved[i] || showAnswers) && !isPassed(i)}
+                data-passed={isPassed(i)}
                 onClick={() => {
                   setCurrent(i);
-                  if (showAnswers) setViewing(i);
+                  setViewing(i);
                 }}
-                disabled={!showLogo && !showAnswers}
+                disabled={!showAnswers}
               >
                 <span className={styles.itemNumber}>{i + 1}</span>
                 <span className={styles.itemLabel}>
                   {solved[i] || showAnswers ? l.name : "???"}
                 </span>
-                {(solved[i] || showAnswers) && (
-                  <span className={styles.check} aria-hidden />
+                {isPassed(i) ? (
+                  <span className={styles.passedBadge}>Passed</span>
+                ) : (
+                  (solved[i] || showAnswers) && (
+                    <span className={styles.check} aria-hidden />
+                  )
                 )}
               </button>
             </li>
@@ -359,7 +378,7 @@ export function SpeedGame({
               {[
                 "Type the name. Capitals, dots and dashes don't matter.",
                 `Every wrong guess adds ${penaltySeconds} ${penaltySeconds === 1 ? "second" : "seconds"} to your score and unlocks a hint.`,
-                "Stuck? Skip, or jump to any logo from the list.",
+                `Stuck? Pass: it adds ${SPEED_PASS_PENALTY_MS / 1000} seconds to the clock and moves on to the next logo.`,
               ].map((rule, i) => (
                 <li key={rule} style={{ "--i": i } as React.CSSProperties}>
                   {rule}
@@ -442,11 +461,12 @@ export function SpeedGame({
               <span>
                 {m.speed_solve_time({ time: formatTime(result.durationMs) })}
               </span>
-              {result.wrongCount === 0 ? (
+              {result.wrongCount === 0 && passCount === 0 && (
                 <strong className={styles.flawless}>
                   {m.speed_flawless()}
                 </strong>
-              ) : (
+              )}
+              {result.wrongCount > 0 && (
                 <>
                   <span aria-hidden="true">+</span>
                   <span>
@@ -458,6 +478,14 @@ export function SpeedGame({
                     </strong>
                   </span>
                 </>
+              )}
+              {passCount > 0 && (
+                <span>
+                  {passCount === 1 ? "1 pass" : `${passCount} passes`}{" "}
+                  <strong className={styles.penalty}>
+                    (included, +{formatTime(passBonusMs)})
+                  </strong>
+                </span>
               )}
             </p>
             {dayIndex !== undefined && (
@@ -605,9 +633,9 @@ export function SpeedGame({
                 <button
                   type="button"
                   className={styles.skip}
-                  onClick={handleSkip}
+                  onClick={handlePass}
                 >
-                  Skip this one
+                  Pass (+{SPEED_PASS_PENALTY_MS / 1000}s)
                 </button>
               </>
             )}

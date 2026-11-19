@@ -1,4 +1,4 @@
-import { env } from "cloudflare:workers";
+import { prepareScoped } from "./brand-db.server";
 
 export interface AdminUser {
   id: string;
@@ -23,7 +23,7 @@ interface AdminUserRow {
 }
 
 export async function listAdminUsers(): Promise<AdminUser[]> {
-  const { results } = await env.DB.prepare(
+  const { results } = await prepareScoped(
     `SELECT
        u.id, u.name, u.email, u.created_at,
        p.last_played_at, p.games_played,
@@ -32,7 +32,7 @@ export async function listAdminUsers(): Promise<AdminUser[]> {
      LEFT JOIN (
        SELECT user_id, MAX(created_at) AS last_played_at, COUNT(*) AS games_played
        FROM progress
-       WHERE user_id IS NOT NULL
+       WHERE brand = $BRAND AND user_id IS NOT NULL
        GROUP BY user_id
      ) p ON p.user_id = u.id
      LEFT JOIN (
@@ -61,10 +61,10 @@ export interface AdminUserCounts {
 }
 
 export async function getAdminUserCounts(): Promise<AdminUserCounts> {
-  const row = await env.DB.prepare(
+  const row = await prepareScoped(
     `SELECT
        (SELECT COUNT(*) FROM user) AS registered,
-       (SELECT COUNT(DISTINCT anon_id) FROM progress WHERE anon_id IS NOT NULL) AS anonymous`,
+       (SELECT COUNT(DISTINCT anon_id) FROM progress WHERE brand = $BRAND AND anon_id IS NOT NULL) AS anonymous`,
   ).first<{ registered: number; anonymous: number }>();
   return { anonymous: row?.anonymous ?? 0, registered: row?.registered ?? 0 };
 }

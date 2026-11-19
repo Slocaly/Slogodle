@@ -49,6 +49,19 @@ const MODULES: string[] = [
   "speed.server.ts",
   "game-logos.server.ts",
   "logo-metadata.server.ts",
+  "stats.server.ts",
+  "mistakes.server.ts",
+  "users.server.ts",
+];
+
+const REQUIRED_MODULES = [
+  "progress.server.ts",
+  "speed.server.ts",
+  "game-logos.server.ts",
+  "logo-metadata.server.ts",
+  "stats.server.ts",
+  "mistakes.server.ts",
+  "users.server.ts",
 ];
 
 const ALLOWLIST: { file: string; snippet: string }[] = [];
@@ -86,6 +99,10 @@ function findUnscopedPrepares(file: string, source: string): string[] {
 }
 
 describe("brand scope guard", () => {
+  it("scans all seven query modules", () => {
+    for (const file of REQUIRED_MODULES) expect(MODULES).toContain(file);
+  });
+
   it("flags a raw env.DB.prepare call in a scanned module", () => {
     expect(
       findUnscopedPrepares(

@@ -1,4 +1,4 @@
-import { env } from "cloudflare:workers";
+import { prepareScoped } from "./brand-db.server";
 import { listGameLogosWithId } from "./game-logos.server";
 import { pickLogo } from "./game-logic";
 import type { Guess } from "./game-logic";
@@ -29,8 +29,8 @@ export async function topMistakesByLogo(): Promise<LogoMistakeStat[]> {
   if (bank.length === 0) return [];
   const byId = new Map(bank.map((logo) => [logo.id, logo]));
 
-  const { results } = await env.DB.prepare(
-    `SELECT logo_id, day_index, guesses_json FROM progress WHERE status IN ('won', 'lost')`,
+  const { results } = await prepareScoped(
+    `SELECT logo_id, day_index, guesses_json FROM progress WHERE brand = $BRAND AND status IN ('won', 'lost')`,
   ).all<ProgressMistakeRow>();
 
   const countsByLogoId = new Map<number, Map<string, number>>();

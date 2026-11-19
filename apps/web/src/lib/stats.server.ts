@@ -1,4 +1,4 @@
-import { env } from "cloudflare:workers";
+import { prepareScoped } from "./brand-db.server";
 import { dayIndexFor } from "./game-logic";
 
 export type FinishBucket =
@@ -61,10 +61,10 @@ export async function dailyFinishStats(
   const startDayIndex = dayIndexFor(monthStart);
   const endDayIndex = dayIndexFor(nextMonthStart) - 1;
 
-  const { results } = await env.DB.prepare(
+  const { results } = await prepareScoped(
     `SELECT day_index, status, guess_count, played_fresh, COUNT(*) as count
      FROM progress
-     WHERE day_index BETWEEN ? AND ? AND status IN ('won', 'lost')
+     WHERE brand = $BRAND AND day_index BETWEEN ? AND ? AND status IN ('won', 'lost')
      GROUP BY day_index, status, guess_count, played_fresh`,
   )
     .bind(startDayIndex, endDayIndex)

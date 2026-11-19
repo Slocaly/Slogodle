@@ -9,13 +9,19 @@ import {
   resetPasswordEmailSubject,
   resetPasswordEmailText,
 } from "../emails/reset-password";
-import { brand } from "../brands";
+import { BRANDS, brand } from "../brands";
+import { buildAuthOptionsFragment } from "./auth-config";
 
 let instance: ReturnType<typeof betterAuth> | undefined;
 
 export function getAuth() {
   if (!instance) {
     instance = betterAuth({
+      // trustedOrigins + (in production) the .slogodle.com cross-subdomain cookie.
+      ...buildAuthOptionsFragment(
+        Object.values(BRANDS).map((b) => b.origin),
+        import.meta.env.DEV,
+      ),
       account: {
         accountLinking: {
           requireLocalEmailVerified: false,

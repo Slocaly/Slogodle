@@ -5,8 +5,25 @@ import { createTestingLogo } from "src/test/create-testing-logo";
 import { mockAuthSession } from "src/test/mock-auth-session";
 import { render } from "src/test/render-with-providers";
 import { RevealPanel } from "../RevealPanel";
+import type * as Brands from "src/brands";
 
 vi.setConfig({ restoreMocks: true });
+
+// Lets a test swap the brand; the default is the real (tech) brand.
+const brandOverride = vi.hoisted(() => ({
+  current: undefined as Record<string, unknown> | undefined,
+}));
+vi.mock("src/brands", async (importOriginal) => {
+  const actual = await importOriginal<typeof Brands>();
+  return {
+    ...actual,
+    get brand() {
+      return brandOverride.current
+        ? { ...actual.brand, ...brandOverride.current }
+        : actual.brand;
+    },
+  };
+});
 
 // better-auth's useSession hook has no service underneath to cut at.
 vi.mock("src/lib/auth-client", () => ({
@@ -44,6 +61,7 @@ const renderRevealPanel = (
 
 describe("RevealPanel", () => {
   beforeEach(() => {
+    brandOverride.current = undefined;
     mockAuthSession("anonymous");
     vi.mocked(fetchSpeedStanding).mockResolvedValue(null);
   });
@@ -84,6 +102,19 @@ describe("RevealPanel", () => {
       ).toBeVisible();
       expect(await navigator.clipboard.readText()).toBe(
         `I found today's tech logo!\nSlogodle #5 2/3\n\n🟥🟩\n\n${window.location.origin}`,
+      );
+    });
+
+    it("uses the brand's name and share noun", async () => {
+      brandOverride.current = { name: "X", shareNoun: "brand" };
+      const user = userEvent.setup();
+      await renderRevealPanel();
+
+      await user.click(screen.getByRole("button", { name: "Share result" }));
+
+      await screen.findByRole("button", { name: "Copied!" });
+      expect(await navigator.clipboard.readText()).toBe(
+        `I found today's brand logo!\nX #5 2/3\n\n🟥🟩\n\n${window.location.origin}`,
       );
     });
 

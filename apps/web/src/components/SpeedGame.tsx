@@ -17,6 +17,7 @@ import {
   speedScore,
 } from "../lib/speed";
 import type { SpeedResult } from "../lib/speed";
+import { brand } from "../brands";
 import { m } from "../paraglide/messages.js";
 import { GithubIcon } from "./icons/GithubIcon";
 import { ShareIcon } from "./icons/ShareIcon";
@@ -265,7 +266,7 @@ export function SpeedGame({
     playBubble();
     const wrong = result.wrongCount;
     const text =
-      `⚡ ${m.site_title()} Speed #${dayIndex + 1}\n` +
+      `⚡ ${brand.name} Speed #${dayIndex + 1}\n` +
       `⏱ ${formatTime(result.scoreMs)} (${formatTime(result.durationMs)} + ${wrong} wrong)\n\n` +
       `Beat my time 👇\n` +
       `${window.location.origin}/speed`;

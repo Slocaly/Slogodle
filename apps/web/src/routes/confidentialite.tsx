@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LegalPage } from "../components/LegalPage";
+import { brand } from "../brands";
 import { m } from "../paraglide/messages.js";
 
 export const Route = createFileRoute("/confidentialite")({
@@ -10,7 +11,7 @@ export const Route = createFileRoute("/confidentialite")({
 function ConfidentialitePage() {
   return (
     <LegalPage title={m.legal_confidentialite_title()}>
-      <p>{m.legal_confidentialite_intro()}</p>
+      <p>{m.legal_confidentialite_intro({ brand: brand.name })}</p>
 
       <h2>{m.legal_confidentialite_local_heading()}</h2>
       <p>{m.legal_confidentialite_local_body()}</p>
@@ -19,7 +20,7 @@ function ConfidentialitePage() {
       <p>{m.legal_confidentialite_account_body()}</p>
 
       <h2>{m.legal_confidentialite_hosting_heading()}</h2>
-      <p>{m.legal_confidentialite_hosting_body()}</p>
+      <p>{m.legal_confidentialite_hosting_body({ brand: brand.name })}</p>
 
       <h2>{m.legal_confidentialite_rights_heading()}</h2>
       <p>{m.legal_confidentialite_rights_body()}</p>

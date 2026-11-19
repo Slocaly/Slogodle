@@ -9,11 +9,12 @@ import type { QueryClient } from "@tanstack/react-query";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 import globalCss from "../styles/global.css?url";
 import { getLocale } from "../paraglide/runtime.js";
+import { brand } from "../brands";
 import { m } from "../paraglide/messages.js";
 import { NotFoundPage } from "../components/NotFoundPage";
 
 // Link-preview crawlers ignore relative URLs, so OG tags need the absolute production URL.
-const SITE_URL = "https://tech.slogodle.com";
+const SITE_URL = brand.origin;
 // Rendered from apps/video with `pnpm run render:og`; crawlers don't accept SVG.
 const OG_IMAGE_URL = `${SITE_URL}/og-image.png`;
 
@@ -24,22 +25,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       meta: [
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width" },
-        { title: m.site_title() },
-        { name: "description", content: m.site_description() },
-        { name: "theme-color", content: "#f4a6c6" },
+        { title: brand.name },
+        {
+          name: "description",
+          content: m.site_description({ noun: brand.shareNoun }),
+        },
+        { name: "theme-color", content: brand.themeColor },
         { property: "og:type", content: "website" },
-        { property: "og:site_name", content: m.site_title() },
+        { property: "og:site_name", content: brand.name },
         { property: "og:url", content: SITE_URL },
-        { property: "og:title", content: m.site_title() },
-        { property: "og:description", content: m.site_description() },
+        { property: "og:title", content: brand.name },
+        {
+          property: "og:description",
+          content: m.site_description({ noun: brand.shareNoun }),
+        },
         { property: "og:image", content: OG_IMAGE_URL },
         { property: "og:image:type", content: "image/png" },
         { property: "og:image:width", content: "1200" },
         { property: "og:image:height", content: "630" },
-        { property: "og:image:alt", content: m.site_description() },
+        {
+          property: "og:image:alt",
+          content: m.site_description({ noun: brand.shareNoun }),
+        },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: m.site_title() },
-        { name: "twitter:description", content: m.site_description() },
+        { name: "twitter:title", content: brand.name },
+        {
+          name: "twitter:description",
+          content: m.site_description({ noun: brand.shareNoun }),
+        },
         { name: "twitter:image", content: OG_IMAGE_URL },
       ],
       links: [

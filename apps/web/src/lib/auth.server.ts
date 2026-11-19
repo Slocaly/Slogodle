@@ -4,15 +4,12 @@ import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { drizzle } from "drizzle-orm/d1";
 import { render } from "@react-email/render";
 import * as schema from "./auth-schema.server";
-import { ResetPasswordEmail } from "../emails/reset-password";
-
-// Plain-text is written by hand rather than derived from the React template
-// via `render(..., { plainText: true })`: that path pulls in html-to-text on
-// top of the React render, doubling the work for every reset email — not
-// worth it for a one-paragraph message on Workers' free-plan CPU budget.
-function resetPasswordEmailText(url: string): string {
-  return `Reset your Slogodle password: ${url}\n\nThis link expires in 1 hour. If you didn't request this, you can safely ignore this email.`;
-}
+import {
+  ResetPasswordEmail,
+  resetPasswordEmailSubject,
+  resetPasswordEmailText,
+} from "../emails/reset-password";
+import { brand } from "../brands";
 
 let instance: ReturnType<typeof betterAuth> | undefined;
 
@@ -55,9 +52,9 @@ export function getAuth() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              from: `Slogodle <${from}>`,
+              from: `${brand.name} <${from}>`,
               to: [user.email],
-              subject: "Reset your Slogodle password",
+              subject: resetPasswordEmailSubject(),
               html: await render(
                 ResetPasswordEmail({
                   url,

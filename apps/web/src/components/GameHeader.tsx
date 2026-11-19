@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { brand } from "../brands";
 import { m } from "../paraglide/messages.js";
 import { AccountMenu } from "./AccountMenu";
 import { ArchiveToggle } from "./ArchiveToggle";
@@ -62,7 +63,7 @@ export function GameHeader({
   };
 
   const handleTitleActivate = () => {
-    const letterCount = [...m.site_title()].length;
+    const letterCount = [...brand.name].length;
     setBounceKey((key) => key + 1);
     for (let i = 0; i < letterCount; i++) {
       setTimeout(
@@ -78,11 +79,11 @@ export function GameHeader({
         <button
           type="button"
           className={styles.titleButton}
-          aria-label={m.site_title()}
+          aria-label={brand.name}
           onClick={handleTitleActivate}
         >
           {(() => {
-            const letters = [...m.site_title()];
+            const letters = [...brand.name];
             const groupEnds: number[] = [];
             for (const size of TITLE_GROUP_SIZES) {
               groupEnds.push((groupEnds.at(-1) ?? 0) + size);

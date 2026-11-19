@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Logo } from "@slogodle/logos";
 import { Link } from "@tanstack/react-router";
+import { brand } from "../brands";
 import { buildShareText } from "../lib/game-logic";
 import type { GameStatus, Guess } from "../lib/game-logic";
 import { authClient } from "../lib/auth-client";
@@ -40,12 +41,15 @@ export function RevealPanel({
     const text = buildShareText({
       dayIndex,
       guesses,
-      intro: status === "won" ? m.share_intro_won() : m.share_intro_lost(),
+      intro:
+        status === "won"
+          ? m.share_intro_won({ noun: brand.shareNoun })
+          : m.share_intro_lost({ noun: brand.shareNoun }),
       maxTries,
       origin: window.location.origin,
       status,
       streakLine: streak ? m.share_streak({ streak }) : undefined,
-      title: m.site_title(),
+      title: brand.name,
     });
     try {
       await navigator.clipboard.writeText(text);

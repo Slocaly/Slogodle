@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { brand } from "../brands";
 
 // Table-based layout with inline styles on purpose — Outlook desktop renders
 // email HTML with Word's engine, which ignores flexbox/grid and most modern
@@ -107,6 +108,18 @@ const styles = {
   } satisfies CSSProperties,
 };
 
+export function resetPasswordEmailSubject(): string {
+  return `Reset your ${brand.name} password`;
+}
+
+// Plain-text is written by hand rather than derived from the React template
+// via `render(..., { plainText: true })`: that path pulls in html-to-text on
+// top of the React render, doubling the work for every reset email — not
+// worth it for a one-paragraph message on Workers' free-plan CPU budget.
+export function resetPasswordEmailText(url: string): string {
+  return `${resetPasswordEmailSubject()}: ${url}\n\nThis link expires in 1 hour. If you didn't request this, you can safely ignore this email.`;
+}
+
 export interface ResetPasswordEmailProps {
   url: string;
   // Absolute URL to public/email/slogodle-wordmark.png, built from
@@ -124,12 +137,12 @@ export function ResetPasswordEmail({
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Reset your Slogodle password</title>
+        <title>{resetPasswordEmailSubject()}</title>
       </head>
       <body style={styles.body}>
         <span style={styles.preheader}>
-          Reset the password for your Slogodle account. This link expires in 1
-          hour.
+          Reset the password for your {brand.name} account. This link expires in
+          1 hour.
         </span>
         <table role="presentation" width="100%" cellPadding={0} cellSpacing={0}>
           <tbody>
@@ -150,15 +163,15 @@ export function ResetPasswordEmail({
                             src={logoImageUrl}
                             width={LOGO_WIDTH}
                             height={LOGO_HEIGHT}
-                            alt="Slogodle"
+                            alt={brand.name}
                             style={styles.brandImg}
                           />
                         </div>
                         <h1 style={styles.heading}>Reset your password</h1>
                         <p style={styles.paragraph}>
                           We received a request to reset the password for your
-                          Slogodle account. Click the button below to choose a
-                          new one.
+                          {brand.name} account. Click the button below to choose
+                          a new one.
                         </p>
                         <div style={styles.buttonWrap}>
                           <a href={url} style={styles.button}>
@@ -171,7 +184,7 @@ export function ResetPasswordEmail({
                         </p>
                         <hr style={styles.hr} />
                         <p style={styles.tagline}>
-                          Slogodle — guess the logo, keep your streak.
+                          {brand.name} — guess the logo, keep your streak.
                         </p>
                       </td>
                     </tr>
@@ -189,9 +202,9 @@ export function ResetPasswordEmail({
 export default ResetPasswordEmail;
 
 ResetPasswordEmail.PreviewProps = {
-  url: "https://slogodle.com/reset-password?token=preview-token",
+  url: `${brand.origin}/reset-password?token=preview-token`,
   // `pnpm email` serves this template from its own dev server, which can't
   // reach a relative app path — point this at a deployed origin, or run the
   // app's own dev server and swap in its localhost URL, to preview for real.
-  logoImageUrl: "https://slogodle.com/email/slogodle-wordmark.png",
+  logoImageUrl: `${brand.origin}/email/slogodle-wordmark.png`,
 } satisfies ResetPasswordEmailProps;

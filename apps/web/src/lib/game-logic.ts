@@ -32,6 +32,17 @@ export function pickLogo<T extends Logo>(bank: T[], dayIndex: number): T {
   return bank[i];
 }
 
+/**
+ * The logo for `dayIndex`, or `null` while the bank is empty (a new brand's
+ * bucket starts with no playable logos) — `pickLogo` alone would index NaN.
+ */
+export function selectTodayLogo<T extends Logo>(
+  bank: T[],
+  dayIndex: number,
+): T | null {
+  return bank.length > 0 ? pickLogo(bank, dayIndex) : null;
+}
+
 export function isCorrectGuess(text: string, logo: Logo): boolean {
   const q = text.trim().toLowerCase();
   return logo.name.toLowerCase() === q;

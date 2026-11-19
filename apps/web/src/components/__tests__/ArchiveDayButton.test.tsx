@@ -55,6 +55,13 @@ describe("ArchiveDayButton", () => {
     expect(screen.getByText("Beta")).toBeVisible();
   });
 
+  it("renders a played day without a name when the bank is empty", async () => {
+    await renderArchiveDayButton({ bank: [], result: "won" });
+
+    expect(screen.getByRole("img", { name: "Solved" })).toBeVisible();
+    expect(screen.getByText("#5")).toBeVisible();
+  });
+
   it("marks the active day as current", async () => {
     await renderArchiveDayButton({ active: true });
 

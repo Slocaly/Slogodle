@@ -1,4 +1,5 @@
 import { env } from "cloudflare:workers";
+import { prepareScoped } from "./brand-db.server";
 
 export interface LogoMetadata {
   id: number;
@@ -59,8 +60,8 @@ function toLogoMetadata(row: LogoMetadataRow): LogoMetadata {
 }
 
 export async function listLogoMetadata(): Promise<LogoMetadata[]> {
-  const { results } = await env.DB.prepare(
-    "SELECT * FROM logo_metadata ORDER BY r2_key",
+  const { results } = await prepareScoped(
+    "SELECT * FROM logo_metadata WHERE brand = $BRAND ORDER BY r2_key",
   ).all<LogoMetadataRow>();
   return results.map(toLogoMetadata);
 }
@@ -68,10 +69,12 @@ export async function listLogoMetadata(): Promise<LogoMetadata[]> {
 export async function upsertLogoMetadata(
   input: UpsertLogoMetadataInput,
 ): Promise<LogoMetadata> {
-  const row = await env.DB.prepare(
-    `INSERT INTO logo_metadata (r2_key, name, industry, founded, description, fun_fact, git_link, aspect, day_order)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(day_order), 0) + 1 FROM logo_metadata))
-     ON CONFLICT(r2_key) DO UPDATE SET
+  // day_order numbers each brand's own sequence (unique per brand), so the
+  // next slot is counted over this brand's rows only.
+  const row = await prepareScoped(
+    `INSERT INTO logo_metadata (brand, r2_key, name, industry, founded, description, fun_fact, git_link, aspect, day_order)
+     VALUES ($BRAND, ?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(day_order), 0) + 1 FROM logo_metadata WHERE brand = $BRAND))
+     ON CONFLICT(brand, r2_key) DO UPDATE SET
        name = excluded.name,
        industry = excluded.industry,
        founded = excluded.founded,
@@ -99,7 +102,9 @@ export async function upsertLogoMetadata(
 }
 
 export async function deleteLogoMetadata(r2Key: string): Promise<void> {
-  await env.DB.prepare("DELETE FROM logo_metadata WHERE r2_key = ?")
+  await prepareScoped(
+    "DELETE FROM logo_metadata WHERE brand = $BRAND AND r2_key = ?",
+  )
     .bind(r2Key)
     .run();
 }
@@ -108,18 +113,18 @@ export async function reorderLogoMetadata(
   updates: { r2Key: string; dayOrder: number }[],
 ): Promise<void> {
   if (updates.length === 0) return;
-  // day_order has a UNIQUE index, so writing final values directly can
+  // day_order is unique per brand, so writing final values directly can
   // collide mid-batch with a row that hasn't moved out of the way yet.
   // Stage through negative temp values first to dodge that.
   const statements = [
     ...updates.map(({ r2Key }, index) =>
-      env.DB.prepare(
-        "UPDATE logo_metadata SET day_order = ? WHERE r2_key = ?",
+      prepareScoped(
+        "UPDATE logo_metadata SET day_order = ? WHERE brand = $BRAND AND r2_key = ?",
       ).bind(-(index + 1), r2Key),
     ),
     ...updates.map(({ r2Key, dayOrder }) =>
-      env.DB.prepare(
-        "UPDATE logo_metadata SET day_order = ?, updated_at = CURRENT_TIMESTAMP WHERE r2_key = ?",
+      prepareScoped(
+        "UPDATE logo_metadata SET day_order = ?, updated_at = CURRENT_TIMESTAMP WHERE brand = $BRAND AND r2_key = ?",
       ).bind(dayOrder, r2Key),
     ),
   ];

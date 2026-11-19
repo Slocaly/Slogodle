@@ -62,15 +62,17 @@ export function RevealPanel({
       <div className={shared.revealFact}>{logo.funFact}</div>
       <div className={styles.ctaGroup}>
         <div className={styles.actionsRow}>
-          <a
-            className={styles.githubLinkBtn}
-            href={logo.gitLink}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <GithubIcon />
-            <span>{m.reveal_github_cta()}</span>
-          </a>
+          {logo.gitLink && (
+            <a
+              className={styles.githubLinkBtn}
+              href={logo.gitLink}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <GithubIcon />
+              <span>{m.reveal_github_cta()}</span>
+            </a>
+          )}
           <button
             type="button"
             className={styles.shareBtn}

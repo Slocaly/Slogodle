@@ -13,6 +13,7 @@ import {
   pickLogo,
   resolveGuesses,
   rewardFor,
+  selectTodayLogo,
   suggestionsFor,
   type GameStatus,
 } from "./game-logic";
@@ -56,6 +57,20 @@ describe("pickLogo", () => {
 
   it("handles negative indexes", () => {
     expect(pickLogo(bank, -1).name).toBe("c");
+  });
+});
+
+describe("selectTodayLogo", () => {
+  const bank = [{ name: "a" }, { name: "b" }, { name: "c" }] as Logo[];
+
+  it("returns null for an empty bank instead of indexing it", () => {
+    expect(selectTodayLogo([], 0)).toBeNull();
+    expect(selectTodayLogo([], 7)).toBeNull();
+  });
+
+  it("picks the same wrapped logo as pickLogo otherwise", () => {
+    expect(selectTodayLogo(bank, 4)?.name).toBe("b");
+    expect(selectTodayLogo(bank, -1)?.name).toBe("c");
   });
 });
 

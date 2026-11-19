@@ -100,6 +100,11 @@ function SpeedPage() {
             Retry
           </button>
         </div>
+      ) : bank && bank.length < SPEED_ROUND_SIZE ? (
+        // A new brand's bank starts empty: no series to play until it fills up.
+        <div className={styles.loading}>
+          <LoadingCard variant="empty" />
+        </div>
       ) : logos.length === SPEED_ROUND_SIZE && runQuery.data ? (
         <SpeedGame
           key={`${dayIndex}-${replay}-${runQuery.data.viewingRanked}`}

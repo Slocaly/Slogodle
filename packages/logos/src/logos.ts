@@ -8,8 +8,8 @@ export interface Logo {
   icon: string;
   /** Intrinsic width/height ratio of the icon, used to size it in the physics pile. */
   aspect: number;
-  /** Link to the project's GitHub repository. */
-  gitLink: string;
+  /** Link to the project's GitHub repository; null for brands without one. */
+  gitLink: string | null;
 }
 
 export const LOGOS: Logo[] = [

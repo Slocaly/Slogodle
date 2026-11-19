@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
+import { brand } from "../brands";
 import { now } from "../lib/clock";
 import { dayIndexFor } from "../lib/game-logic";
 import { fetchR2Logos } from "../lib/r2-logos";
@@ -678,7 +679,8 @@ function ReadOnlyView({
     !metadata?.name ||
     !metadata?.industry ||
     !metadata?.founded ||
-    !metadata?.gitLink;
+    // Only brands of open-source projects need a git link to be playable.
+    (brand.requiresGitLink && !metadata?.gitLink);
 
   return (
     <>

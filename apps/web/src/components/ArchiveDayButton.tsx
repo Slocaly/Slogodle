@@ -1,5 +1,5 @@
 import type { Logo } from "@slogodle/logos";
-import { pickLogo } from "../lib/game-logic";
+import { selectTodayLogo } from "../lib/game-logic";
 import type { GameStatus } from "../lib/game-logic";
 import { m } from "../paraglide/messages.js";
 import styles from "./ArchiveDayButton.module.css";
@@ -30,7 +30,7 @@ export function ArchiveDayButton({
 }: ArchiveDayButtonProps) {
   const isPlayed = result === "won" || result === "lost";
   const { dotClass, label } = STATUS_META[isPlayed ? result : "unplayed"];
-  const name = isPlayed ? pickLogo(bank, dayIdx).name : null;
+  const name = isPlayed ? (selectTodayLogo(bank, dayIdx)?.name ?? null) : null;
   const activeClass = active ? styles.archiveDayActive : "";
 
   return (

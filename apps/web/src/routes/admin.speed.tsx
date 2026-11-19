@@ -5,6 +5,7 @@ import { useSoundSettings } from "../hooks/useSoundSettings";
 import { useSoundEffects } from "../hooks/useSoundEffects";
 import { useGameLogosQuery } from "../hooks/useGameLogosQuery";
 import { SPEED_ROUND_SIZE, randomSpeedLogos } from "../lib/speed";
+import { m } from "../paraglide/messages.js";
 
 export const Route = createFileRoute("/admin/speed")({
   component: AdminSpeedPage,
@@ -26,6 +27,7 @@ function AdminSpeedPage() {
     [bank, round],
   );
 
+  if (bank && bank.length < SPEED_ROUND_SIZE) return <p>{m.loading_empty()}</p>;
   if (logos.length !== SPEED_ROUND_SIZE) return <p>Loading logos…</p>;
 
   return (

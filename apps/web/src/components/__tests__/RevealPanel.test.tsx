@@ -64,6 +64,13 @@ describe("RevealPanel", () => {
     expect(link).toHaveAttribute("target", "_blank");
   });
 
+  it("hides the repository link when the logo has none", async () => {
+    await renderRevealPanel({ logo: { ...logo, gitLink: null } });
+
+    // Without an href the anchor would lose its link role, so look for the text.
+    expect(screen.queryByText("Learn more")).not.toBeInTheDocument();
+  });
+
   describe("sharing", () => {
     // userEvent.setup() installs its own in-memory clipboard on navigator.
     it("copies the result to the clipboard and confirms it", async () => {

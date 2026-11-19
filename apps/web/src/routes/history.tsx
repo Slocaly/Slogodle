@@ -6,7 +6,7 @@ import { GameFooter } from "../components/GameFooter";
 import { STATUS_META } from "../components/ArchiveDayButton";
 import { GuessDots } from "../components/GuessDots";
 import { GithubIcon } from "../components/icons/GithubIcon";
-import { pickLogo } from "../lib/game-logic";
+import { selectTodayLogo } from "../lib/game-logic";
 import { m } from "../paraglide/messages.js";
 import dayStyles from "../components/ArchiveDayButton.module.css";
 import shared from "../styles/shared.module.css";
@@ -67,7 +67,7 @@ function HistoryPage() {
               // A finished day (won or lost) reveals its logo; only a truly
               // unplayed day gets the blurred placeholder so the answer
               // stays hidden.
-              const logo = isPlayed ? pickLogo(g.bank, idx) : null;
+              const logo = isPlayed ? selectTodayLogo(g.bank, idx) : null;
               return (
                 <div key={idx} className={styles.card}>
                   <span
@@ -75,7 +75,7 @@ function HistoryPage() {
                     role="img"
                     aria-label={label()}
                   />
-                  {logo && (
+                  {logo?.gitLink && (
                     <a
                       href={logo.gitLink}
                       target="_blank"

@@ -648,7 +648,8 @@ export function SpeedGame({
   );
 }
 
-function GithubLink({ href }: { href: string }) {
+function GithubLink({ href }: { href: string | null }) {
+  if (!href) return null;
   return (
     <a
       className={styles.githubLink}

@@ -7,6 +7,7 @@ import {
   SPEED_FINISH_GRACE_MS,
   SPEED_MAX_RUN_MS,
   SPEED_PASS_PENALTY_MS,
+  SPEED_ROUND_SIZE,
   checkSpeedGuesses,
   dailySpeedLogos,
   speedScore,
@@ -152,6 +153,9 @@ export async function finishSpeedRun(
 
   const bank = await listGameLogos();
   const logos = dailySpeedLogos(bank, input.dayIndex);
+  // An empty (or too small) bank has no series: zero guesses must not "solve" it.
+  if (logos.length !== SPEED_ROUND_SIZE)
+    throw new Error("no logo bank available");
   const checked = checkSpeedGuesses(logos, input.guesses);
   if (!checked) throw new Error("guesses do not solve the series");
   const { misses, passCount } = checked;

@@ -4,7 +4,7 @@ import { loadJSON, saveJSON } from "../lib/storage";
 import { now, subscribe as subscribeClock } from "../lib/clock";
 import {
   dayIndexFor,
-  pickLogo,
+  selectTodayLogo,
   computeStreak,
   computeBestStreak,
   resolveGuesses,
@@ -191,7 +191,7 @@ export function useGameState() {
     [pinnedToToday],
   );
 
-  const logo = bank && bank.length > 0 ? pickLogo(bank, activeDayIndex) : null;
+  const logo = bank ? selectTodayLogo(bank, activeDayIndex) : null;
 
   const history: Record<string, GameStatus> = {};
   // A win only counts toward a streak if it was played on the day the puzzle
@@ -209,12 +209,15 @@ export function useGameState() {
       streakHistory[key] =
         record.status === "won" && !playedFresh ? "lost" : record.status;
     }
-    if (record.status === "won" && bank) {
-      const dayIndex = Number(key);
+    const foundLogo =
+      record.status === "won" && bank
+        ? selectTodayLogo(bank, Number(key))
+        : null;
+    if (foundLogo) {
       foundLogos.push({
         count: record.reward,
-        dayIndex,
-        logo: pickLogo(bank, dayIndex),
+        dayIndex: Number(key),
+        logo: foundLogo,
       });
     }
   }

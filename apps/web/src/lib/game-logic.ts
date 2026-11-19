@@ -1,6 +1,9 @@
 import type { Logo } from "@slogodle/logos";
+import { brand } from "../brands";
 
-const EPOCH = new Date(2026, 9, 5);
+function brandEpoch(): Date {
+  return new Date(...brand.epoch);
+}
 
 export type GameStatus = "playing" | "won" | "lost";
 
@@ -19,7 +22,7 @@ function localMidnight(date: Date): Date {
   return d;
 }
 
-export function dayIndexFor(date: Date, epoch: Date = EPOCH): number {
+export function dayIndexFor(date: Date, epoch: Date = brandEpoch()): number {
   const ms = localMidnight(date).getTime() - localMidnight(epoch).getTime();
   return Math.floor(ms / 86_400_000);
 }

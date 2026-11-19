@@ -44,7 +44,7 @@ describe("brandSql", () => {
 // queried through prepareScoped. Each task that converts a module appends it to
 // MODULES; ALLOWLIST lists the raw env.DB.prepare calls that are allowed to stay
 // (statements on user/session only), as file + snippet of the SQL that follows.
-const MODULES: string[] = [];
+const MODULES: string[] = ["progress.server.ts", "speed.server.ts"];
 
 const ALLOWLIST: { file: string; snippet: string }[] = [];
 

@@ -1,5 +1,6 @@
 import { env } from "cloudflare:workers";
 import { getAuth } from "./auth.server";
+import { prepareScoped } from "./brand-db.server";
 import { listGameLogosWithId } from "./game-logos.server";
 import {
   ARCHIVE_DAYS,
@@ -81,9 +82,9 @@ export async function syncDay(
     Math.abs(input.dayIndex - serverToday) <= TIMEZONE_SLACK_DAYS;
   const reward = rewardFor(status, guesses, isFreshToday);
 
-  await env.DB.prepare(
-    `INSERT OR IGNORE INTO progress (anon_id, user_id, day_index, status, guess_count, guesses_json, reward, logo_id, played_fresh)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  await prepareScoped(
+    `INSERT OR IGNORE INTO progress (brand, anon_id, user_id, day_index, status, guess_count, guesses_json, reward, logo_id, played_fresh)
+     VALUES ($BRAND, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   )
     .bind(
       userId ? null : input.anonId,
@@ -115,22 +116,22 @@ export async function claimAnon(
     return { error: "not authenticated", ok: false };
   }
   await env.DB.batch([
-    env.DB.prepare(
-      `DELETE FROM progress WHERE anon_id = ? AND day_index IN (SELECT day_index FROM progress WHERE user_id = ?)`,
+    prepareScoped(
+      `DELETE FROM progress WHERE brand = $BRAND AND anon_id = ? AND day_index IN (SELECT day_index FROM progress WHERE brand = $BRAND AND user_id = ?)`,
     ).bind(anonId, userId),
-    env.DB.prepare(
-      `UPDATE progress SET user_id = ?, anon_id = NULL WHERE anon_id = ?`,
+    prepareScoped(
+      `UPDATE progress SET user_id = ?, anon_id = NULL WHERE brand = $BRAND AND anon_id = ?`,
     ).bind(userId, anonId),
   ]);
   // Speed-round runs follow the same rule (an existing account run for a day
   // wins). Kept in its own batch so the main game's claim never depends on it.
   try {
     await env.DB.batch([
-      env.DB.prepare(
-        `DELETE FROM speed_run WHERE anon_id = ? AND (day_index, is_replay) IN (SELECT day_index, is_replay FROM speed_run WHERE user_id = ?)`,
+      prepareScoped(
+        `DELETE FROM speed_run WHERE brand = $BRAND AND anon_id = ? AND (day_index, is_replay) IN (SELECT day_index, is_replay FROM speed_run WHERE brand = $BRAND AND user_id = ?)`,
       ).bind(anonId, userId),
-      env.DB.prepare(
-        `UPDATE speed_run SET user_id = ?, anon_id = NULL WHERE anon_id = ?`,
+      prepareScoped(
+        `UPDATE speed_run SET user_id = ?, anon_id = NULL WHERE brand = $BRAND AND anon_id = ?`,
       ).bind(userId, anonId),
     ]);
   } catch (error) {
@@ -147,8 +148,8 @@ export async function myProgress(
 > | null> {
   const userId = await currentUserId(headers);
   if (!userId) return null;
-  const { results } = await env.DB.prepare(
-    `SELECT day_index, status, guesses_json, reward, played_fresh FROM progress WHERE user_id = ?`,
+  const { results } = await prepareScoped(
+    `SELECT day_index, status, guesses_json, reward, played_fresh FROM progress WHERE brand = $BRAND AND user_id = ?`,
   )
     .bind(userId)
     .all<ProgressRow>();

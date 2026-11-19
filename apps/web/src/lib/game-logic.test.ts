@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Logo } from "@slogodle/logos";
+import { getBrand } from "../brands";
 import {
   MAX_TRIES,
   buildShareText,
@@ -19,6 +20,16 @@ import {
 const logo = { name: "React" } as Logo;
 
 describe("dayIndexFor", () => {
+  it("defaults to the build brand's epoch (tech: day 0 on 2026-10-05)", () => {
+    expect(dayIndexFor(new Date(2026, 9, 5))).toBe(0);
+    expect(dayIndexFor(new Date(2026, 9, 6))).toBe(1);
+  });
+
+  it("counts from another brand's epoch when given", () => {
+    const { epoch } = getBrand("brand");
+    expect(dayIndexFor(new Date(2026, 10, 19), new Date(...epoch))).toBe(0);
+  });
+
   const epoch = new Date(2026, 0, 1);
 
   it("is 0 on the epoch day, whatever the time", () => {

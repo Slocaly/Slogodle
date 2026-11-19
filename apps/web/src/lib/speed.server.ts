@@ -1,6 +1,6 @@
 import { getRequestHeaders } from "@tanstack/react-start/server";
-import { env } from "cloudflare:workers";
 import { getAuth } from "./auth.server";
+import { prepareScoped } from "./brand-db.server";
 import { listGameLogos } from "./game-logos.server";
 import { dayIndexFor } from "./game-logic";
 import {
@@ -72,9 +72,9 @@ async function findRun(
   isReplay: boolean,
 ): Promise<SpeedRunRow | null> {
   const column = who.userId ? "user_id" : "anon_id";
-  return env.DB.prepare(
+  return prepareScoped(
     `SELECT id, started_at, finished_at, duration_ms, wrong_count, score_ms
-     FROM speed_run WHERE ${column} = ? AND day_index = ? AND is_replay = ?`,
+     FROM speed_run WHERE brand = $BRAND AND ${column} = ? AND day_index = ? AND is_replay = ?`,
   )
     .bind(who.userId ?? who.anonId, dayIndex, isReplay ? 1 : 0)
     .first<SpeedRunRow>();
@@ -129,8 +129,8 @@ export async function startSpeedRun(input: RunInput) {
   const isReplay = input.replay === true;
   assertPlayableDay(input.dayIndex, isReplay);
   const who = await identify(input.anonId);
-  await env.DB.prepare(
-    `INSERT OR IGNORE INTO speed_run (anon_id, user_id, day_index, started_at, is_replay) VALUES (?, ?, ?, ?, ?)`,
+  await prepareScoped(
+    `INSERT OR IGNORE INTO speed_run (brand, anon_id, user_id, day_index, started_at, is_replay) VALUES ($BRAND, ?, ?, ?, ?, ?)`,
   )
     .bind(who.anonId, who.userId, input.dayIndex, Date.now(), isReplay ? 1 : 0)
     .run();
@@ -163,10 +163,10 @@ export async function finishSpeedRun(
     wrongCount,
   );
 
-  await env.DB.prepare(
+  await prepareScoped(
     `UPDATE speed_run
      SET finished_at = ?, duration_ms = ?, wrong_count = ?, score_ms = ?, wrong_counts_json = ?
-     WHERE id = ? AND finished_at IS NULL`,
+     WHERE brand = $BRAND AND id = ? AND finished_at IS NULL`,
   )
     .bind(
       finishedAt,
@@ -232,9 +232,9 @@ export async function getSpeedLadder(input: {
   if (input.dayIndex < dayIndexFor(new Date())) {
     const played =
       meUser || meAnon
-        ? await env.DB.prepare(
+        ? await prepareScoped(
             `SELECT 1 AS ok FROM speed_run
-             WHERE day_index = ? AND finished_at IS NOT NULL AND (user_id = ? OR anon_id = ?)
+             WHERE brand = $BRAND AND day_index = ? AND finished_at IS NOT NULL AND (user_id = ? OR anon_id = ?)
              LIMIT 1`,
           )
             .bind(input.dayIndex, meUser, meAnon)
@@ -242,11 +242,11 @@ export async function getSpeedLadder(input: {
         : null;
     if (!played) return null;
   }
-  const { results } = await env.DB.prepare(
+  const { results } = await prepareScoped(
     `SELECT u.name AS name, r.anon_id AS anonId, r.duration_ms AS durationMs, r.wrong_count AS wrongCount,
             r.score_ms AS scoreMs, (r.user_id = ? OR r.anon_id = ?) AS isMe
      FROM speed_run r LEFT JOIN user u ON u.id = r.user_id
-     WHERE r.day_index = ? AND r.finished_at IS NOT NULL AND r.is_replay = 0
+     WHERE r.brand = $BRAND AND r.day_index = ? AND r.finished_at IS NOT NULL AND r.is_replay = 0
      ORDER BY r.score_ms ASC, r.finished_at ASC
      LIMIT 50`,
   )
@@ -277,9 +277,9 @@ export async function getSpeedStanding(input: {
   const who = await identify(input.anonId);
   const run = await findRun(who, input.dayIndex, false);
   if (!run || run.finished_at === null || run.score_ms === null) return null;
-  const ahead = await env.DB.prepare(
+  const ahead = await prepareScoped(
     `SELECT COUNT(*) AS n FROM speed_run
-     WHERE day_index = ? AND finished_at IS NOT NULL AND is_replay = 0
+     WHERE brand = $BRAND AND day_index = ? AND finished_at IS NOT NULL AND is_replay = 0
        AND (score_ms < ? OR (score_ms = ? AND finished_at < ?))`,
   )
     .bind(input.dayIndex, run.score_ms, run.score_ms, run.finished_at)
@@ -315,16 +315,16 @@ export async function getSpeedHistory(input: {
 }): Promise<SpeedHistoryEntry[]> {
   const who = await identify(input.anonId);
   const column = who.userId ? "user_id" : "anon_id";
-  const { results } = await env.DB.prepare(
+  const { results } = await prepareScoped(
     `SELECT r.day_index AS dayIndex, r.is_replay AS isReplay, r.finished_at AS finishedAt,
             r.duration_ms AS durationMs, r.wrong_count AS wrongCount, r.score_ms AS scoreMs,
             CASE WHEN r.is_replay = 0 AND r.finished_at IS NOT NULL THEN
               (SELECT COUNT(*) FROM speed_run o
-               WHERE o.day_index = r.day_index AND o.is_replay = 0 AND o.finished_at IS NOT NULL
+               WHERE o.brand = $BRAND AND o.day_index = r.day_index AND o.is_replay = 0 AND o.finished_at IS NOT NULL
                  AND (o.score_ms < r.score_ms OR (o.score_ms = r.score_ms AND o.finished_at < r.finished_at))) + 1
             END AS rank
      FROM speed_run r
-     WHERE r.${column} = ? AND (r.finished_at IS NOT NULL OR r.started_at < ?)`,
+     WHERE r.brand = $BRAND AND r.${column} = ? AND (r.finished_at IS NOT NULL OR r.started_at < ?)`,
   )
     .bind(who.userId ?? who.anonId, Date.now() - SPEED_MAX_RUN_MS)
     .all<HistoryRow>();

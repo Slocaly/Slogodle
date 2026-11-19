@@ -32,3 +32,6 @@ declare global {
 
   interface Env extends AuthEnv {}
 }
+
+// Injected at build time by vite `define` (undefined when VARIANT is unset).
+declare const __VARIANT__: string | undefined;

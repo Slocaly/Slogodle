@@ -5,8 +5,14 @@ import viteReact, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
+import { getBrand } from "./src/brands";
+
+// Fail the build loudly on an unknown VARIANT.
+getBrand(process.env.VARIANT);
 
 export default defineConfig({
+  // Build-time brand selection (see src/brands). Unset -> undefined -> tech.
+  define: { __VARIANT__: JSON.stringify(process.env.VARIANT) },
   // The admin video previews import the Remotion compositions from apps/video, which
   // resolve their own react/remotion copies otherwise (and break the Player's contexts).
   resolve: {

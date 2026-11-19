@@ -92,7 +92,7 @@ async function main() {
   const dryRun = process.argv.includes("--dry-run");
 
   const rows = await d1Query<LogoMetadataRow>(
-    "SELECT id, r2_key, name FROM logo_metadata",
+    "SELECT id, r2_key, name FROM logo_metadata WHERE brand = 'tech'",
   );
   console.log(`${dryRun ? "[dry run] " : ""}Renaming ${rows.length} logos…`);
 
@@ -100,7 +100,7 @@ async function main() {
     const newKey = generateR2Key();
     if (!dryRun) {
       await renameR2Object(row.r2_key, newKey);
-      await d1Query("UPDATE logo_metadata SET r2_key = ? WHERE id = ?", [
+      await d1Query("UPDATE logo_metadata SET r2_key = ? WHERE id = ? AND brand = 'tech'", [
         newKey,
         row.id,
       ]);

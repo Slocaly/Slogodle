@@ -4,6 +4,8 @@
 // table. Safe to re-run — existing R2 objects are left alone, and D1 rows
 // are only written when they don't exist yet or their fields differ.
 //
+// Tech-only: every logo_metadata statement is scoped to brand = 'tech'.
+//
 // Usage: pnpm --filter web run sync-logos (loads apps/web/.env)
 
 import { randomBytes } from "node:crypto";
@@ -158,9 +160,9 @@ function metadataMatches(existing: LogoMetadataRow, logo: Logo): boolean {
 
 async function upsertMetadata(r2Key: string, logo: Logo): Promise<void> {
   await d1Query(
-    `INSERT INTO logo_metadata (r2_key, name, industry, founded, description, fun_fact, git_link, aspect, day_order)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(day_order), 0) + 1 FROM logo_metadata))
-     ON CONFLICT(r2_key) DO UPDATE SET
+    `INSERT INTO logo_metadata (brand, r2_key, name, industry, founded, description, fun_fact, git_link, aspect, day_order)
+     VALUES ('tech', ?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(day_order), 0) + 1 FROM logo_metadata WHERE brand = 'tech'))
+     ON CONFLICT(brand, r2_key) DO UPDATE SET
        name = excluded.name,
        industry = excluded.industry,
        founded = excluded.founded,
@@ -186,7 +188,7 @@ async function main() {
   console.log(`Syncing ${LOGOS.length} logos…`);
 
   const existingRows = await d1Query<LogoMetadataRow>(
-    "SELECT r2_key, name, industry, founded, description, fun_fact, git_link, aspect FROM logo_metadata",
+    "SELECT r2_key, name, industry, founded, description, fun_fact, git_link, aspect FROM logo_metadata WHERE brand = 'tech'",
   );
   const existingByName = new Map(existingRows.map((row) => [row.name, row]));
 

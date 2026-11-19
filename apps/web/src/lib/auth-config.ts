@@ -7,6 +7,7 @@ export const SHARED_COOKIE_DOMAIN = ".slogodle.com";
 export interface AuthOptionsFragment {
   trustedOrigins: string[];
   advanced?: {
+    useSecureCookies: true;
     crossSubDomainCookies: {
       enabled: true;
       domain: typeof SHARED_COOKIE_DOMAIN;
@@ -25,6 +26,9 @@ export function buildAuthOptionsFragment(
   return {
     trustedOrigins,
     advanced: {
+      // Pin the `__Secure-` cookie prefix: better-auth otherwise derives it from
+      // baseURL, which may be unset on one deployment, giving different names.
+      useSecureCookies: true,
       crossSubDomainCookies: { enabled: true, domain: SHARED_COOKIE_DOMAIN },
     },
   };

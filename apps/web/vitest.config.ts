@@ -3,7 +3,7 @@ import { defineConfig } from "vitest/config";
 // Kept separate from vite.config.ts on purpose: unit tests don't need the
 // Cloudflare, TanStack Start, Paraglide or React Compiler plugins.
 export default defineConfig({
-  define: { __VARIANT__: JSON.stringify(process.env.VARIANT) },
+  define: { __VARIANT__: JSON.stringify("tech") },
   plugins: [
     {
       // "cloudflare:workers" only exists in the Workers runtime. Server modules

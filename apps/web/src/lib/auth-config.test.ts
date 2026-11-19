@@ -15,6 +15,7 @@ describe("buildAuthOptionsFragment", () => {
       ]),
     );
     expect(fragment.advanced).toEqual({
+      useSecureCookies: true,
       crossSubDomainCookies: { enabled: true, domain: ".slogodle.com" },
     });
   });

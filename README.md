@@ -31,14 +31,16 @@ Run from the repo root ([Turborepo](https://turborepo.com) orchestrates and cach
 | `build` / `build:brand`   | Production build for `tech` / `brand`       |
 | `deploy` / `deploy:brand` | Build then `wrangler deploy` for each brand |
 
-Both variants share one D1 database; each has its own R2 logo bucket. Builds write to the same `dist`, so run them sequentially.
+Both variants share one D1 database; each has its own R2 logo bucket. Builds write to the same `dist`, so always deploy through the `deploy` / `deploy:brand` scripts (never hand-run `wrangler deploy` after a single build).
+
+Sign-in does not work under `pnpm start` (vite preview on localhost): the login cookie is only host-only when `import.meta.env.DEV`, otherwise it targets `.slogodle.com`.
 
 ### Shipping a new brand (manual steps)
 
 1. Create the bucket: `wrangler r2 bucket create brand-logos`.
 2. Set secrets for the env with `wrangler secret put <NAME> --env brand`:
    - `BETTER_AUTH_SECRET`: same value as `tech` (shared login cookie on `.slogodle.com`)
-   - `BETTER_AUTH_URL`: the brand origin (e.g. `https://brand.slogodle.com`)
+   - `BETTER_AUTH_URL`: the brand origin (e.g. `https://brand.slogodle.com`). Confirm `tech` also has `BETTER_AUTH_URL=https://tech.slogodle.com`
    - `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`: from a separate GitHub OAuth App per brand (an OAuth App allows only one callback URL)
    - `RESEND_API_KEY`, `EMAIL_FROM`
-3. Apply the migration: `wrangler d1 migrations apply slogodle --remote`, then deploy immediately (`pnpm --filter web deploy` and `deploy:brand`). Between migration and deploy the old admin logo upsert breaks; game play does not.
+3. First note the D1 Time Travel bookmark (`wrangler d1 time-travel info slogodle`), then apply the migration: `wrangler d1 migrations apply slogodle --remote`, then deploy immediately (`pnpm --filter web deploy` and `deploy:brand`). Between migration and deploy the old admin logo upsert breaks (game play does not), so don't use the admin logo upsert or `sync-logos` in that window.

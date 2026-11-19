@@ -136,3 +136,37 @@ describe("brand scope guard", () => {
     }
   });
 });
+
+// Add-logo tooling is tech-only: scripts must never rely on the old single-column
+// uniqueness and every logo_metadata statement must be scoped to a brand.
+const SCRIPTS: Record<string, string> = import.meta.glob<string>(
+  "../../scripts/*.ts",
+  { eager: true, import: "default", query: "?raw" },
+);
+
+describe("scripts brand scope guard", () => {
+  it("can read the scripts it scans", () => {
+    expect(Object.keys(SCRIPTS).length).toBeGreaterThan(0);
+  });
+
+  it("no script conflicts on r2_key alone", () => {
+    const offenders = Object.entries(SCRIPTS)
+      .filter(([, source]) => source.includes("ON CONFLICT(r2_key)"))
+      .map(([file]) => file);
+    expect(offenders).toEqual([]);
+  });
+
+  it("every logo_metadata statement in a script mentions brand", () => {
+    const offenders = Object.entries(SCRIPTS).flatMap(([file, source]) =>
+      [
+        ...source.matchAll(
+          /"[^"\n]*logo_metadata[^"\n]*"|`[^`]*logo_metadata[^`]*`/g,
+        ),
+      ]
+        .map((match) => match[0])
+        .filter((statement) => !statement.includes("brand"))
+        .map((statement) => `${file}: ${statement}`),
+    );
+    expect(offenders).toEqual([]);
+  });
+});

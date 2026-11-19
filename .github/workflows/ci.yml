@@ -30,3 +30,8 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      - name: Build (all variants)
+        run: |
+          pnpm --filter web build
+          pnpm --filter web build:brand

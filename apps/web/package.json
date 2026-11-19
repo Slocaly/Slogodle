@@ -6,10 +6,13 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
+    "dev": "VARIANT=tech vite dev",
+    "dev:brand": "VARIANT=brand CLOUDFLARE_ENV=brand vite dev",
+    "build": "VARIANT=tech vite build",
+    "build:brand": "VARIANT=brand CLOUDFLARE_ENV=brand vite build",
     "start": "vite preview",
-    "deploy": "vite build && wrangler deploy",
+    "deploy": "pnpm build && wrangler deploy",
+    "deploy:brand": "pnpm build:brand && wrangler deploy --env brand",
     "cf-typegen": "wrangler types",
     "postinstall": "wrangler types",
     "sync-logos": "node --env-file=.env scripts/sync-logos.ts",

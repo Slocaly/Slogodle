@@ -33,4 +33,31 @@
       "binding": "slogodle_videos_tmp",
     },
   ],
+  // Brand deployment. Wrangler does not inherit vars/d1/r2 into envs: redeclared.
+  // Build with `pnpm build:brand` (VARIANT=brand CLOUDFLARE_ENV=brand).
+  "env": {
+    "brand": {
+      "name": "brand-slogodle",
+      "routes": [{ "pattern": "brand.slogodle.com", "custom_domain": true }],
+      "vars": {
+        "ADMIN_EMAIL": "lucasaudart@gmail.com",
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "slogodle",
+          "database_id": "d993c41e-9dc1-4065-aa03-7988fca0ff06",
+          "migrations_dir": "migrations",
+          "remote": true,
+        },
+      ],
+      "r2_buckets": [
+        {
+          "binding": "LOGO_BUCKET",
+          "bucket_name": "brand-logos",
+          "remote": true,
+        },
+      ],
+    },
+  },
 }

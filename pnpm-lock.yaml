@@ -121,6 +121,9 @@ importers:
       '@remotion/player':
         specifier: 4.0.513
         version: 4.0.513(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@slogodle/brand-logos':
+        specifier: workspace:*
+        version: link:../../packages/brand-logos
       '@slogodle/logos':
         specifier: workspace:*
         version: link:../../packages/logos
@@ -239,6 +242,12 @@ importers:
       wrangler:
         specifier: ^4.125.0
         version: 4.125.0
+
+  packages/brand-logos:
+    dependencies:
+      '@slogodle/logos':
+        specifier: workspace:*
+        version: link:../logos
 
   packages/logos: {}
 

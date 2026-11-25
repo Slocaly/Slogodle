@@ -1,0 +1,15 @@
+{
+  "name": "@slogodle/brand-logos",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "exports": {
+    ".": "./src/logos.ts"
+  },
+  "dependencies": {
+    "@slogodle/logos": "workspace:*"
+  },
+  "scripts": {
+    "shuffle": "node scripts/shuffle-logos.mjs"
+  }
+}

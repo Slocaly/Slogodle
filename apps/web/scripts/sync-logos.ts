@@ -1,12 +1,16 @@
 #!/usr/bin/env node
-// Syncs the local @slogodle/logos catalog to the cloud: uploads any missing
+// Syncs a local logo catalog to the cloud: uploads any missing
 // SVGs to R2 and upserts any missing/changed rows into the D1 logo_metadata
 // table. Safe to re-run — existing R2 objects are left alone, and D1 rows
 // are only written when they don't exist yet or their fields differ.
 //
-// Tech-only: every logo_metadata statement is scoped to brand = 'tech'.
+// The catalog follows the VARIANT env var (default `tech`):
+//   tech  → @slogodle/logos       + public/logos                 → bucket `logos`
+//   brand → @slogodle/brand-logos + packages/brand-logos/assets  → bucket `brand-logos`
+// Every logo_metadata statement is scoped to that brand.
 //
-// Usage: pnpm --filter web run sync-logos (loads apps/web/.env)
+// Usage: pnpm --filter web run sync-logos         (tech)
+//        pnpm --filter web run sync-logos:brand   (brand). Both load apps/web/.env
 
 import { randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -17,12 +21,42 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { LOGOS } from "@slogodle/logos";
+import { LOGOS as BRAND_LOGOS } from "@slogodle/brand-logos";
+import { LOGOS as TECH_LOGOS } from "@slogodle/logos";
 import type { Logo } from "@slogodle/logos";
 import { optimize } from "svgo";
 
 const __dirname = import.meta.dirname;
-const logosDir = join(__dirname, "../public/logos");
+
+interface Catalog {
+  logos: Logo[];
+  logosDir: string;
+  bucket: string;
+}
+
+const CATALOGS: Record<string, Catalog> = {
+  tech: {
+    logos: TECH_LOGOS,
+    logosDir: join(__dirname, "../public/logos"),
+    bucket: "logos",
+  },
+  brand: {
+    logos: BRAND_LOGOS,
+    logosDir: join(__dirname, "../../../packages/brand-logos/assets"),
+    bucket: "brand-logos",
+  },
+};
+
+const brandId = process.env.VARIANT ?? "tech";
+const catalog = Object.hasOwn(CATALOGS, brandId)
+  ? CATALOGS[brandId]
+  : undefined;
+if (!catalog) {
+  throw new Error(
+    `Unknown VARIANT "${brandId}" (expected one of: ${Object.keys(CATALOGS).join(", ")})`,
+  );
+}
+const { logos: LOGOS, logosDir } = catalog;
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -38,7 +72,7 @@ const r2Client = new S3Client({
   endpoint: `https://${requireEnv("CLOUDFLARE_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
   region: "auto",
 });
-const r2Bucket = "logos";
+const r2Bucket = catalog.bucket;
 
 const cfAccountId = requireEnv("CLOUDFLARE_ACCOUNT_ID");
 const cfApiToken = requireEnv("CLOUDFLARE_API_TOKEN");
@@ -161,7 +195,7 @@ function metadataMatches(existing: LogoMetadataRow, logo: Logo): boolean {
 async function upsertMetadata(r2Key: string, logo: Logo): Promise<void> {
   await d1Query(
     `INSERT INTO logo_metadata (brand, r2_key, name, industry, founded, description, fun_fact, git_link, aspect, day_order)
-     VALUES ('tech', ?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(day_order), 0) + 1 FROM logo_metadata WHERE brand = 'tech'))
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, (SELECT COALESCE(MAX(day_order), 0) + 1 FROM logo_metadata WHERE brand = ?))
      ON CONFLICT(brand, r2_key) DO UPDATE SET
        name = excluded.name,
        industry = excluded.industry,
@@ -172,6 +206,7 @@ async function upsertMetadata(r2Key: string, logo: Logo): Promise<void> {
        aspect = excluded.aspect,
        updated_at = CURRENT_TIMESTAMP`,
     [
+      brandId,
       r2Key,
       logo.name,
       logo.industry,
@@ -180,15 +215,19 @@ async function upsertMetadata(r2Key: string, logo: Logo): Promise<void> {
       logo.funFact,
       logo.gitLink,
       logo.aspect,
+      brandId,
     ],
   );
 }
 
 async function main() {
-  console.log(`Syncing ${LOGOS.length} logos…`);
+  console.log(
+    `Syncing ${LOGOS.length} ${brandId} logos to bucket ${r2Bucket}…`,
+  );
 
   const existingRows = await d1Query<LogoMetadataRow>(
-    "SELECT r2_key, name, industry, founded, description, fun_fact, git_link, aspect FROM logo_metadata WHERE brand = 'tech'",
+    "SELECT r2_key, name, industry, founded, description, fun_fact, git_link, aspect FROM logo_metadata WHERE brand = ?",
+    [brandId],
   );
   const existingByName = new Map(existingRows.map((row) => [row.name, row]));
 

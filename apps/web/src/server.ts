@@ -2,6 +2,7 @@ import handler from "@tanstack/react-start/server-entry";
 import { env } from "cloudflare:workers";
 import { paraglideMiddleware } from "./paraglide/server.js";
 import { getAuth } from "./lib/auth.server";
+import { withCookieMove } from "./lib/cookie-move";
 import { claimAnon, myProgress, syncDay } from "./lib/progress.server";
 
 const LOGO_KEY_PATTERN = /^\/api\/logos\/([^/]+)$/;
@@ -125,7 +126,7 @@ const server = {
       url.protocol = "https:";
       return Response.redirect(url.toString(), 301);
     }
-    return withSecurityHeaders(await route(request));
+    return withSecurityHeaders(await withCookieMove(request, route));
   },
 };
 

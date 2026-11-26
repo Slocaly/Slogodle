@@ -1,7 +1,9 @@
 import handler from "@tanstack/react-start/server-entry";
 import { env } from "cloudflare:workers";
 import { paraglideMiddleware } from "./paraglide/server.js";
+import { brand } from "./brands";
 import { getAuth } from "./lib/auth.server";
+import { buildCsp } from "./lib/csp";
 import { claimAnon, myProgress, syncDay } from "./lib/progress.server";
 
 const LOGO_KEY_PATTERN = /^\/api\/logos\/([^/]+)$/;
@@ -9,21 +11,7 @@ const LOGO_KEY_PATTERN = /^\/api\/logos\/([^/]+)$/;
 // Vite's dev server injects HMR client scripts and style tags inline, so a
 // strict CSP is only safe to send for the production build — Observatory
 // only ever scans the deployed site anyway.
-const CSP = [
-  "default-src 'self'",
-  // TanStack Start injects per-request inline <script> tags for SSR/hydration
-  // data, so a hash or static nonce can't cover them — 'unsafe-inline' is the
-  // pragmatic tradeoff here.
-  "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self'",
-  "connect-src 'self'",
-  "frame-ancestors 'none'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-].join("; ");
+const CSP = buildCsp(brand);
 
 function withSecurityHeaders(response: Response): Response {
   const headers = new Headers(response.headers);

@@ -23,6 +23,11 @@ describe("BRANDS", () => {
     expect(BRANDS.tech.requiresGitLink).toBe(true);
   });
 
+  it("turns sticker logos on for brand only", () => {
+    expect(BRANDS.tech.stickerLogos).toBe(false);
+    expect(BRANDS.brand.stickerLogos).toBe(true);
+  });
+
   it("has the brand values", () => {
     expect(BRANDS.brand.requiresGitLink).toBe(false);
     expect(BRANDS.brand.origin).toBe("https://brand.slogodle.com");

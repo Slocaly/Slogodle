@@ -7,6 +7,9 @@ export interface Brand {
   requiresGitLink: boolean;
   // Replaces the hard-coded "tech" in "I found today's tech logo!".
   shareNoun: string;
+  // White-outlined logos in the pile. They are data: URLs, so this also allows
+  // data: images in the CSP (src/lib/csp.ts).
+  stickerLogos: boolean;
 }
 
 export const BRANDS: Record<string, Brand> = {
@@ -18,6 +21,7 @@ export const BRANDS: Record<string, Brand> = {
     themeColor: "#f4a6c6",
     requiresGitLink: true,
     shareNoun: "tech",
+    stickerLogos: false,
   },
   // Placeholder: the owner fills in the real name/colors later.
   brand: {
@@ -28,6 +32,7 @@ export const BRANDS: Record<string, Brand> = {
     themeColor: "#f4a6c6",
     requiresGitLink: false,
     shareNoun: "brand",
+    stickerLogos: true,
   },
 };
 

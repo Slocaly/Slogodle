@@ -3,13 +3,19 @@ import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import type { Ref, RefObject } from "react";
 import { flushSync } from "react-dom";
 import type { Logo } from "@slogodle/logos";
+import { brand } from "../brands";
 import { createLogoPileSimulation } from "../lib/physicsLogoPile";
 import type { LogoPileSimulation } from "../lib/physicsLogoPile";
 import { createTiltGravity } from "../lib/tiltGravity";
 import { getStickerIconSrc } from "../lib/stickerIcons";
 import styles from "./PhysicsLogoPile.module.css";
 
-const STICKER_LOGOS = import.meta.env.VITE_STICKER_LOGOS !== "false";
+// WARNING: VITE_STICKER_LOGOS=false switches stickers off for any build that
+// sees it, including `brand`. A .env copied from .env.example does this.
+// The variable cannot turn stickers on: that is `stickerLogos` in the brand
+// config (src/brands), which also controls the CSP.
+const STICKER_LOGOS =
+  brand.stickerLogos && import.meta.env.VITE_STICKER_LOGOS !== "false";
 
 export interface PhysicsLogoPileHandle {
   /** Flings `count` copies of today's logo in from a random screen edge. */

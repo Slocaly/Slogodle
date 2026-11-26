@@ -3,10 +3,9 @@
 // (see apps/web/src/hooks/useGameState.ts), so this changes which logo
 // appears on which day going forward.
 import { readFileSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = import.meta.dirname;
 const filePath = join(__dirname, "../src/logos.ts");
 
 const source = readFileSync(filePath, "utf8");
@@ -49,7 +48,7 @@ for (let i = entries.length - 1; i > 0; i--) {
   [entries[i], entries[j]] = [entries[j], entries[i]];
 }
 
-const newBody = "\n" + entries.map((entry) => "  " + entry).join("\n") + "\n";
+const newBody = `\n${entries.map((entry) => `  ${entry}`).join("\n")}\n`;
 
 writeFileSync(filePath, header + newBody + footer);
 console.log(`Shuffled ${entries.length} logos in ${filePath}`);

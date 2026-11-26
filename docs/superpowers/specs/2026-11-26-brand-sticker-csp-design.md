@@ -24,8 +24,8 @@ Content Security Policy blocks them. Make them display, with their white
 - `brand.slogodle.com` shows the pile logos with the sticker outline.
 - `tech.slogodle.com` keeps its current appearance (no stickers) and its
   current CSP, unchanged.
-- One brand config flag drives both the sticker feature and the CSP allowance,
-  so the two cannot disagree.
+- One brand config flag drives the CSP allowance and decides which brands may
+  have stickers, so stickers can never be on while the CSP blocks them.
 
 ## Non-goals
 
@@ -43,7 +43,10 @@ Content Security Policy blocks them. Make them display, with their white
 2. `img-src` allows `data:` only for brands that have stickers. Rejected:
    allowing it for every brand (loosens `tech` for no benefit), and switching to
    `blob:` URLs (still needs a CSP change, plus URL cleanup code).
-3. `VITE_STICKER_LOGOS` is removed, with no override left behind.
+3. `VITE_STICKER_LOGOS` is kept for now, as an override that can only switch
+   stickers off. It carries a warning in the code and in the pull request.
+   Rejected: letting it turn stickers on, which would bring the bug back on a
+   brand whose CSP blocks `data:`.
 
 ## Design
 
@@ -75,13 +78,39 @@ Allowing `data:` in `img-src` applies to image loads only; it does not let
 
 ### Logo pile — `apps/web/src/components/PhysicsLogoPile.tsx`
 
-Replace the `STICKER_LOGOS` constant (read from `import.meta.env`) with
-`brand.stickerLogos`.
+Stickers are on only when the brand has them and the variable does not switch
+them off:
 
-### Environment variable
+```ts
+const STICKER_LOGOS =
+  brand.stickerLogos && import.meta.env.VITE_STICKER_LOGOS !== "false";
+```
 
-Delete `VITE_STICKER_LOGOS` from `apps/web/.env.example`. A copy still set on a
-developer or build machine is ignored.
+| `stickerLogos` | `VITE_STICKER_LOGOS`  | Stickers |
+| -------------- | --------------------- | -------- |
+| `true`         | unset or not `false`  | on       |
+| `true`         | `false`               | off      |
+| `false`        | any value             | off      |
+
+`buildCsp` reads the brand config only, never the variable. With stickers
+switched off on `brand`, the policy still allows `data:`, which is harmless.
+
+### Warning comments
+
+Add a comment above `STICKER_LOGOS`, and one above the variable in
+`apps/web/.env.example`. The variable keeps its current value there. Both
+comments must say:
+
+- **Warning:** `VITE_STICKER_LOGOS=false` switches stickers off for any build
+  that sees it, including `brand`. A `.env` copied from `.env.example` does
+  this.
+- It cannot turn stickers on: that is `stickerLogos` in the brand config, which
+  also controls the CSP.
+
+### Pull request
+
+The description repeats the warning and asks the deployer to check that
+`VITE_STICKER_LOGOS=false` is not set where `brand` is built.
 
 ### Error handling
 
@@ -90,10 +119,11 @@ plain icon URL.
 
 ## Consequences
 
-- The tech bundle will now include the sticker code, unused, because the flag is
-  read at run time from the brand config rather than removed at build time.
-- Local dev follows the brand config: `dev` shows no stickers and `dev:brand`
-  shows them, whatever `.env` says.
+- A `tech` build without `VITE_STICKER_LOGOS=false` still includes the sticker
+  code, unused, because the brand flag is read at run time.
+- In local dev, `dev` shows no stickers. `dev:brand` shows them unless `.env`
+  sets `VITE_STICKER_LOGOS=false`.
+- Whether to remove the variable is left for later.
 
 ## Testing
 
@@ -104,13 +134,16 @@ Unit tests (`pnpm test`):
   exactly.
 - The two policies are otherwise identical.
 - `BRANDS.tech.stickerLogos` is `false`; `BRANDS.brand.stickerLogos` is `true`.
-- `PhysicsLogoPile` calls `getStickerIconSrc` when the active brand has
-  `stickerLogos: true`, and does not when it is `false`. Vitest builds as
-  `tech`, so the test mocks the brand module for the `true` case.
+- `PhysicsLogoPile` calls `getStickerIconSrc` only in the "on" row of the table
+  above; cover all three rows. Vitest builds as `tech`, so the test mocks the
+  brand module for `stickerLogos: true`. It also stubs `VITE_STICKER_LOGOS` in
+  every case, so a local `.env` cannot change the result. The constant is read
+  when the module loads, so stub before importing it.
 
 Both variants must build (`build` and `build:brand`).
 
-After deploying (dev mode cannot prove this fix, since it sends no CSP):
+After deploying (dev mode cannot prove this fix, since it sends no CSP), with
+`VITE_STICKER_LOGOS=false` not set for the `brand` build:
 
 - `brand.slogodle.com` sends `img-src 'self' data:`; its pile shows outlined
   logos after a win, with no CSP error in the browser console.
